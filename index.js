@@ -15,7 +15,7 @@ const schema = String(readFileSync(`${__dirname}/${graphqlSchemaPath}`));
 const MyGraphQLSchema = buildSchema(schema);
 
 const rootValue = {
-  alive: () => true
+  alive: () => true,
 };
 
 app.use(
@@ -28,9 +28,10 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+  res.send('Hello World!');
 });
 
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`Example app listening at http://localhost:${port}`);
 });
