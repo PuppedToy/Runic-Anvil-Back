@@ -5,24 +5,22 @@ const { readFileSync } = require('fs');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 
+const api = require('./api');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
-const graphqlSchemaPath = process.env.GRAPHQL_SCHEMA_PATH || 'schema.graphql';
+const graphqlSchemaPath = process.env.GRAPHQL_SCHEMA_PATH || '../schema.graphql';
 const schema = String(readFileSync(`${__dirname}/${graphqlSchemaPath}`));
 const MyGraphQLSchema = buildSchema(schema);
-
-const rootValue = {
-  alive: () => true,
-};
 
 app.use(
   '/graphql',
   graphqlHTTP({
     schema: MyGraphQLSchema,
-    rootValue,
+    rootValue: api,
     graphiql: true,
   }),
 );

@@ -1,3 +1,82 @@
+scalar Date
+
+type UserSettings {
+  id: ID
+  # TODO
+}
+
+type UserStats {
+  id: ID
+  # TODO
+}
+
+type UserBag {
+  gold: Int
+  runicEssence: Int
+  packs: Int
+}
+
+type UserQuest {
+  id: ID
+  # TODO
+}
+
+type UserAchievement {
+  id: ID
+  # TODO
+}
+
+type ChatMessage {
+  sender: User!
+  content: String!
+  timestamp: Date!
+}
+
+type UserChat {
+  id: ID!
+  date: Date!
+  users: [User!]!
+  messages: [ChatMessage!]!
+}
+
+type Game {
+  id: ID
+  # TODO
+}
+
+type Card {
+  id: ID
+  # TODO
+}
+
+type Friend {
+  user: User!
+  notes: String
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  validated: Boolean!
+  state: String!
+  settings: UserSettings!
+  stats: UserStats!
+  bag: UserBag!
+  ownedCards: [Card!]!
+  quests: [UserQuest!]!
+  recentGames: [Game!]!
+  collection: [ID!]!
+  achievements: [UserAchievement!]!
+  friends: [Friend!]!
+  reported: [User!]!
+  muted: [User!]!
+  chats: [UserChat!]!
+  team: ID
+  currentGame: Game
+}
+
 type Query {
   alive: Boolean
+  getUser(id: ID!): User!
 }
