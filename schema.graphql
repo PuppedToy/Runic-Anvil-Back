@@ -57,7 +57,6 @@ type Friend {
 type User {
   id: ID!
   name: String!
-  email: String!
   validated: Boolean!
   state: String!
   settings: UserSettings!
@@ -72,11 +71,16 @@ type User {
   reported: [User!]!
   muted: [User!]!
   chats: [UserChat!]!
+  email: String
   team: ID
   currentGame: Game
 }
 
 type Query {
   alive: Boolean
-  getUser(id: ID!): User!
+  getUser(id: ID!): User
+}
+
+type Mutation {
+  createUser(name: String!, password: String!): Boolean
 }
