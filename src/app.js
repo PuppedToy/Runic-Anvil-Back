@@ -6,11 +6,13 @@ const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 
 const api = require('./api');
+const { authMiddleware } = require('./utils/middlewares');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+app.use(authMiddleware);
 
 const graphqlSchemaPath = process.env.GRAPHQL_SCHEMA_PATH || '../schema.graphql';
 const schema = String(readFileSync(`${__dirname}/${graphqlSchemaPath}`));

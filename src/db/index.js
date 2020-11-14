@@ -44,6 +44,18 @@ async function getUserById(id) {
 }
 module.exports.getUserById = getUserById;
 
+async function verifyUser(name, inputPassword) {
+  const db = await getDatabase();
+  const user = await db.collection('users').findOne({ name });
+
+  if (!user) return false;
+  const isPasswordCorrect = await argon2.verify(user.password, inputPassword);
+  if (!isPasswordCorrect) return false;
+
+  return user;
+}
+module.exports.verifyUser = verifyUser;
+
 async function createUser(name, password) {
   const [db, hashedPassword] = await Promise.all([
     getDatabase(),

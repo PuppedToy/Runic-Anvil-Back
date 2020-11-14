@@ -79,6 +79,8 @@ type User {
 type Query {
   alive: Boolean
   getUser(id: ID!): User
+  login(name: String!, password: String!): String
+  token: ID
 }
 
 type Mutation {
