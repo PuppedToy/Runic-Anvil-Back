@@ -6,7 +6,10 @@
   "scripts": {
     "start": "nodemon src/app.js",
     "lint": "eslint . --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:setup": "docker pull mongo",
+    "docker:start": "docker run -d -p 27018:27017 --name runic_anvil_db mongo",
+    "docker:stop": "docker stop runic_anvil_db && docker rm runic_anvil_db"
   },
   "pre-commit": [
     "lint"
