@@ -1,8 +1,9 @@
-const { createUser } = require('../../db');
+const db = require('../../db');
 
+// TODO return creation result instead of true or false
 async function createUserGraphQL({ name, password }) {
   try {
-    await createUser(name, password);
+    await db.users.create(name, password);
     return true;
   } catch (error) {
     return false;

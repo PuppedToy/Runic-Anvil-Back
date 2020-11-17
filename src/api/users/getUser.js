@@ -1,7 +1,7 @@
-const { getUserById } = require('../../db');
+const db = require('../../db');
 
 async function getUserGraphQL({ id }) {
-  return getUserById(id);
+  return db.users.getById(id);
 }
 
 module.exports = getUserGraphQL;
