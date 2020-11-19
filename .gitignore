@@ -12,3 +12,7 @@
 
 # Local History for Visual Studio Code
 .history/
+
+# Jest
+coverage
+.env.test

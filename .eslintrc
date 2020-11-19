@@ -3,5 +3,8 @@
     "plugins": ["jest"],
     "rules": {
         "no-underscore-dangle": 0
+    },
+    "env": {
+        "jest/globals": true
     }
 }
