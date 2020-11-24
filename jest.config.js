@@ -5,7 +5,7 @@ module.exports = {
     'src/**/*.js',
     '!app.js',
   ],
-  coverageDirectory: '.coverage',
+  coverageDirectory: 'coverage',
   coverageReporters: [
     'json-summary',
     'text',
