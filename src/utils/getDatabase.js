@@ -1,27 +1,31 @@
 const { MongoClient } = require('mongodb');
 
-const client = new MongoClient(process.env.MONGODB_URI);
-
+let client;
 let connectionPromise;
 
 function connectDatabase() {
   if (connectionPromise) {
-    connectionPromise
-      .finally(() => client.close())
-      .finally(() => {
-        connectionPromise = client.connect();
-        return connectionPromise;
-      })
-      .then(() => client.db(process.env.DB_NAME));
-  } else {
-    connectionPromise = client.connect()
-      .then(() => client.db(process.env.DB_NAME));
+    return Promise.reject(new Error('The database was already connected'));
   }
+
+  client = new MongoClient(
+    process.env.MONGODB_URI,
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  );
+  
+  connectionPromise = client.connect()
+    .then(() => client.db(process.env.DB_NAME));
+
+  return connectionPromise;
 }
 
 connectDatabase();
 
 function getDatabase(collection = null) {
+  if (!connectionPromise) {
+    return Promise.reject(new Error('The database is not connected'));
+  }
+
   if (collection && (typeof collection !== 'string')) {
     return Promise.reject(new Error('The parameter collection should be a string'));
   }
@@ -35,11 +39,16 @@ function getDatabase(collection = null) {
 }
 
 function closeDatabase() {
-  connectionPromise
-    .then(() => client.close())
-    .then(() => {
-      connectionPromise = Promise.reject(new Error('The connection is closed'));
-    });
+  if (connectionPromise) {
+    const closePromise = connectionPromise
+      .then(() => client.close());
+
+    connectionPromise = null;
+
+    return closePromise;
+  }
+
+  return Promise.resolve();
 }
 
 module.exports = {
