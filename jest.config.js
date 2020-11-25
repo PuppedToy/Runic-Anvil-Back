@@ -4,6 +4,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.js',
     '!app.js',
+    '!src/utils/testing/*'
   ],
   coverageDirectory: 'coverage',
   coverageReporters: [
