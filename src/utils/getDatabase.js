@@ -10,9 +10,9 @@ function connectDatabase() {
 
   client = new MongoClient(
     process.env.MONGODB_URI,
-    { useNewUrlParser: true, useUnifiedTopology: true }
+    { useNewUrlParser: true, useUnifiedTopology: true },
   );
-  
+
   connectionPromise = client.connect()
     .then(() => client.db(process.env.DB_NAME));
 
