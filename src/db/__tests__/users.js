@@ -1,6 +1,7 @@
 const { ObjectId } = require('mongodb');
+const argon2 = require('argon2');
 
-const { getById } = require('../users');
+const { getById, verify } = require('../users');
 const { getDatabase, closeDatabase, connectDatabase } = require('../../utils/getDatabase');
 const emptyDatabase = require('../../utils/testing/emptyDatabase');
 
@@ -26,7 +27,6 @@ describe('Users database methods', () => {
       .then((users) => users.insertMany([
         { _id: ObjectId('111111111111111111111111'), name: 'foo' },
         { _id: ObjectId('222222222222222222222222'), name: 'bar' },
-        { _id: ObjectId('333333333333333333333333'), name: 'baz' },
       ])));
 
     it('Should return foo if requested for id 111111111111111111111111', () => new Promise((resolve, reject) => {
@@ -62,4 +62,97 @@ describe('Users database methods', () => {
         });
     }));
   });
+
+  describe('verify', () => {
+
+    beforeEach(() => Promise.all([
+        getDatabase('users'),
+        argon2.hash('baz'),
+        argon2.hash('qux'),
+    ])
+      .then(([users, bazPassword, quxPassword]) => users.insertMany([
+        { _id: ObjectId('111111111111111111111111'), name: 'foo', password: bazPassword },
+        { _id: ObjectId('222222222222222222222222'), name: 'bar', password: quxPassword },
+      ])));
+
+    it('Should return 111111111111111111111111 user if provided foo name and baz password', () => new Promise((resolve, reject) => {
+
+        verify('foo', 'baz')
+            .then((retrievedUser) => {
+                expect(retrievedUser).toHaveProperty('_id', ObjectId('111111111111111111111111'));
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+    }));
+
+    it('Should return 222222222222222222222222 user if provided foo name and qux password', () => new Promise((resolve, reject) => {
+
+        verify('bar', 'qux')
+            .then((retrievedUser) => {
+                expect(retrievedUser).toHaveProperty('_id', ObjectId('222222222222222222222222'));
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+    }));
+
+    it('Should return false if provided foo name and qux password', () => new Promise((resolve, reject) => {
+
+        verify('foo', 'qux')
+            .then((retrievedUser) => {
+                expect(retrievedUser).toBe(false);
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+    }));
+
+    it('Should return false if provided foo name and quux password', () => new Promise((resolve, reject) => {
+
+        verify('foo', 'quux')
+            .then((retrievedUser) => {
+                expect(retrievedUser).toBe(false);
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+    }));
+
+    it('Should return false if provided quux name', () => new Promise((resolve, reject) => {
+
+        verify('quux', 'qux')
+            .then((retrievedUser) => {
+                expect(retrievedUser).toBe(false);
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+    }));
+
+    it('Should return false if provided no arguments', () => new Promise((resolve, reject) => {
+
+        verify()
+            .then((retrievedUser) => {
+                expect(retrievedUser).toBe(false);
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+
+    }));
+
+  });
+
 });
