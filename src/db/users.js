@@ -1,7 +1,7 @@
 const argon2 = require('argon2');
 const { ObjectId } = require('mongodb');
 
-const getDatabase = require('../utils/getDatabase');
+const { getDatabase } = require('../utils/getDatabase');
 
 const baseUser = {
   validated: false,
