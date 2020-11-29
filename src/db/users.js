@@ -51,11 +51,11 @@ async function verify(name, inputPassword) {
 module.exports.verify = verify;
 
 async function create(name, password) {
-  if(!name) {
-    return Promise.reject(new Error('name can\'t be null'))
+  if (!name) {
+    return Promise.reject(new Error('name can\'t be null'));
   }
-  if(!password) {
-    return Promise.reject(new Error('password can\'t be null'))
+  if (!password) {
+    return Promise.reject(new Error('password can\'t be null'));
   }
 
   const [db, hashedPassword] = await Promise.all([

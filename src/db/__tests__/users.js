@@ -142,10 +142,9 @@ describe('Users database methods', () => {
   });
 
   describe('create', () => {
-
     it('Should create a user given a name and a password', () => new Promise((resolve, reject) => {
       create('foo', 'bar')
-        .then(() => usersDb.findOne({name: 'foo'}))
+        .then(() => usersDb.findOne({ name: 'foo' }))
         .then((retrievedUser) => {
           expect(retrievedUser).toHaveProperty('name', 'foo');
           resolve();
@@ -154,10 +153,10 @@ describe('Users database methods', () => {
           reject(error);
         });
     }));
-    
+
     it('Should create a user with an _id', () => new Promise((resolve, reject) => {
       create('foo', 'bar')
-        .then(() => usersDb.findOne({name: 'foo'}))
+        .then(() => usersDb.findOne({ name: 'foo' }))
         .then((retrievedUser) => {
           expect(retrievedUser).toHaveProperty('_id');
           resolve();
@@ -169,7 +168,7 @@ describe('Users database methods', () => {
 
     it('Should not save the password in plain', () => new Promise((resolve, reject) => {
       create('foo', 'bar')
-        .then(() => usersDb.findOne({name: 'foo'}))
+        .then(() => usersDb.findOne({ name: 'foo' }))
         .then((retrievedUser) => {
           expect(retrievedUser).toHaveProperty('password');
           expect(retrievedUser).not.toHaveProperty('password', 'bar');
@@ -179,7 +178,7 @@ describe('Users database methods', () => {
           reject(error);
         });
     }));
-    
+
     it('Should throw an error if password is not provided', () => new Promise((resolve, reject) => {
       create('foo')
         .then(() => {
@@ -194,7 +193,7 @@ describe('Users database methods', () => {
     it('Should not create an user if password is not provided', () => new Promise((resolve, reject) => {
       create('foo')
         .catch(() => {})
-        .finally(() => usersDb.findOne({name: 'foo'}))
+        .finally(() => usersDb.findOne({ name: 'foo' }))
         .then((retrievedUser) => {
           expect(retrievedUser).toBeFalsy();
           resolve();
@@ -218,7 +217,7 @@ describe('Users database methods', () => {
     it('Should not create an user if name is not provided', () => new Promise((resolve, reject) => {
       create(null, 'bar')
         .catch(() => {})
-        .finally(() => usersDb.findOne({name: null}))
+        .finally(() => usersDb.findOne({ name: null }))
         .then((retrievedUser) => {
           expect(retrievedUser).toBeFalsy();
           resolve();
@@ -227,7 +226,7 @@ describe('Users database methods', () => {
           reject(error);
         });
     }));
-    
+
     it('Should throw an error if name is blank', () => new Promise((resolve, reject) => {
       create('', 'bar')
         .then(() => {
@@ -242,7 +241,7 @@ describe('Users database methods', () => {
     it('Should not create an user if name is blank', () => new Promise((resolve, reject) => {
       create('', 'bar')
         .catch(() => {})
-        .finally(() => usersDb.findOne({name: ''}))
+        .finally(() => usersDb.findOne({ name: '' }))
         .then((retrievedUser) => {
           expect(retrievedUser).toBeFalsy();
           resolve();
@@ -251,7 +250,5 @@ describe('Users database methods', () => {
           reject(error);
         });
     }));
-
   });
-
 });
