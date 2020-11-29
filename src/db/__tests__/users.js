@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongodb');
 const argon2 = require('argon2');
 
-const { getById, verify } = require('../users');
+const { getById, verify, create } = require('../users');
 const { getDatabase, closeDatabase, connectDatabase } = require('../../utils/getDatabase');
 const emptyDatabase = require('../../utils/testing/emptyDatabase');
 
@@ -140,4 +140,118 @@ describe('Users database methods', () => {
         });
     }));
   });
+
+  describe('create', () => {
+
+    it('Should create a user given a name and a password', () => new Promise((resolve, reject) => {
+      create('foo', 'bar')
+        .then(() => usersDb.findOne({name: 'foo'}))
+        .then((retrievedUser) => {
+          expect(retrievedUser).toHaveProperty('name', 'foo');
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }));
+    
+    it('Should create a user with an _id', () => new Promise((resolve, reject) => {
+      create('foo', 'bar')
+        .then(() => usersDb.findOne({name: 'foo'}))
+        .then((retrievedUser) => {
+          expect(retrievedUser).toHaveProperty('_id');
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }));
+
+    it('Should not save the password in plain', () => new Promise((resolve, reject) => {
+      create('foo', 'bar')
+        .then(() => usersDb.findOne({name: 'foo'}))
+        .then((retrievedUser) => {
+          expect(retrievedUser).toHaveProperty('password');
+          expect(retrievedUser).not.toHaveProperty('password', 'bar');
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }));
+    
+    it('Should throw an error if password is not provided', () => new Promise((resolve, reject) => {
+      create('foo')
+        .then(() => {
+          reject(new Error('Should have thrown an error'));
+        })
+        .catch((error) => {
+          expect(error).toBeInstanceOf(Error);
+          resolve();
+        });
+    }));
+
+    it('Should not create an user if password is not provided', () => new Promise((resolve, reject) => {
+      create('foo')
+        .catch(() => {})
+        .finally(() => usersDb.findOne({name: 'foo'}))
+        .then((retrievedUser) => {
+          expect(retrievedUser).toBeFalsy();
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }));
+
+    it('Should throw an error if name is not provided', () => new Promise((resolve, reject) => {
+      create(null, 'bar')
+        .then(() => {
+          reject(new Error('Should have thrown an error'));
+        })
+        .catch((error) => {
+          expect(error).toBeInstanceOf(Error);
+          resolve();
+        });
+    }));
+
+    it('Should not create an user if name is not provided', () => new Promise((resolve, reject) => {
+      create(null, 'bar')
+        .catch(() => {})
+        .finally(() => usersDb.findOne({name: null}))
+        .then((retrievedUser) => {
+          expect(retrievedUser).toBeFalsy();
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }));
+    
+    it('Should throw an error if name is blank', () => new Promise((resolve, reject) => {
+      create('', 'bar')
+        .then(() => {
+          reject(new Error('Should have thrown an error'));
+        })
+        .catch((error) => {
+          expect(error).toBeInstanceOf(Error);
+          resolve();
+        });
+    }));
+
+    it('Should not create an user if name is blank', () => new Promise((resolve, reject) => {
+      create('', 'bar')
+        .catch(() => {})
+        .finally(() => usersDb.findOne({name: ''}))
+        .then((retrievedUser) => {
+          expect(retrievedUser).toBeFalsy();
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }));
+
+  });
+
 });
