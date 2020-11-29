@@ -11,7 +11,7 @@ async function loginGraphQL({ name, password }) {
     }
     return token;
   } catch (error) {
-    return false;
+    return null;
   }
 }
 
