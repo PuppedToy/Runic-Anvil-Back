@@ -1,6 +1,8 @@
 module.exports = {
   users: {
-    getById: jest.fn(() => Promise.resolve({})),
+    getById: jest.fn(() => Promise.resolve({
+      id: 'foo',
+    })),
     verify: jest.fn((name) => new Promise((resolve, reject) => {
       if (name === 'foo') {
         resolve({
