@@ -15,6 +15,12 @@ module.exports = {
         resolve(null);
       }
     })),
-    create: jest.fn(() => Promise.resolve({})),
+    create: jest.fn((name) => new Promise((resolve, reject) => {
+      if (name === 'foo') {
+        resolve();
+      } else {
+        reject();
+      }
+    })),
   },
 };
