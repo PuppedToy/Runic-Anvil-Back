@@ -9,7 +9,7 @@ const api = require('./api');
 const { authMiddleware } = require('./utils/middlewares');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 app.use(authMiddleware);
@@ -27,11 +27,13 @@ app.use(
   }),
 );
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get('/alive', (req, res) => {
+  res.send('true');
 });
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Example app listening at http://localhost:${port}`);
 });
+
+module.exports = app;
