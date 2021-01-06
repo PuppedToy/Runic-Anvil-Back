@@ -121,6 +121,10 @@ const unitTypes = {
     name: 'God',
     forgeLevel: 5,
   },
+  primordial: {
+    name: 'Primordial',
+    forgeLevel: 5,
+  },
 };
 
 const passiveEffects = {
@@ -314,11 +318,6 @@ const passiveEffects = {
 // 1. Review every passive / effect / trigger to see if they apply to weapons or spells
 // 2. Create the forge tree for the effects.
 // 3. Assign a cost/modificator for each effect
-
-// More effect ideas
-// Disarm
-// Give stats
-// Cast? (Its deploy for spells) --> Do spells go to graveyard or banish? Maybe a spell graveyard?
 const effects = {
   deploy: {
     name: 'Deploy',
@@ -376,6 +375,10 @@ const effects = {
     name: 'Summon',
     description: 'Creates one new unit without applying it\'s deploy effect.',
   },
+  unsummon: {
+    name: 'Unsummon',
+    description: 'Puts a creature in play into the player hand',
+  },
   resurrect: {
     name: 'Resurrect',
     description: 'Returns one unit from graveyard to barracks. This unit does not trigger any deployed effect.',
@@ -424,6 +427,18 @@ const effects = {
     name: 'Collapse',
     description: 'The target zone decreases the number of units that can hold inside',
   },
+  disarm: {
+    name: 'Disarm',
+    description: 'Remove a weapon from a creature and put it in the floor. Whenever the phase ends, a random creature in that zone will pick it',
+  },
+  cast: {
+    name: 'Cast',
+    description: 'Creates a spell with some conditions and deploys it',
+  },
+  mutate: {
+    name: 'Mutate',
+    description: 'Adds and/or removes stats from a creature or weapon',
+  },
 };
 
 // Triggers cost modificator act over the associated effect total cost
@@ -431,50 +446,66 @@ const effects = {
 const triggers = {
   deployed: {
     name: 'Deployed',
+    effectType: 'trigger',
     onEffect: 'deploy',
   },
   destroyed: {
     name: 'Destroyed',
+    effectType: 'trigger',
     onEffect: 'destroy',
     costModificator: ({ cost }) => cost * 0.9,
   },
   resurrected: {
     name: 'Resurrected',
+    effectType: 'trigger',
     onEffect: 'resurrect',
     costModificator: ({ cost }) => cost * 0.6,
   },
   banished: {
     name: 'Banished',
+    effectType: 'trigger',
     onEffect: 'banish',
     costModificator: ({ cost }) => cost * 0.3,
   },
   discarded: {
     name: 'Discarded',
+    effectType: 'trigger',
     onEffect: 'discard',
     costModificator: ({ cost }) => cost * 0.5,
   },
   moved: {
     name: 'Moved',
+    effectType: 'trigger',
     onEffect: 'move',
     costModificator: ({ cost }) => cost * 3,
   },
   damaged: {
     name: 'Damage',
+    effectType: 'trigger',
     onEffect: 'damage',
     costModificator: ({ cost }) => cost * 1.2,
   },
   dealingDamage: {
     name: 'Dealing damage',
+    effectType: 'trigger',
     onEffect: 'dealingDamage',
     costModificator: ({ cost }) => cost * 1.3,
   },
+  retires: {
+    name: 'Retires',
+    effectType: 'trigger',
+    onEffect: 'retire',
+    costModificator: ({ cost }) => cost * 0.7,
+  },
   attacking: {
     name: 'Attacking',
+    effectType: 'trigger',
     onEffect: 'attack',
     costModificator: ({ cost }) => cost * 1.75,
   },
   defending: {
     name: 'Defending',
+    effectType: 'trigger',
     onEffect: 'defend',
     costModificator: ({ cost }) => cost * 1.75,
   },
@@ -490,23 +521,48 @@ const triggers = {
     onEffect: 'siege',
     costModificator: ({ cost }) => cost * 1.75,
   },
-  // More ideas
-  // For a unit:
-  // Retires
-  // Triggers
-  //
-  //
-  // Game phases:
-  // Beginning of a player's turn
-  // End of a player's turn
-  //
-  //
-  // A player invests
-  // A player receives a token
-  // Draw a card
-  // Money is earnt
-  // An eligible card triggers one of the above effects
-  //
+  turnBeginning: {
+    name: 'Beginning of the turn',
+    effectType: 'stageChange',
+    onEffect: 'turnBeginning',
+    costModificator: ({ cost }) => cost * 2.5,
+  },
+  turnEnd: {
+    name: 'End of the turn',
+    effectType: 'stageChange',
+    onEffect: 'turnEnd',
+    costModificator: ({ cost }) => cost * 3,
+  },
+  invest: {
+    name: 'A kingdom invests',
+    effectType: 'kingdomTrigger',
+    onEffect: 'invest',
+    costModificator: ({ cost }) => cost * 4,
+  },
+  receiveToken: {
+    name: 'A kingdom receives the token',
+    effectType: 'kingdomTrigger',
+    onEffect: 'token',
+    costModificator: ({ cost }) => cost * 6,
+  },
+  draw: {
+    name: 'A kingdom draws a card',
+    effectType: 'kingdomTrigger',
+    onEffect: 'draw',
+    costModificator: ({ cost }) => cost * 4,
+  },
+  earn: {
+    name: 'A kingdom earns money',
+    effectType: 'kingdomTrigger',
+    onEffect: 'earn',
+    costModificator: ({ cost }) => cost * 4,
+  },
+  otherTrigger: {
+    name: 'Another card trigger',
+    description: 'Another card triggers any of the trigger effects',
+    effectType: 'otherTrigger',
+    costModificator: ({ cost }) => cost,
+  },
 };
 
 const triggerableEffect = {
@@ -532,58 +588,136 @@ const triggerableEffect = {
   },
 };
 
-// Targets
-// 1. Choose one
-// 2. Choose many
-// 3. Random one
-// 4. Random many
-// 5. Every eligible target
+// Note that the amount of chosen targets may vary and will never be more than the eligible targets count
+// unless specified by the card text
+const targetTypes = {
+  choose: {
+    name: 'Choose',
+    description: 'The owner may choose between the eligible targets',
+  },
+  random: {
+    name: 'Random',
+    description: 'The targets will be chosen randomly among the eligible options',
+  },
+  all: {
+    name: 'All',
+    description: 'All the eligible targets will be chosen',
+  },
+};
 
-// Eligible targets (cards)
-// 0. Self
-// 1. All
-// 2. All that posses one passive effect
-// 3. All from a tribe
-// 4. All that posses a triggereable effect
-// 5. All that have a variable above, below or equal a threshold:
-// 5.a. Cost
-// 5.b. Attack
-// 5.c. Max health
-// 5.d. Health
-// 5.e. Missing health
-// 5.f. Rarity
-// 5.g. Name length
-// 6. All that are in a zone
-// 6.a. Barracks
-// 6.b. Inside kingdom
-// 6.c. Melee zone
-// 6.d. War zone
-// 6.e. Sieging
-// 6.f. Graveyard
-// 6.g. Deck
-// 6.h. Hand
-// 7. All from an eligible kingdom
-// 8. All with a specific name
-// 9. All from a forge origin (starting blank card)
-// 10. All holding a siege
-// 11. The many that have the most or least of one variable
-// 12. All that are from a card type (spell, weapon or creature)
+const cardStats = [
+  'cost',
+  'attack',
+  'health',
+  'maxHealth',
+  'missingHealth',
+  'rarity',
+  'nameLength',
+];
 
-// Eligible Kingdoms
-// 1. All from owner kingdom
-// 2. All from allied kingdoms
-// 3. All from enemy kingdoms
-// 4. All from the kingdom with the turn token
-// 5. All from any kingdom with a variable above, below or equal a threshold:
-// 5.a. Invested money
-// 5.b. Money
-// 5.c. Wall health
-// 5.d. Deployed (eligible) cards
-// 5.g. (eligible) Cards in graveyard
-// 5.h. (eligible) Cards in deck
-// 5.i. Spells casted
-// 5.j. Time spent
-// 6. All from the kingdoms with the most or least of one variable
+const zones = [
+  'barracks',
+  'kingdom',
+  'periphery',
+  'war',
+  'sieging',
+  'graveyard',
+  'deck',
+  'hand',
+];
+
+const cardTypes = [
+  'creature',
+  'weapon',
+  'spell',
+];
+
+const eligibleTargetsCards = {
+  self: {
+    name: 'Self',
+  },
+  all: {
+    name: 'All',
+  },
+  passiveEffect: {
+    name: 'Has a passive effect',
+  },
+  tribe: {
+    name: 'Is from a tribe',
+  },
+  triggereableEffect: {
+    name: 'Has a triggereable effect',
+  },
+  statBelowThreshold: {
+    name: 'Has a stat below a threshold',
+  },
+  statAboveThreshold: {
+    name: 'Has a stat above a threshold',
+  },
+  statEqualThreshold: {
+    name: 'Has a stat that equals a threshold',
+  },
+  statTop: {
+    name: 'Is the card with the highest value of a stat',
+  },
+  statBottom: {
+    name: 'Is the card with the lowest value of a stat',
+  },
+  inZone: {
+    name: 'Is in a zone',
+  },
+  fromKingdom: {
+    name: 'Is from a kingdom',
+  },
+  name: {
+    name: 'Matches a specific name',
+  },
+  forgeOrigin: {
+    name: 'Has a forge origin (starting blank card)',
+  },
+  cardType: {
+    name: 'Has a card type',
+  },
+};
+
+const kingdomsStats = [
+  'investedMoney',
+  'money',
+  'wallHealth',
+  'ownsEligibleCards',
+  'timeSpent',
+  // Has triggered a effect more times? Like casted more spells
+];
+
+const eligibleTargetsKingdoms = {
+  owner: {
+    name: 'Is from owner kingdom',
+  },
+  ally: {
+    name: 'Is from allied kingdoms',
+  },
+  enemy: {
+    name: 'Is from enemy kingdoms',
+  },
+  turnToken: {
+    name: 'Is from the kingdom with the turn token',
+  },
+  statBelowThreshold: {
+    name: 'Is from a kingdom with a stat below a threshold',
+  },
+  statAboveThreshold: {
+    name: 'Is from a kingdom with a stat above a threshold',
+  },
+  statEqualThreshold: {
+    name: 'Is from a kingdom with a stat that equals a threshold',
+  },
+  statTop: {
+    name: 'Is the kingdom with the highest value of a stat',
+  },
+  statBottom: {
+    name: 'Is the kingdom with the lowest value of a stat',
+  },
+};
 
 // Extras for both kingdoms and cards
 // EXTRA A: All that meet 1 of many of the above conditions
