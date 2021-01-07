@@ -724,13 +724,53 @@ const eligibleTargetsKingdoms = {
 // EXTRA B: All that meet many of the above conditions
 // EXTRA C: All that does NOT meet the conditions
 
-// Condition ideas
-// 1. There are more, less or equal than a threshold of eligible cards
-// 2. There are more, less or equal than a threshold of eligible kingdoms
-// 3. The total amount of one variable is more, less or equal than a trheshold in the game:
-// 3.a. Any of the (eligible) cards variables
-// 3.b. Any of the (eligible) kingdms variables
-// 4. Turn count is more, less or equal a threshold
+const conditions = {
+  amountCardsBelowThreshold: {
+    name: 'The amount of eligible cards is below a threshold',
+  },
+  amountCardsAboveThreshold: {
+    name: 'The amount of eligible cards is above a threshold',
+  },
+  amountCardsEqualsThreshold: {
+    name: 'The amount of eligible cards equals a threshold',
+  },
+  amountKingdomsBelowThreshold: {
+    name: 'The amount of eligible kingdoms is below a threshold',
+  },
+  amountKingdomsAboveThreshold: {
+    name: 'The amount of eligible kingdoms is above a threshold',
+  },
+  amountKingdomsEqualsThreshold: {
+    name: 'The amount of eligible kingdoms equals a threshold',
+  },
+  amountCardStatsSumBelowThreshold: {
+    name: 'The sum of one stat among the eligible cards is below the threshold',
+  },
+  amountCardStatsSumAboveThreshold: {
+    name: 'The sum of one stat among the eligible cards is above the threshold',
+  },
+  amountCardStatsSumEqualsThreshold: {
+    name: 'The sum of one stat among the eligible cards equals a threshold',
+  },
+  amountKingdomStatsSumBelowThreshold: {
+    name: 'The sum of one stat among the eligible kingdoms is below the threshold',
+  },
+  amountKingdomStatsSumAboveThreshold: {
+    name: 'The sum of one stat among the eligible kingdoms is above the threshold',
+  },
+  amountKingdomStatsSumEqualsThreshold: {
+    name: 'The sum of one stat among the eligible kingdoms equals a threshold',
+  },
+  turnCountBelowThreshold: {
+    name: 'The turn count is below a threshold',
+  },
+  turnCountAboveThreshold: {
+    name: 'The turn count is above a threshold',
+  },
+  turnCountEqualsThreshold: {
+    name: 'The turn count equals a threshold',
+  },
+};
 
 // Compounded effect ideas
 // 1. Grant a passive effect to (eligible) cards
