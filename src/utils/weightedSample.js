@@ -6,12 +6,23 @@ function getItemChance(item) {
   return item.chance;
 }
 
-function weightedSample(collection) {
+function weightedSample(collection, filters) {
   let collectionType = typeof collection;
   if (collection instanceof Array) collectionType = 'array';
 
   if (collectionType !== 'array' && collectionType !== 'object') {
     throw new Error(`Weighted sample expects an array or object but has received: ${collectionType}`);
+  }
+
+  if (
+    filters !== undefined
+    && typeof filters !== 'function'
+    && (
+      !(filters instanceof Array)
+      || filters.some((filter) => typeof filter !== 'function')
+    )
+  ) {
+    throw new Error('Expected second argument to be a function or an array of functions');
   }
 
   // Assign the key property if the collection is an object
@@ -35,6 +46,14 @@ function weightedSample(collection) {
 
   if (collectionData.length <= 0) {
     throw new Error('The received collection has no data with positive chances');
+  }
+
+  // Apply filters
+  if (filters) {
+    const filtersArray = typeof filters === 'function' ? [filters] : filters;
+    filtersArray.forEach((filter) => {
+      collectionData = collectionData.filter(filter);
+    });
   }
 
   // Calculate the weight sum

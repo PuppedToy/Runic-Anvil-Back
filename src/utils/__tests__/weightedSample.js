@@ -65,6 +65,11 @@ describe('Weighted sample util', () => {
       key: 'fookey',
     },
   };
+  const filterableArray = ['foo', 'bar', 'baz'];
+  const filterableObject = {
+    foo: 'bar',
+    bar: 'baz',
+  };
 
   it('Should return an item from an array', () => {
     const sample = weightedSample(basicArray);
@@ -106,6 +111,40 @@ describe('Weighted sample util', () => {
     expect(sample).toHaveProperty('key', 'fookey');
   });
 
+  it('Should not return the expected result if one filter is applied to an object', () => {
+    const filter = (item) => item === 'bar';
+
+    const sample = weightedSample(filterableObject, filter);
+    expect(sample).toBe('bar');
+  });
+
+  it('Should not return the expected result if two filters are applied to an object', () => {
+    const filters = [
+      (item) => item.match(/ba./),
+      (item) => item.match(/.ar/),
+    ];
+
+    const sample = weightedSample(filterableObject, filters);
+    expect(sample).toBe('bar');
+  });
+
+  it('Should not return the expected result if one filter is applied to an array', () => {
+    const filter = (item) => item === 'bar';
+
+    const sample = weightedSample(filterableArray, filter);
+    expect(sample).toBe('bar');
+  });
+
+  it('Should not return the expected result if two filters are appied to an array', () => {
+    const filters = [
+      (item) => item.match(/ba./),
+      (item) => item.match(/.ar/),
+    ];
+
+    const sample = weightedSample(filterableArray, filters);
+    expect(sample).toBe('bar');
+  });
+
   it('Should return an error if no param is provided', () => {
     expect(() => {
       weightedSample();
@@ -139,6 +178,72 @@ describe('Weighted sample util', () => {
   it('Should return an error if an object with zero chances is provided', () => {
     expect(() => {
       weightedSample(zeroChanceObject);
+    }).toThrow();
+  });
+
+  it('Should return an error if filter is a positive number', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, 1);
+    }).toThrow();
+  });
+
+  it('Should return an error if filter is a non empty string', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, 'hello');
+    }).toThrow();
+  });
+
+  it('Should not return an error if filter is undefined', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, undefined);
+    }).not.toThrow();
+  });
+
+  it('Should return an error if filter is 0', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, 0);
+    }).toThrow();
+  });
+
+  it('Should return an error if filter is null', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, null);
+    }).toThrow();
+  });
+
+  it('Should return an error if filter is an empty string', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, '');
+    }).toThrow();
+  });
+
+  it('Should return an error if filter is false', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, false);
+    }).toThrow();
+  });
+
+  it('Should not return an error if filter is an empty array', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, []);
+    }).not.toThrow();
+  });
+
+  it('Should not return an error if filter is an empty function array', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, [() => null]);
+    }).not.toThrow();
+  });
+
+  it('Should return an error if filter is an array filled with a non function item', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, [5]);
+    }).toThrow();
+  });
+
+  it('Should return an error if filter is an array containing a non function item', () => {
+    expect(() => {
+      weightedSample(oneChanceArray, [() => null, 5]);
     }).toThrow();
   });
 });

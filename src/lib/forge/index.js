@@ -1,7 +1,11 @@
+const generateForge = require('./generateForge');
+
 class Forge {
   constructor() {
-    this.foo = 'bar';
-    // TODO
+    const forge = generateForge();
+    Object.entries(forge).forEach(([key, value]) => {
+      this[key] = value;
+    });
   }
 }
 

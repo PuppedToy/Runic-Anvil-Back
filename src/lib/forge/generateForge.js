@@ -1,19 +1,22 @@
 const weightedSample = require('../../utils/weightedSample');
 const { unitTypes } = require('../../data/forges');
 
-function generateUnitType() {
-  return weightedSample(unitTypes);
-}
+const forgeLevelFilter = (level) => ({ forgeLevel }) => level >= forgeLevel;
 
-const forges = [
+const forgeGenerators = [
   {
+    type: 'addUnitType',
     chance: 1,
-    generate: () => generateUnitType(),
+    generate: (level) => weightedSample(unitTypes, [forgeLevelFilter(level)]),
   },
 ];
 
-function generateForge() {
-  return weightedSample(forges);
+function generateForge(level) {
+  const forgeGenerator = weightedSample(forgeGenerators);
+  return {
+    type: forgeGenerator.type,
+    ...forgeGenerator.generate(level),
+  };
 }
 
 module.exports = generateForge;
