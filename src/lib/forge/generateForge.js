@@ -1,13 +1,19 @@
 const weightedSample = require('../../utils/weightedSample');
-const { unitTypes } = require('../../data/forges');
+const { unitTypes, passiveEffects } = require('../../data/forges');
 
-const forgeLevelFilter = (level) => ({ forgeLevel }) => level >= forgeLevel;
+// Filters
+const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 const forgeGenerators = [
   {
     type: 'addUnitType',
     chance: 1,
     generate: (level) => weightedSample(unitTypes, [forgeLevelFilter(level)]),
+  },
+  {
+    type: 'addPassiveEffect',
+    chance: 1,
+    generate: (level) => weightedSample(passiveEffects, [forgeLevelFilter(level)]),
   },
 ];
 
