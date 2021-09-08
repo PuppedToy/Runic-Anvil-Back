@@ -37,7 +37,7 @@ const triggers = {
     costModificator: ({ cost }) => cost * 3,
   },
   damaged: {
-    name: 'Damage',
+    name: 'Damaged',
     effectType: 'trigger',
     onEffect: 'damage',
     costModificator: ({ cost }) => cost * 1.2,

@@ -33,6 +33,26 @@ function generateEligibleTargets(level, targetTypes) {
   return eligibleTarget;
 }
 
+const processTextRegex = /(\$[^.$ ]+?\.)+?[^.$ ]+?(?=\s|$)/;
+function processText({ text, ...fields }) {
+  if (!text) throw new Error('Text is required to process text');
+
+  let resultText = text;
+  while (resultText.includes('$')) {
+    const resultRegex = processTextRegex.exec(resultText);
+    if (!resultRegex) throw new Error('Regex is expected to match on processText');
+    const [match] = resultRegex;
+    const parts = match.replace('$', '').split('.');
+    let resultField = fields;
+    parts.forEach((part) => {
+      resultField = resultField[part];
+    });
+    resultText = resultText.replace(match, resultField);
+  }
+
+  return resultText;
+}
+
 // Effects
 // TODO targets
 // TODO conditions
@@ -45,10 +65,17 @@ function generateEffect(level) {
 
   // TODO now we are assuming card as eligible targets
   const target = generateEligibleTargets(level, [TARGET_TYPE_CARD]);
+  const generatedTarget = {
+    ...target,
+    ...(target.generate ? target.generate(level) : {}),
+  };
+  if (generatedTarget.text) {
+    generatedTarget.text = processText(generatedTarget);
+  }
   return {
     ...effect,
     // TODO This is Assuming no effect placeholders. Make it count when the time comes
-    text: `${effect.name} ${target.name}`,
+    text: `${effect.name} ${generatedTarget.text || generatedTarget.name}`,
   };
 }
 

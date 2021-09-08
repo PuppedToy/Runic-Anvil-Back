@@ -1,15 +1,27 @@
+const unitTypes = require('./unitTypes');
+const weightedSample = require('../../utils/weightedSample');
+
 const eligibleTargetsCards = {
   self: {
     name: 'Self',
+    text: 'itself',
   },
   all: {
     name: 'All',
+    text: 'every card',
   },
   passiveEffect: {
     name: 'Has a passive effect',
   },
   tribe: {
     name: 'Is from a tribe',
+    generate: () => {
+      const chosenUnitType = weightedSample(unitTypes);
+      return {
+        tribe: chosenUnitType,
+      };
+    },
+    text: 'a $tribe.name',
   },
   triggereableEffect: {
     name: 'Has a triggereable effect',
