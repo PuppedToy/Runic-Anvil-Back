@@ -3,7 +3,11 @@ const { ObjectId } = require('mongodb');
 
 const { getDatabase } = require('../utils/getDatabase');
 
+const DB_VERSION = 1;
+
 const baseUser = {
+  version: DB_VERSION,
+  appVersion: process.env.VERSION,
   validated: false,
   state: 'idle',
   settings: {},

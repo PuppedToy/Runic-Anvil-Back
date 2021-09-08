@@ -76,11 +76,37 @@ type User {
   currentGame: Game
 }
 
+type ForgeTrigger {
+  key: String
+  name: String
+  description: String
+  effectType: String
+}
+
+type ForgeEffect {
+  key: String
+  name: String
+  description: String
+  text: String
+}
+
+type Forge {
+  type: String!
+  forgeLevel: Int
+  key: String
+  name: String
+  text: String
+  trigger: ForgeTrigger
+  effect: ForgeEffect
+}
+
 type Query {
   alive: Boolean
   getUser(id: ID!): User
   login(name: String!, password: String!): String
   token: ID
+
+  simulateForge(level: Int!): Forge
 }
 
 type Mutation {
