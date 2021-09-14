@@ -1,4 +1,7 @@
 const unitTypes = require('./unitTypes');
+const passiveEffects = require('./passiveEffects');
+const triggerableEffects = require('./triggerableEffects');
+const zones = require('./zones');
 const weightedSample = require('../../utils/weightedSample');
 
 const eligibleTargetsCards = {
@@ -12,6 +15,13 @@ const eligibleTargetsCards = {
   },
   passiveEffect: {
     name: 'Has a passive effect',
+    generate: () => {
+      const chosenPassiveEffect = weightedSample(passiveEffects);
+      return {
+        passiveEffect: chosenPassiveEffect,
+      };
+    },
+    text: 'a $passiveEffect.name unit',
   },
   tribe: {
     name: 'Is from a tribe',
@@ -25,6 +35,13 @@ const eligibleTargetsCards = {
   },
   triggereableEffect: {
     name: 'Has a triggereable effect',
+    generate: () => {
+      const chosenTriggerableEffects = weightedSample(triggerableEffects);
+      return {
+        triggerableEffect: chosenTriggerableEffects,
+      };
+    },
+    text: 'a unit with $triggerableEffect.name',
   },
   statBelowThreshold: {
     name: 'Has a stat below a threshold',
@@ -43,6 +60,13 @@ const eligibleTargetsCards = {
   },
   inZone: {
     name: 'Is in a zone',
+    generate: () => {
+      const chosenZone = weightedSample(zones);
+      return {
+        zone: chosenZone,
+      };
+    },
+    text: 'a card in $zone',
   },
   fromKingdom: {
     name: 'Is from a kingdom',

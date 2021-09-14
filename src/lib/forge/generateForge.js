@@ -33,14 +33,19 @@ function generateEligibleTargets(level, targetTypes) {
   return eligibleTarget;
 }
 
-const processTextRegex = /(\$[^.$ ]+?\.)+?[^.$ ]+?(?=\s|$)/;
+const processTextRegex = /\$([^.$ ]*?\.?)+?[^.$ ]+?(?=\s|$)/;
 function processText({ text, ...fields }) {
   if (!text) throw new Error('Text is required to process text');
 
   let resultText = text;
   while (resultText.includes('$')) {
     const resultRegex = processTextRegex.exec(resultText);
-    if (!resultRegex) throw new Error('Regex is expected to match on processText');
+    if (!resultRegex) {
+      throw new Error(`Regex is expected to match on processText.
+  - Received text: ${text}.
+  - Current state: ${resultText}
+  - Other fields: ${JSON.stringify(fields)}`);
+    }
     const [match] = resultRegex;
     const parts = match.replace('$', '').split('.');
     let resultField = fields;
