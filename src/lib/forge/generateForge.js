@@ -13,6 +13,10 @@ const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 // Trigger
 function generateTrigger(level) {
+  // TODO We've used basic triggers like: Destroyed
+  // But what about "Destroyed on barracks", "Destroyed by an Insect", "Destroyed by Siege Unit",
+  // "Destroyed by a spell" or "Destroyed by an ally". We can enum all possible triggers for
+  // each keyword
   return weightedSample(triggers, [forgeLevelFilter(level)]);
 }
 
