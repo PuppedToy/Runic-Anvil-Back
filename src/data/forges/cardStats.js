@@ -3,7 +3,8 @@ const cardStats = [
   'attack',
   'health',
   'maxHealth',
-  'missingHealth',
+  'energy',
+  'maxEnergy',
   'rarity',
   'nameLength',
 ];
