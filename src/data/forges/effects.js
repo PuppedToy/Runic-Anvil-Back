@@ -37,14 +37,19 @@ const effects = {
       from: {
         kingdom: 'owner',
         place: 'hand',
+        text: 'the owner\'s hand',
       },
-      target: 'chosen',
+      target: 'random',
       value: {
         range: {
-          min: 0,
+          min: 50,
           max: 149,
         },
       },
+      textContext: {
+        card: 'a $target $value cost card from $from',
+      },
+      valueMultiploer: '$cost + $targetValue',
     },
     mods: [
       'ANOTHER_KINGDOM', // or upgrade
