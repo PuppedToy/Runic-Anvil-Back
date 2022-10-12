@@ -42,7 +42,7 @@ const effects = {
       target: 'random',
       value: {
         range: {
-          min: 50,
+          min: 20,
           max: 149,
         },
       },
@@ -58,6 +58,22 @@ const effects = {
       'UPGRADE_TARGET_CARD',
       'ADD_SELECTOR', // or improve
     ],
+  },
+  draw: {
+    name: 'Draw',
+    description: 'Draw cards from the target place',
+    text: 'Draw $amount card$plural from $from',
+    default: {
+      from: {
+        kingdom: 'owner',
+        place: 'deck',
+        text: 'the owner\'s deck',
+      },
+      textContext: {
+        plural: (context) => (context.amount > 1 ? 's' : ''),
+      },
+      amount: 1,
+    },
   },
 };
 

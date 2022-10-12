@@ -59,7 +59,7 @@ function processText(text, textContext) {
         throw new Error(`Field ${part} not found on ${JSON.stringify(resultField)}`);
       }
       if (typeof resultField[part] === 'function') {
-        resultField = resultField[part]();
+        resultField = resultField[part](textContext);
       } else {
         resultField = resultField[part];
       }
@@ -117,18 +117,16 @@ function generateEffect() {
   const effect = weightedSample(effects, [forgeLevelFilter(1)]);
 
   const {
-    name, description, text, default: defaultForge,
+    name, description, text, default: defaultForge, generalTextContext = {},
   } = effect;
-  const {
-    from, target, value: rawValue, textContext,
-  } = defaultForge;
-  const value = processValue(rawValue);
+
+  const value = processValue(defaultForge.value);
+  const textContext = { ...(defaultForge.textContext || {}), ...generalTextContext };
 
   const forge = {
     name,
     description,
-    from,
-    target,
+    ...defaultForge,
     value,
     textContext,
   };
