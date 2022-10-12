@@ -1,0 +1,21 @@
+query {
+  simulateForge (level: 1) {
+    type
+    forgeLevel
+    key
+    name
+  	text
+    trigger {
+        key
+        name
+        description
+        effectType
+    }
+    effect {
+        key
+        name
+        description
+        text
+    }
+  }
+}
