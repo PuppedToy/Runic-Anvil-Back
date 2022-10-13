@@ -32,7 +32,7 @@ const effects = {
   deploy: {
     name: 'Deploy',
     description: 'Deploy a card to the target place',
-    text: 'Deploy $card',
+    text: 'deploy $card',
     default: {
       from: {
         kingdom: 'owner',
@@ -62,7 +62,7 @@ const effects = {
   draw: {
     name: 'Draw',
     description: 'Draw cards from the target place',
-    text: 'Draw $amount card$plural from $from',
+    text: 'draw $amount card$plural from $from',
     default: {
       from: {
         kingdom: 'owner',
@@ -73,6 +73,60 @@ const effects = {
         plural: (context) => (context.amount > 1 ? 's' : ''),
       },
       amount: 1,
+    },
+  },
+  dealDamage: {
+    name: 'Deal damage',
+    description: 'Deal damage to the target card',
+    text: 'deal $value damage to $card',
+    default: {
+      card: {
+        target: 'randomEnemy',
+        text: 'a random enemy',
+      },
+      value: {
+        range: {
+          min: 1,
+          max: 2,
+        },
+      },
+    },
+  },
+  modifyInvestment: {
+    name: 'Modify investment',
+    description: 'Modify the investment of the target kingdom',
+    text: '$operation $value investment to $target',
+    default: {
+      target: {
+        kingdom: 'owner',
+        text: 'the owner',
+      },
+      operation: 'add',
+      value: {
+        range: {
+          min: 1,
+          max: 19,
+        },
+      },
+    },
+  },
+  modifyCurrency: {
+    name: 'Modify currency',
+    description: 'Modify the currency of the target kingdom',
+    text: '$operation $value $currency to $target',
+    default: {
+      target: {
+        kingdom: 'owner',
+        text: 'the owner',
+      },
+      operation: 'add',
+      value: {
+        range: {
+          min: 20,
+          max: 49,
+        },
+      },
+      currency: 'gold',
     },
   },
 };
