@@ -28,6 +28,12 @@
  * Grant state until condition @TODO
  */
 
+const DEFAULT_MODS = [
+  'ADD_OR_IMPROVE_TARGET',
+  'ADD_OR_IMPROVE_SELECTOR',
+  'ADD_OR_IMPROVE_CONDITION',
+];
+
 const effects = {
   deploy: {
     name: 'Deploy',
@@ -74,6 +80,13 @@ const effects = {
       },
       amount: 1,
     },
+    mods: [
+      ...DEFAULT_MODS,
+      'IMPROVE_TARGET_KINGDOM',
+      'IMPROVE_CARD_SELECTOR',
+      'DISCARD',
+      'CHANGE_PLACE',
+    ],
   },
   dealDamage: {
     name: 'Deal damage',
