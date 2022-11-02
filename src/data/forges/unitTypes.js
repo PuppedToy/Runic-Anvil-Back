@@ -65,8 +65,8 @@ const unitTypes = {
     name: 'Ooze',
     forgeLevel: 3,
   },
-  zombie: {
-    name: 'Zombie',
+  undead: {
+    name: 'Undead',
     forgeLevel: 3,
   },
   shade: {
