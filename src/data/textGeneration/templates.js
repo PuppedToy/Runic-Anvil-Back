@@ -7,7 +7,7 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 0,
-    value: '$adjective $main of $noun',
+    value: '$adjective $main of $other',
   },
   {
     type: 'unit',

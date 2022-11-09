@@ -108,9 +108,6 @@ const adjectives = [
     word: 'afraid',
   },
   {
-    word: 'afraid',
-  },
-  {
     word: 'african',
   },
   {
@@ -130,9 +127,6 @@ const adjectives = [
   },
   {
     word: 'alert',
-  },
-  {
-    word: 'alive',
   },
   {
     word: 'alive',
@@ -171,12 +165,6 @@ const adjectives = [
     word: 'ancient',
   },
   {
-    word: 'ancient',
-  },
-  {
-    word: 'angry',
-  },
-  {
     word: 'angry',
   },
   {
@@ -192,9 +180,6 @@ const adjectives = [
     word: 'anxious',
   },
   {
-    word: 'anxious',
-  },
-  {
     word: 'appalling',
   },
   {
@@ -205,9 +190,6 @@ const adjectives = [
   },
   {
     word: 'appropriate',
-  },
-  {
-    word: 'arab',
   },
   {
     word: 'arbitrary',
@@ -229,12 +211,6 @@ const adjectives = [
   },
   {
     word: 'ashamed',
-  },
-  {
-    word: 'ashamed',
-  },
-  {
-    word: 'asian',
   },
   {
     word: 'asleep',
@@ -267,12 +243,6 @@ const adjectives = [
     word: 'average',
   },
   {
-    word: 'average',
-  },
-  {
-    word: 'average',
-  },
-  {
     word: 'awake',
   },
   {
@@ -282,19 +252,10 @@ const adjectives = [
     word: 'awful',
   },
   {
-    word: 'awful',
-  },
-  {
     word: 'awkward',
   },
   {
     word: 'back',
-  },
-  {
-    word: 'bad',
-  },
-  {
-    word: 'bad',
   },
   {
     word: 'bad',
@@ -312,12 +273,6 @@ const adjectives = [
     word: 'beautiful',
   },
   {
-    word: 'beautiful',
-  },
-  {
-    word: 'beautiful',
-  },
-  {
     word: 'beneficial',
   },
   {
@@ -325,12 +280,6 @@ const adjectives = [
   },
   {
     word: 'bewildered',
-  },
-  {
-    word: 'big',
-  },
-  {
-    word: 'big',
   },
   {
     word: 'big',
@@ -345,13 +294,7 @@ const adjectives = [
     word: 'bitter',
   },
   {
-    word: 'bitter',
-  },
-  {
     word: 'bizarre',
-  },
-  {
-    word: 'black',
   },
   {
     word: 'black',
@@ -369,12 +312,6 @@ const adjectives = [
     word: 'bloody',
   },
   {
-    word: 'bloody',
-  },
-  {
-    word: 'blue',
-  },
-  {
     word: 'blue',
   },
   {
@@ -385,9 +322,6 @@ const adjectives = [
   },
   {
     word: 'bold',
-  },
-  {
-    word: 'bored',
   },
   {
     word: 'bored',
@@ -405,9 +339,6 @@ const adjectives = [
     word: 'brave',
   },
   {
-    word: 'brave',
-  },
-  {
     word: 'breakable',
   },
   {
@@ -415,15 +346,6 @@ const adjectives = [
   },
   {
     word: 'brief',
-  },
-  {
-    word: 'brief',
-  },
-  {
-    word: 'bright',
-  },
-  {
-    word: 'bright',
   },
   {
     word: 'bright',
@@ -436,12 +358,6 @@ const adjectives = [
   },
   {
     word: 'broad',
-  },
-  {
-    word: 'broad',
-  },
-  {
-    word: 'broken',
   },
   {
     word: 'broken',
@@ -459,12 +375,6 @@ const adjectives = [
     word: 'busy',
   },
   {
-    word: 'busy',
-  },
-  {
-    word: 'calm',
-  },
-  {
     word: 'calm',
   },
   {
@@ -480,9 +390,6 @@ const adjectives = [
     word: 'careful',
   },
   {
-    word: 'careful',
-  },
-  {
     word: 'casual',
   },
   {
@@ -490,9 +397,6 @@ const adjectives = [
   },
   {
     word: 'causal',
-  },
-  {
-    word: 'cautious',
   },
   {
     word: 'cautious',
@@ -513,13 +417,7 @@ const adjectives = [
     word: 'charming',
   },
   {
-    word: 'charming',
-  },
-  {
     word: 'cheap',
-  },
-  {
-    word: 'cheerful',
   },
   {
     word: 'cheerful',
@@ -570,16 +468,7 @@ const adjectives = [
     word: 'clean',
   },
   {
-    word: 'clean',
-  },
-  {
     word: 'clear',
-  },
-  {
-    word: 'clear',
-  },
-  {
-    word: 'clever',
   },
   {
     word: 'clever',
@@ -612,9 +501,6 @@ const adjectives = [
     word: 'cold',
   },
   {
-    word: 'cold',
-  },
-  {
     word: 'collective',
   },
   {
@@ -637,9 +523,6 @@ const adjectives = [
   },
   {
     word: 'combined',
-  },
-  {
-    word: 'comfortable',
   },
   {
     word: 'comfortable',
@@ -696,9 +579,6 @@ const adjectives = [
     word: 'concerned',
   },
   {
-    word: 'concerned',
-  },
-  {
     word: 'concrete',
   },
   {
@@ -709,9 +589,6 @@ const adjectives = [
   },
   {
     word: 'confidential',
-  },
-  {
-    word: 'confused',
   },
   {
     word: 'confused',
@@ -780,9 +657,6 @@ const adjectives = [
     word: 'cool',
   },
   {
-    word: 'cool',
-  },
-  {
     word: 'cooperative',
   },
   {
@@ -804,16 +678,7 @@ const adjectives = [
     word: 'crazy',
   },
   {
-    word: 'crazy',
-  },
-  {
-    word: 'crazy',
-  },
-  {
     word: 'creative',
-  },
-  {
-    word: 'creepy',
   },
   {
     word: 'creepy',
@@ -823,9 +688,6 @@ const adjectives = [
   },
   {
     word: 'critical',
-  },
-  {
-    word: 'crooked',
   },
   {
     word: 'crooked',
@@ -843,16 +705,10 @@ const adjectives = [
     word: 'cruel',
   },
   {
-    word: 'cruel',
-  },
-  {
     word: 'cuddly',
   },
   {
     word: 'cultural',
-  },
-  {
-    word: 'curious',
   },
   {
     word: 'curious',
@@ -879,22 +735,10 @@ const adjectives = [
     word: 'damp',
   },
   {
-    word: 'damp',
-  },
-  {
-    word: 'dangerous',
-  },
-  {
     word: 'dangerous',
   },
   {
     word: 'dark',
-  },
-  {
-    word: 'dark',
-  },
-  {
-    word: 'dead',
   },
   {
     word: 'dead',
@@ -913,9 +757,6 @@ const adjectives = [
   },
   {
     word: 'decisive',
-  },
-  {
-    word: 'deep',
   },
   {
     word: 'deep',
@@ -942,13 +783,7 @@ const adjectives = [
     word: 'delicious',
   },
   {
-    word: 'delicious',
-  },
-  {
     word: 'delighted',
-  },
-  {
-    word: 'delightful',
   },
   {
     word: 'delightful',
@@ -958,9 +793,6 @@ const adjectives = [
   },
   {
     word: 'dependent',
-  },
-  {
-    word: 'depressed',
   },
   {
     word: 'depressed',
@@ -978,9 +810,6 @@ const adjectives = [
     word: 'determined',
   },
   {
-    word: 'determined',
-  },
-  {
     word: 'developed',
   },
   {
@@ -993,12 +822,6 @@ const adjectives = [
     word: 'different',
   },
   {
-    word: 'different',
-  },
-  {
-    word: 'difficult',
-  },
-  {
     word: 'difficult',
   },
   {
@@ -1009,9 +832,6 @@ const adjectives = [
   },
   {
     word: 'direct',
-  },
-  {
-    word: 'dirty',
   },
   {
     word: 'dirty',
@@ -1033,9 +853,6 @@ const adjectives = [
   },
   {
     word: 'distant',
-  },
-  {
-    word: 'distinct',
   },
   {
     word: 'distinct',
@@ -1074,9 +891,6 @@ const adjectives = [
     word: 'doubtful',
   },
   {
-    word: 'doubtful',
-  },
-  {
     word: 'drab',
   },
   {
@@ -1095,19 +909,10 @@ const adjectives = [
     word: 'dry',
   },
   {
-    word: 'dry',
-  },
-  {
     word: 'dual',
   },
   {
     word: 'due',
-  },
-  {
-    word: 'dull',
-  },
-  {
-    word: 'dull',
   },
   {
     word: 'dull',
@@ -1128,19 +933,10 @@ const adjectives = [
     word: 'eager',
   },
   {
-    word: 'eager',
-  },
-  {
-    word: 'early',
-  },
-  {
     word: 'early',
   },
   {
     word: 'eastern',
-  },
-  {
-    word: 'easy',
   },
   {
     word: 'easy',
@@ -1188,13 +984,7 @@ const adjectives = [
     word: 'elegant',
   },
   {
-    word: 'elegant',
-  },
-  {
     word: 'eligible',
-  },
-  {
-    word: 'embarrassed',
   },
   {
     word: 'embarrassed',
@@ -1212,13 +1002,7 @@ const adjectives = [
     word: 'empty',
   },
   {
-    word: 'empty',
-  },
-  {
     word: 'enchanting',
-  },
-  {
-    word: 'encouraging',
   },
   {
     word: 'encouraging',
@@ -1234,9 +1018,6 @@ const adjectives = [
   },
   {
     word: 'enormous',
-  },
-  {
-    word: 'enthusiastic',
   },
   {
     word: 'enthusiastic',
@@ -1290,9 +1071,6 @@ const adjectives = [
     word: 'evil',
   },
   {
-    word: 'evil',
-  },
-  {
     word: 'evolutionary',
   },
   {
@@ -1309,9 +1087,6 @@ const adjectives = [
   },
   {
     word: 'excessive',
-  },
-  {
-    word: 'excited',
   },
   {
     word: 'excited',
@@ -1368,16 +1143,7 @@ const adjectives = [
     word: 'faint',
   },
   {
-    word: 'faint',
-  },
-  {
     word: 'fair',
-  },
-  {
-    word: 'fair',
-  },
-  {
-    word: 'faithful',
   },
   {
     word: 'faithful',
@@ -1389,13 +1155,7 @@ const adjectives = [
     word: 'famous',
   },
   {
-    word: 'famous',
-  },
-  {
     word: 'fancy',
-  },
-  {
-    word: 'fantastic',
   },
   {
     word: 'fantastic',
@@ -1411,15 +1171,6 @@ const adjectives = [
   },
   {
     word: 'fast',
-  },
-  {
-    word: 'fast',
-  },
-  {
-    word: 'fat',
-  },
-  {
-    word: 'fat',
   },
   {
     word: 'fat',
@@ -1452,12 +1203,6 @@ const adjectives = [
     word: 'fierce',
   },
   {
-    word: 'fierce',
-  },
-  {
-    word: 'filthy',
-  },
-  {
     word: 'filthy',
   },
   {
@@ -1465,9 +1210,6 @@ const adjectives = [
   },
   {
     word: 'financial',
-  },
-  {
-    word: 'fine',
   },
   {
     word: 'fine',
@@ -1491,9 +1233,6 @@ const adjectives = [
     word: 'flat',
   },
   {
-    word: 'flat',
-  },
-  {
     word: 'flexible',
   },
   {
@@ -1510,9 +1249,6 @@ const adjectives = [
   },
   {
     word: 'fond',
-  },
-  {
-    word: 'foolish',
   },
   {
     word: 'foolish',
@@ -1557,19 +1293,7 @@ const adjectives = [
     word: 'fresh',
   },
   {
-    word: 'fresh',
-  },
-  {
     word: 'friendly',
-  },
-  {
-    word: 'friendly',
-  },
-  {
-    word: 'friendly',
-  },
-  {
-    word: 'frightened',
   },
   {
     word: 'frightened',
@@ -1602,12 +1326,6 @@ const adjectives = [
     word: 'funny',
   },
   {
-    word: 'funny',
-  },
-  {
-    word: 'funny',
-  },
-  {
     word: 'furious',
   },
   {
@@ -1635,9 +1353,6 @@ const adjectives = [
     word: 'gentle',
   },
   {
-    word: 'gentle',
-  },
-  {
     word: 'genuine',
   },
   {
@@ -1648,12 +1363,6 @@ const adjectives = [
   },
   {
     word: 'giant',
-  },
-  {
-    word: 'giant',
-  },
-  {
-    word: 'gigantic',
   },
   {
     word: 'gigantic',
@@ -1677,13 +1386,7 @@ const adjectives = [
     word: 'glorious',
   },
   {
-    word: 'glorious',
-  },
-  {
     word: 'golden',
-  },
-  {
-    word: 'good',
   },
   {
     word: 'good',
@@ -1716,16 +1419,7 @@ const adjectives = [
     word: 'great',
   },
   {
-    word: 'great',
-  },
-  {
-    word: 'great',
-  },
-  {
     word: 'greek',
-  },
-  {
-    word: 'green',
   },
   {
     word: 'green',
@@ -1764,25 +1458,10 @@ const adjectives = [
     word: 'handsome',
   },
   {
-    word: 'handsome',
-  },
-  {
-    word: 'happy',
-  },
-  {
-    word: 'happy',
-  },
-  {
     word: 'happy',
   },
   {
     word: 'hard',
-  },
-  {
-    word: 'hard',
-  },
-  {
-    word: 'harsh',
   },
   {
     word: 'harsh',
@@ -1794,34 +1473,16 @@ const adjectives = [
     word: 'healthy',
   },
   {
-    word: 'healthy',
-  },
-  {
-    word: 'heavy',
-  },
-  {
     word: 'heavy',
   },
   {
     word: 'helpful',
-  },
-  {
-    word: 'helpful',
-  },
-  {
-    word: 'helpful',
-  },
-  {
-    word: 'helpless',
   },
   {
     word: 'helpless',
   },
   {
     word: 'hidden',
-  },
-  {
-    word: 'high',
   },
   {
     word: 'high',
@@ -1851,9 +1512,6 @@ const adjectives = [
     word: 'homeless',
   },
   {
-    word: 'homeless',
-  },
-  {
     word: 'homely',
   },
   {
@@ -1869,28 +1527,16 @@ const adjectives = [
     word: 'horrible',
   },
   {
-    word: 'horrible',
-  },
-  {
     word: 'hostile',
   },
   {
     word: 'hot',
   },
   {
-    word: 'hot',
-  },
-  {
-    word: 'huge',
-  },
-  {
     word: 'huge',
   },
   {
     word: 'human',
-  },
-  {
-    word: 'hungry',
   },
   {
     word: 'hungry',
@@ -1920,9 +1566,6 @@ const adjectives = [
     word: 'ill',
   },
   {
-    word: 'ill',
-  },
-  {
     word: 'illegal',
   },
   {
@@ -1935,9 +1578,6 @@ const adjectives = [
     word: 'immense',
   },
   {
-    word: 'immense',
-  },
-  {
     word: 'imperial',
   },
   {
@@ -1945,12 +1585,6 @@ const adjectives = [
   },
   {
     word: 'important',
-  },
-  {
-    word: 'important',
-  },
-  {
-    word: 'impossible',
   },
   {
     word: 'impossible',
@@ -2023,9 +1657,6 @@ const adjectives = [
   },
   {
     word: 'inner',
-  },
-  {
-    word: 'innocent',
   },
   {
     word: 'innocent',
@@ -2139,9 +1770,6 @@ const adjectives = [
     word: 'jolly',
   },
   {
-    word: 'jolly',
-  },
-  {
     word: 'joyous',
   },
   {
@@ -2166,12 +1794,6 @@ const adjectives = [
     word: 'kind',
   },
   {
-    word: 'kind',
-  },
-  {
-    word: 'kind',
-  },
-  {
     word: 'known',
   },
   {
@@ -2184,13 +1806,7 @@ const adjectives = [
     word: 'large',
   },
   {
-    word: 'large',
-  },
-  {
     word: 'large-scale',
-  },
-  {
-    word: 'late',
   },
   {
     word: 'late',
@@ -2238,12 +1854,6 @@ const adjectives = [
     word: 'light',
   },
   {
-    word: 'light',
-  },
-  {
-    word: 'light',
-  },
-  {
     word: 'like',
   },
   {
@@ -2268,13 +1878,7 @@ const adjectives = [
     word: 'little',
   },
   {
-    word: 'little',
-  },
-  {
     word: 'live',
-  },
-  {
-    word: 'lively',
   },
   {
     word: 'lively',
@@ -2292,25 +1896,10 @@ const adjectives = [
     word: 'lonely',
   },
   {
-    word: 'lonely',
-  },
-  {
-    word: 'long',
-  },
-  {
-    word: 'long',
-  },
-  {
-    word: 'long',
-  },
-  {
     word: 'long',
   },
   {
     word: 'long-term',
-  },
-  {
-    word: 'loose',
   },
   {
     word: 'loose',
@@ -2322,16 +1911,7 @@ const adjectives = [
     word: 'loud',
   },
   {
-    word: 'loud',
-  },
-  {
     word: 'lovely',
-  },
-  {
-    word: 'lovely',
-  },
-  {
-    word: 'low',
   },
   {
     word: 'low',
@@ -2341,9 +1921,6 @@ const adjectives = [
   },
   {
     word: 'ltd',
-  },
-  {
-    word: 'lucky',
   },
   {
     word: 'lucky',
@@ -2359,9 +1936,6 @@ const adjectives = [
   },
   {
     word: 'magnetic',
-  },
-  {
-    word: 'magnificent',
   },
   {
     word: 'magnificent',
@@ -2391,9 +1965,6 @@ const adjectives = [
     word: 'many',
   },
   {
-    word: 'many',
-  },
-  {
     word: 'marginal',
   },
   {
@@ -2413,9 +1984,6 @@ const adjectives = [
   },
   {
     word: 'mass',
-  },
-  {
-    word: 'massive',
   },
   {
     word: 'massive',
@@ -2472,9 +2040,6 @@ const adjectives = [
     word: 'mighty',
   },
   {
-    word: 'mighty',
-  },
-  {
     word: 'mild',
   },
   {
@@ -2523,12 +2088,6 @@ const adjectives = [
     word: 'modern',
   },
   {
-    word: 'modern',
-  },
-  {
-    word: 'modern',
-  },
-  {
     word: 'modest',
   },
   {
@@ -2568,19 +2127,10 @@ const adjectives = [
     word: 'mysterious',
   },
   {
-    word: 'mysterious',
-  },
-  {
     word: 'naked',
   },
   {
     word: 'narrow',
-  },
-  {
-    word: 'narrow',
-  },
-  {
-    word: 'nasty',
   },
   {
     word: 'nasty',
@@ -2622,9 +2172,6 @@ const adjectives = [
     word: 'nervous',
   },
   {
-    word: 'nervous',
-  },
-  {
     word: 'net',
   },
   {
@@ -2634,12 +2181,6 @@ const adjectives = [
     word: 'new',
   },
   {
-    word: 'new',
-  },
-  {
-    word: 'nice',
-  },
-  {
     word: 'nice',
   },
   {
@@ -2647,9 +2188,6 @@ const adjectives = [
   },
   {
     word: 'noble',
-  },
-  {
-    word: 'noisy',
   },
   {
     word: 'noisy',
@@ -2671,9 +2209,6 @@ const adjectives = [
   },
   {
     word: 'nuclear',
-  },
-  {
-    word: 'numerous',
   },
   {
     word: 'numerous',
@@ -2712,9 +2247,6 @@ const adjectives = [
     word: 'odd',
   },
   {
-    word: 'odd',
-  },
-  {
     word: 'official',
   },
   {
@@ -2727,12 +2259,6 @@ const adjectives = [
     word: 'old',
   },
   {
-    word: 'old',
-  },
-  {
-    word: 'old-fashioned',
-  },
-  {
     word: 'old-fashioned',
   },
   {
@@ -2740,9 +2266,6 @@ const adjectives = [
   },
   {
     word: 'only',
-  },
-  {
-    word: 'open',
   },
   {
     word: 'open',
@@ -2761,12 +2284,6 @@ const adjectives = [
   },
   {
     word: 'orange',
-  },
-  {
-    word: 'orange',
-  },
-  {
-    word: 'ordinary',
   },
   {
     word: 'ordinary',
@@ -2797,9 +2314,6 @@ const adjectives = [
   },
   {
     word: 'outside',
-  },
-  {
-    word: 'outstanding',
   },
   {
     word: 'outstanding',
@@ -2868,9 +2382,6 @@ const adjectives = [
     word: 'perfect',
   },
   {
-    word: 'perfect',
-  },
-  {
     word: 'permanent',
   },
   {
@@ -2895,16 +2406,10 @@ const adjectives = [
     word: 'plain',
   },
   {
-    word: 'plain',
-  },
-  {
     word: 'planned',
   },
   {
     word: 'plastic',
-  },
-  {
-    word: 'pleasant',
   },
   {
     word: 'pleasant',
@@ -2928,9 +2433,6 @@ const adjectives = [
     word: 'poor',
   },
   {
-    word: 'poor',
-  },
-  {
     word: 'popular',
   },
   {
@@ -2949,13 +2451,7 @@ const adjectives = [
     word: 'powerful',
   },
   {
-    word: 'powerful',
-  },
-  {
     word: 'practical',
-  },
-  {
-    word: 'precious',
   },
   {
     word: 'precious',
@@ -2988,13 +2484,7 @@ const adjectives = [
     word: 'pretty',
   },
   {
-    word: 'pretty',
-  },
-  {
     word: 'previous',
-  },
-  {
-    word: 'prickly',
   },
   {
     word: 'prickly',
@@ -3063,9 +2553,6 @@ const adjectives = [
     word: 'proud',
   },
   {
-    word: 'proud',
-  },
-  {
     word: 'provincial',
   },
   {
@@ -3087,19 +2574,10 @@ const adjectives = [
     word: 'purple',
   },
   {
-    word: 'purple',
-  },
-  {
     word: 'purring',
   },
   {
     word: 'puzzled',
-  },
-  {
-    word: 'puzzled',
-  },
-  {
-    word: 'quaint',
   },
   {
     word: 'quaint',
@@ -3111,19 +2589,7 @@ const adjectives = [
     word: 'quick',
   },
   {
-    word: 'quick',
-  },
-  {
-    word: 'quick',
-  },
-  {
     word: 'quickest',
-  },
-  {
-    word: 'quiet',
-  },
-  {
-    word: 'quiet',
   },
   {
     word: 'quiet',
@@ -3138,19 +2604,10 @@ const adjectives = [
     word: 'rainy',
   },
   {
-    word: 'rainy',
-  },
-  {
     word: 'random',
   },
   {
     word: 'rapid',
-  },
-  {
-    word: 'rapid',
-  },
-  {
-    word: 'rare',
   },
   {
     word: 'rare',
@@ -3174,9 +2631,6 @@ const adjectives = [
     word: 'real',
   },
   {
-    word: 'real',
-  },
-  {
     word: 'realistic',
   },
   {
@@ -3187,9 +2641,6 @@ const adjectives = [
   },
   {
     word: 'recent',
-  },
-  {
-    word: 'red',
   },
   {
     word: 'red',
@@ -3226,9 +2677,6 @@ const adjectives = [
   },
   {
     word: 'reliable',
-  },
-  {
-    word: 'relieved',
   },
   {
     word: 'relieved',
@@ -3294,9 +2742,6 @@ const adjectives = [
     word: 'rich',
   },
   {
-    word: 'rich',
-  },
-  {
     word: 'ridiculous',
   },
   {
@@ -3336,15 +2781,6 @@ const adjectives = [
     word: 'rough',
   },
   {
-    word: 'rough',
-  },
-  {
-    word: 'round',
-  },
-  {
-    word: 'round',
-  },
-  {
     word: 'round',
   },
   {
@@ -3375,9 +2811,6 @@ const adjectives = [
     word: 'sad',
   },
   {
-    word: 'sad',
-  },
-  {
     word: 'safe',
   },
   {
@@ -3391,9 +2824,6 @@ const adjectives = [
   },
   {
     word: 'scared',
-  },
-  {
-    word: 'scary',
   },
   {
     word: 'scary',
@@ -3471,13 +2901,7 @@ const adjectives = [
     word: 'shallow',
   },
   {
-    word: 'shallow',
-  },
-  {
     word: 'shared',
-  },
-  {
-    word: 'sharp',
   },
   {
     word: 'sharp',
@@ -3498,22 +2922,10 @@ const adjectives = [
     word: 'short',
   },
   {
-    word: 'short',
-  },
-  {
-    word: 'short',
-  },
-  {
-    word: 'short',
-  },
-  {
     word: 'short-term',
   },
   {
     word: 'shrill',
-  },
-  {
-    word: 'shy',
   },
   {
     word: 'shy',
@@ -3528,16 +2940,7 @@ const adjectives = [
     word: 'silent',
   },
   {
-    word: 'silent',
-  },
-  {
     word: 'silky',
-  },
-  {
-    word: 'silly',
-  },
-  {
-    word: 'silly',
   },
   {
     word: 'silly',
@@ -3576,12 +2979,6 @@ const adjectives = [
     word: 'slow',
   },
   {
-    word: 'slow',
-  },
-  {
-    word: 'small',
-  },
-  {
     word: 'small',
   },
   {
@@ -3592,9 +2989,6 @@ const adjectives = [
   },
   {
     word: 'smoggy',
-  },
-  {
-    word: 'smooth',
   },
   {
     word: 'smooth',
@@ -3612,19 +3006,10 @@ const adjectives = [
     word: 'soft',
   },
   {
-    word: 'soft',
-  },
-  {
-    word: 'soft',
-  },
-  {
     word: 'solar',
   },
   {
     word: 'sole',
-  },
-  {
-    word: 'solid',
   },
   {
     word: 'solid',
@@ -3642,19 +3027,10 @@ const adjectives = [
     word: 'sound',
   },
   {
-    word: 'sound',
-  },
-  {
     word: 'sour',
   },
   {
     word: 'southern',
-  },
-  {
-    word: 'soviet',
-  },
-  {
-    word: 'spanish',
   },
   {
     word: 'spare',
@@ -3687,9 +3063,6 @@ const adjectives = [
     word: 'splendid',
   },
   {
-    word: 'splendid',
-  },
-  {
     word: 'spontaneous',
   },
   {
@@ -3700,9 +3073,6 @@ const adjectives = [
   },
   {
     word: 'spotty',
-  },
-  {
-    word: 'square',
   },
   {
     word: 'square',
@@ -3732,16 +3102,7 @@ const adjectives = [
     word: 'steady',
   },
   {
-    word: 'steady',
-  },
-  {
     word: 'steep',
-  },
-  {
-    word: 'steep',
-  },
-  {
-    word: 'sticky',
   },
   {
     word: 'sticky',
@@ -3762,16 +3123,7 @@ const adjectives = [
     word: 'straight',
   },
   {
-    word: 'straight',
-  },
-  {
     word: 'straightforward',
-  },
-  {
-    word: 'strange',
-  },
-  {
-    word: 'strange',
   },
   {
     word: 'strange',
@@ -3792,16 +3144,10 @@ const adjectives = [
     word: 'strong',
   },
   {
-    word: 'strong',
-  },
-  {
     word: 'structural',
   },
   {
     word: 'stuck',
-  },
-  {
-    word: 'stupid',
   },
   {
     word: 'stupid',
@@ -3822,9 +3168,6 @@ const adjectives = [
     word: 'successful',
   },
   {
-    word: 'successful',
-  },
-  {
     word: 'successive',
   },
   {
@@ -3838,9 +3181,6 @@ const adjectives = [
   },
   {
     word: 'sunny',
-  },
-  {
-    word: 'super',
   },
   {
     word: 'super',
@@ -3882,9 +3222,6 @@ const adjectives = [
     word: 'sweet',
   },
   {
-    word: 'sweet',
-  },
-  {
     word: 'swift',
   },
   {
@@ -3901,15 +3238,6 @@ const adjectives = [
   },
   {
     word: 'tall',
-  },
-  {
-    word: 'tall',
-  },
-  {
-    word: 'tall',
-  },
-  {
-    word: 'tame',
   },
   {
     word: 'tame',
@@ -3942,16 +3270,7 @@ const adjectives = [
     word: 'tender',
   },
   {
-    word: 'tender',
-  },
-  {
-    word: 'tender',
-  },
-  {
     word: 'tense',
-  },
-  {
-    word: 'terrible',
   },
   {
     word: 'terrible',
@@ -3993,16 +3312,7 @@ const adjectives = [
     word: 'tight',
   },
   {
-    word: 'tight',
-  },
-  {
     word: 'tiny',
-  },
-  {
-    word: 'tiny',
-  },
-  {
-    word: 'tired',
   },
   {
     word: 'tired',
@@ -4015,9 +3325,6 @@ const adjectives = [
   },
   {
     word: 'total',
-  },
-  {
-    word: 'tough',
   },
   {
     word: 'tough',
@@ -4051,12 +3358,6 @@ const adjectives = [
   },
   {
     word: 'ugliest',
-  },
-  {
-    word: 'ugly',
-  },
-  {
-    word: 'ugly',
   },
   {
     word: 'ugly',
@@ -4143,16 +3444,10 @@ const adjectives = [
     word: 'unusual',
   },
   {
-    word: 'unusual',
-  },
-  {
     word: 'unwilling',
   },
   {
     word: 'upper',
-  },
-  {
-    word: 'upset',
   },
   {
     word: 'upset',
@@ -4198,9 +3493,6 @@ const adjectives = [
   },
   {
     word: 'varying',
-  },
-  {
-    word: 'vast',
   },
   {
     word: 'vast',
@@ -4272,9 +3564,6 @@ const adjectives = [
     word: 'weak',
   },
   {
-    word: 'weak',
-  },
-  {
     word: 'wealthy',
   },
   {
@@ -4308,12 +3597,6 @@ const adjectives = [
     word: 'wet',
   },
   {
-    word: 'wet',
-  },
-  {
-    word: 'wet',
-  },
-  {
     word: 'whispering',
   },
   {
@@ -4326,12 +3609,6 @@ const adjectives = [
     word: 'wicked',
   },
   {
-    word: 'wicked',
-  },
-  {
-    word: 'wide',
-  },
-  {
     word: 'wide',
   },
   {
@@ -4339,9 +3616,6 @@ const adjectives = [
   },
   {
     word: 'widespread',
-  },
-  {
-    word: 'wild',
   },
   {
     word: 'wild',
@@ -4359,15 +3633,6 @@ const adjectives = [
     word: 'wonderful',
   },
   {
-    word: 'wonderful',
-  },
-  {
-    word: 'wonderful',
-  },
-  {
-    word: 'wooden',
-  },
-  {
     word: 'wooden',
   },
   {
@@ -4378,9 +3643,6 @@ const adjectives = [
   },
   {
     word: 'worldwide',
-  },
-  {
-    word: 'worried',
   },
   {
     word: 'worried',
@@ -4401,25 +3663,13 @@ const adjectives = [
     word: 'wrong',
   },
   {
-    word: 'wrong',
-  },
-  {
     word: 'yellow',
-  },
-  {
-    word: 'yellow',
-  },
-  {
-    word: 'young',
   },
   {
     word: 'young',
   },
   {
     word: 'yummy',
-  },
-  {
-    word: 'zany',
   },
   {
     word: 'zany',
