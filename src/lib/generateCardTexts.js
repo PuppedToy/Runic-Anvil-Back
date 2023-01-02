@@ -18,7 +18,6 @@ function getKeywords(item) {
     Object.values(item).forEach((value) => {
       result = result.concat(getKeywords(value));
     });
-    return result;
   }
 
   // Remove duplicates
@@ -50,8 +49,24 @@ function addWeightsToObjectListComparingWithAKeywordList(list = [], keywordList 
   return result;
 }
 
-function generateName(card) {
-  const chosenTemplate = weighedSample(templates.filter((template) => template.type === card.type));
+function generateName(card, options = {}) {
+  let template;
+
+  if (!card || typeof card !== 'object') {
+    throw new Error('Card must be an object');
+  }
+
+  if (typeof options !== 'object') {
+    throw new Error('Options must be an object');
+  }
+
+  if (options && Object.hasOwnProperty.call(options, 'test')
+    && Object.hasOwnProperty.call(options.test, 'template')) {
+    template = options.test.template;
+  }
+
+  const chosenTemplate = template
+    || weighedSample(templates.filter((currentTemplate) => currentTemplate.type === card.type));
 
   const keyWords = getKeywords(card);
   let result = chosenTemplate.value;
@@ -73,18 +88,16 @@ function generateName(card) {
     let dictionary = weightedAllNouns;
     if (match === '$adjective') {
       dictionary = weightedAdjectives;
-    }
-    if (match === '$other') {
+    } else if (match === '$other') {
       dictionary = weightedOtherNouns;
-    }
-    if (match === '$noun') {
+    } else if (match === '$noun') {
       dictionary = weightedAllNouns;
-    }
-    if (match === '$main') {
+    } else if (match === '$main') {
       dictionary = weightedMainNouns;
-    }
-    if (match === '$profession') {
+    } else if (match === '$profession') {
       dictionary = weightedProfessionNouns;
+    } else {
+      throw new Error(`Unknown template: ${match}`);
     }
     return weighedSample(dictionary).word;
   });
@@ -92,4 +105,4 @@ function generateName(card) {
   return result;
 }
 
-module.exports = { generateName };
+module.exports = { getKeywords, addWeightsToObjectListComparingWithAKeywordList, generateName };
