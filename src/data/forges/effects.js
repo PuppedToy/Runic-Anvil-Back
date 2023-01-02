@@ -28,23 +28,34 @@
  * Grant state until condition @TODO
  */
 
+const DEFAULT_MODS = [
+  'ADD_OR_IMPROVE_TARGET',
+  'ADD_OR_IMPROVE_SELECTOR',
+  'ADD_OR_IMPROVE_CONDITION',
+];
+
 const effects = {
   deploy: {
     name: 'Deploy',
     description: 'Deploy a card to the target place',
-    text: 'Deploy $card',
+    text: 'deploy $card',
     default: {
       from: {
         kingdom: 'owner',
         place: 'hand',
+        text: 'the owner\'s hand',
       },
-      target: 'chosen',
+      target: 'random',
       value: {
         range: {
-          min: 0,
+          min: 20,
           max: 149,
         },
       },
+      textContext: {
+        card: 'a $target $value cost card from $from',
+      },
+      valueMultiploer: '$cost + $targetValue',
     },
     mods: [
       'ANOTHER_KINGDOM', // or upgrade
@@ -53,6 +64,83 @@ const effects = {
       'UPGRADE_TARGET_CARD',
       'ADD_SELECTOR', // or improve
     ],
+  },
+  draw: {
+    name: 'Draw',
+    description: 'Draw cards from the target place',
+    text: 'draw $amount card$plural from $from',
+    default: {
+      from: {
+        kingdom: 'owner',
+        place: 'deck',
+        text: 'the owner\'s deck',
+      },
+      textContext: {
+        plural: (context) => (context.amount > 1 ? 's' : ''),
+      },
+      amount: 1,
+    },
+    mods: [
+      ...DEFAULT_MODS,
+      'IMPROVE_TARGET_KINGDOM',
+      'IMPROVE_CARD_SELECTOR',
+      'DISCARD',
+      'CHANGE_PLACE',
+    ],
+  },
+  dealDamage: {
+    name: 'Deal damage',
+    description: 'Deal damage to the target card',
+    text: 'deal $value damage to $card',
+    default: {
+      card: {
+        target: 'randomEnemy',
+        text: 'a random enemy',
+      },
+      value: {
+        range: {
+          min: 1,
+          max: 2,
+        },
+      },
+    },
+  },
+  modifyInvestment: {
+    name: 'Modify investment',
+    description: 'Modify the investment of the target kingdom',
+    text: '$operation $value investment to $target',
+    default: {
+      target: {
+        kingdom: 'owner',
+        text: 'the owner',
+      },
+      operation: 'add',
+      value: {
+        range: {
+          min: 1,
+          max: 19,
+        },
+      },
+    },
+  },
+  modifyCurrency: {
+    name: 'Modify currency',
+    description: 'Modify the currency of the target kingdom',
+    text: '$operation $value $currency to $target',
+    default: {
+      target: {
+        kingdom: 'owner',
+        text: 'the owner',
+      },
+      operation: 'add',
+      value: {
+        range: {
+          min: 20,
+          max: 49,
+        },
+      },
+      currency: 'gold',
+    },
   },
 };
 
