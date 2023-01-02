@@ -1,5 +1,5 @@
 const { randomInt, randomFloat } = require('../utils/random');
-const generateForge = require('./forge/generateForge');
+const { generateForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardTexts');
 
 function generateUnit(level = 1) {

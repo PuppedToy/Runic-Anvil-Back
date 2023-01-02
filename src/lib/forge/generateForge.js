@@ -187,4 +187,12 @@ function generateForge(level) {
   };
 }
 
-module.exports = generateForge;
+module.exports = {
+  forgeLevelFilter,
+  generateTrigger,
+  processText,
+  processValue,
+  generateEffect,
+  forgeGenerators,
+  generateForge,
+};
