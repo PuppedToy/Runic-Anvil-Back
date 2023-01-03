@@ -1,4 +1,4 @@
-const generateCard = require('../../lib/generateCard');
+const { generateCard } = require('../../lib/generateCard');
 
 async function simulateCardGraphQL({ level }) {
   return generateCard(level);

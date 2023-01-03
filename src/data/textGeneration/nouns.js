@@ -544,39 +544,39 @@ const nouns = {
         word: 'wizard',
         profession: true,
         keywords: ['cast', 'summon'],
-        elemnts: ['any'],
+        elements: ['any'],
       },
       {
         word: 'summoner',
         profession: true,
         keywords: ['cast', 'summon'],
-        elemnts: ['any'],
+        elements: ['any'],
       },
       {
         word: 'sorcerer',
         profession: true,
         gender: 'male',
         keywords: ['cast', 'summon'],
-        elemnts: ['any'],
+        elements: ['any'],
       },
       {
         word: 'sorceress',
         profession: true,
         gender: 'female',
         keywords: ['cast', 'summon'],
-        elemnts: ['any'],
+        elements: ['any'],
       },
       {
         word: 'mage',
         profession: true,
         keywords: ['cast', 'summon'],
-        elemnts: ['any'],
+        elements: ['any'],
       },
       {
         word: 'caster',
         profession: true,
         keywords: ['cast', 'summon'],
-        elemnts: ['any'],
+        elements: ['any'],
       },
       {
         word: 'pyromancer',
@@ -612,7 +612,7 @@ const nouns = {
         word: 'arcanist',
         profession: true,
         keywords: ['cast', 'summon'],
-        elemnts: ['any'],
+        elements: ['any'],
       },
       {
         word: 'herald',
@@ -622,54 +622,54 @@ const nouns = {
         profession: true,
       },
     ],
-    bird: {
+    bird: [], /* {
       name: 'Bird',
       forgeLevel: 1,
-    },
-    insect: {
+    }, */
+    insect: [], /* {
       name: 'Insect',
       forgeLevel: 1,
-    },
-    ape: {
+    }, */
+    ape: [], /* {
       name: 'Ape',
       forgeLevel: 1,
-    },
-    beast: {
+    }, */
+    beast: [], /* {
       name: 'Beast',
       forgeLevel: 1,
-    },
-    reptile: {
+    }, */
+    reptile: [], /* {
       name: 'Reptile',
       forgeLevel: 1,
-    },
-    fish: {
+    }, */
+    fish: [], /* {
       name: 'Fish',
       forgeLevel: 1,
-    },
-    tree: {
+    }, */
+    tree: [], /* {
       name: 'Tree',
       forgeLevel: 2,
-    },
-    fungus: {
+    }, */
+    fungus: [], /* {
       name: 'Fungus',
       forgeLevel: 2,
-    },
-    drone: {
+    }, */
+    drone: [], /* {
       name: 'Drone',
       forgeLevel: 2,
-    },
-    dinosaur: {
+    }, */
+    dinosaur: [], /* {
       name: 'Dinosaur',
       forgeLevel: 2,
-    },
-    mutant: {
+    }, */
+    mutant: [], /* {
       name: 'Mutant',
       forgeLevel: 2,
-    },
-    elemental: {
+    }, */
+    elemental: [], /* {
       name: 'Elemental',
       forgeLevel: 3,
-    },
+    }, */
     spirit: [
       {
         word: 'soul',
@@ -680,10 +680,10 @@ const nouns = {
         elements: ['life', 'air'],
       },
     ],
-    ooze: {
+    ooze: [], /* {
       name: 'Ooze',
       forgeLevel: 3,
-    },
+    }, */
     undead: [
       {
         word: 'zombie',
@@ -697,50 +697,50 @@ const nouns = {
         word: 'skeleton',
       },
     ],
-    shade: {
+    shade: [], /* {
       name: 'Shade',
       forgeLevel: 3,
-    },
-    golem: {
+    }, */
+    golem: [], /* {
       name: 'Golem',
       forgeLevel: 3,
-    },
-    fairy: {
+    }, */
+    fairy: [], /* {
       name: 'Fairy',
       forgeLevel: 3,
-    },
-    chimera: {
+    }, */
+    chimera: [], /* {
       name: 'Chimera',
       forgeLevel: 3,
-    },
-    kraken: {
+    }, */
+    kraken: [], /* {
       name: 'Kraken',
       forgeLevel: 4,
-    },
-    dragon: {
+    }, */
+    dragon: [], /* {
       name: 'Dragon',
       forgeLevel: 4,
-    },
-    angel: {
+    }, */
+    angel: [], /* {
       name: 'Angel',
       forgeLevel: 4,
-    },
-    demon: {
+    }, */
+    demon: [], /* {
       name: 'Demon',
       forgeLevel: 4,
-    },
-    demigod: {
+    }, */
+    demigod: [], /* {
       name: 'Demigod',
       forgeLevel: 4,
-    },
-    god: {
+    }, */
+    god: [], /* {
       name: 'God',
       forgeLevel: 5,
-    },
-    primordial: {
+    }, */
+    primordial: [], /* {
       name: 'Primordial',
       forgeLevel: 5,
-    },
+    }, */
   },
   other: [
     {
