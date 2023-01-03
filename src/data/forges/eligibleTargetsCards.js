@@ -45,18 +45,23 @@ const eligibleTargetsCards = {
   },
   statBelowThreshold: {
     name: 'Has a stat below a threshold',
+    text: 'has its $stat.name below $threshold',
   },
   statAboveThreshold: {
     name: 'Has a stat above a threshold',
+    text: 'has its $stat.name above $threshold',
   },
   statEqualThreshold: {
     name: 'Has a stat that equals a threshold',
+    text: 'has its $stat.name being $threshold',
   },
   statTop: {
     name: 'Is the card with the highest value of a stat',
+    text: 'has the highest $stat.name',
   },
   statBottom: {
     name: 'Is the card with the lowest value of a stat',
+    text: 'has the lowest $stat.name',
   },
   inZone: {
     name: 'Is in a zone',
@@ -70,15 +75,19 @@ const eligibleTargetsCards = {
   },
   fromKingdom: {
     name: 'Is from a kingdom',
+    text: 'is from $kingdom.text',
   },
   name: {
     name: 'Matches a specific name',
+    text: 'is called $name',
   },
   forgeOrigin: {
     name: 'Has a forge origin (starting blank card)',
+    text: 'is from origin $origin',
   },
   cardType: {
     name: 'Has a card type',
+    text: 'is of type $cardType',
   },
 };
 
