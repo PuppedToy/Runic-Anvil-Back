@@ -5,7 +5,8 @@ const { readFileSync } = require('fs');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 
-const api = require('./api');
+const graphqlApi = require('./graphqlApi');
+const restApi = require('./restApi');
 const { authMiddleware } = require('./utils/middlewares');
 
 const app = express();
@@ -22,10 +23,12 @@ app.use(
   '/graphql',
   graphqlHTTP({
     schema: MyGraphQLSchema,
-    rootValue: api,
+    rootValue: graphqlApi,
     graphiql: true,
   }),
 );
+
+app.use('/api', restApi);
 
 app.get('/alive', (req, res) => {
   res.send('true');
