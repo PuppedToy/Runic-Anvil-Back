@@ -28,15 +28,33 @@ app.use(
   }),
 );
 
-app.use('/api', restApi);
-
 app.get('/alive', (req, res) => {
   res.send('true');
 });
 
+app.use(express.json());
+app.use('/api', restApi);
+
+// 404 fallback
+app.use((req, res) => {
+  res.status(404).json({
+    message: 'Endpoint not found',
+  });
+});
+
 app.listen(port, () => {
   // eslint-disable-next-line no-console
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`App listening at http://localhost:${port}`);
+});
+
+// Error handler
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  // eslint-disable-next-line no-console
+  console.error(err.stack);
+  res.status(500).json({
+    message: 'Internal server error',
+  });
 });
 
 module.exports = app;
