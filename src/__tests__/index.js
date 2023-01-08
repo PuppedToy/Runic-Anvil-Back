@@ -1,6 +1,20 @@
 const request = require('supertest');
 
 jest.mock('../db');
+jest.mock('../lib/generateCard', () => ({
+  generateCard: (level) => {
+    if (level === 5) {
+      throw new Error('Error');
+    } else {
+      return {
+        id: '123',
+        name: 'foo',
+        level: 1,
+      };
+    }
+  },
+}));
+
 const app = require('../app');
 
 describe('API', () => {
@@ -18,7 +32,7 @@ describe('API', () => {
       expect(response.statusCode).toBe(200);
     }));
 
-  describe('Rest API Integration', () => {
+  describe('Rest API - Auth', () => {
     it('Should return 404 and the expected message when requesting /non-existant', async () => {
       const response = await request(app)
         .get('/non-existant');
@@ -82,6 +96,57 @@ describe('API', () => {
         expect(response.statusCode).toBe(500);
         expect(response.body).toHaveProperty('message');
       });
+    });
+  });
+
+  describe('Rest API - Dev', () => {
+    // beforeEach(() => {
+    //   jest.mock('../lib/generateCard', () => ({
+    //     generateCard: () => ({
+    //       id: '123',
+    //       name: 'foo',
+    //       level: 1,
+    //     }),
+    //   }));
+    // });
+
+    it('Should return 200 when requesting /dev/simulate/generate-card with level = 1', async () => {
+      const response = await request(app)
+        .post('/api/dev/simulate/generate-card')
+        .send({
+          level: 1,
+        })
+        .set('Accept', 'application/json');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body).toHaveProperty('card');
+      // expect card to he an object
+      expect(typeof response.body.card).toBe('object');
+    });
+
+    it('Should return 200 when requesting /dev/simulate/generate-card without level', async () => {
+      const response = await request(app)
+        .post('/api/dev/simulate/generate-card')
+        .set('Accept', 'application/json');
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body).toHaveProperty('card');
+      // expect card to he an object
+      expect(typeof response.body.card).toBe('object');
+    });
+
+    it('Should return 500 when requesting /dev/simulate/generate-card with error', async () => {
+      const response = await request(app)
+        .post('/api/dev/simulate/generate-card')
+        .send({
+          level: 5,
+        })
+        .set('Accept', 'application/json');
+
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty('message');
     });
   });
 });
