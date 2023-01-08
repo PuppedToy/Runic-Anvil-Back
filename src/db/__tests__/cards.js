@@ -6,7 +6,7 @@ const emptyDatabase = require('../../utils/testing/emptyDatabase');
 
 describe('Cards database methods', () => {
   // eslint-disable-next-line no-unused-vars
-  let usersDb;
+  let cardsDb;
 
   beforeAll(async () => {
     await closeDatabase();
@@ -15,7 +15,7 @@ describe('Cards database methods', () => {
 
   beforeEach(async () => {
     await emptyDatabase();
-    usersDb = await getDatabase('cards');
+    cardsDb = await getDatabase('cards');
   });
 
   afterAll(async () => {
@@ -25,8 +25,8 @@ describe('Cards database methods', () => {
 
   describe('getById', () => {
     beforeEach(async () => {
-      const cardsDb = await getDatabase('cards');
-      await cardsDb.insertMany([
+      const db = await getDatabase('cards');
+      await db.insertMany([
         { _id: ObjectId('211111111111111111111111'), name: 'foo' },
         { _id: ObjectId('222222222222222222222222'), name: 'bar' },
       ]);

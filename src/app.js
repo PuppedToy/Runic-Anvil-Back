@@ -36,7 +36,6 @@ app.get('/alive', (req, res) => {
 app.use(express.json());
 app.use('/api', restApi);
 
-// 404 fallback
 app.use((req, res) => {
   res.status(404).json({
     message: 'Endpoint not found',

@@ -107,16 +107,6 @@ describe('API', () => {
   });
 
   describe('Rest API - Dev', () => {
-    // beforeEach(() => {
-    //   jest.mock('../lib/generateCard', () => ({
-    //     generateCard: () => ({
-    //       id: '123',
-    //       name: 'foo',
-    //       level: 1,
-    //     }),
-    //   }));
-    // });
-
     it('Should return 200 when requesting /dev/simulate/generate-card with level = 1', async () => {
       const response = await request(app)
         .post('/api/dev/simulate/generate-card')
@@ -128,7 +118,7 @@ describe('API', () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('message');
       expect(response.body).toHaveProperty('card');
-      // expect card to he an object
+
       expect(typeof response.body.card).toBe('object');
     });
 
@@ -140,7 +130,7 @@ describe('API', () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toHaveProperty('message');
       expect(response.body).toHaveProperty('card');
-      // expect card to he an object
+
       expect(typeof response.body.card).toBe('object');
     });
 
