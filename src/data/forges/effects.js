@@ -1,4 +1,4 @@
-// TODO:
+// @TODO:
 // 1. Review every passive / effect / trigger to see if they apply to weapons or spells
 // 2. Create the forge tree for the effects.
 // 3. Assign a cost/modificator for each effect

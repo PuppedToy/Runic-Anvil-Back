@@ -12,7 +12,7 @@ const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 // Trigger
 function generateTrigger(level) {
-  // TODO We've used basic triggers like: Destroyed
+  // @TODO We've used basic triggers like: Destroyed
   // But what about "Destroyed on barracks", "Destroyed by an Insect", "Destroyed by Siege Unit",
   // "Destroyed by a spell" or "Destroyed by an ally". We can enum all possible triggers for
   // each keyword
@@ -100,10 +100,10 @@ function processValue(value) {
 }
 
 // Effects
-// TODO targets
-// TODO conditions
-// TODO for each effect enumerate the type of targets it might have
-// TODO text placeholders for both effects and targets
+// @TODO targets
+// @TODO conditions
+// @TODO for each effect enumerate the type of targets it might have
+// @TODO text placeholders for both effects and targets
 // In the case of basic effects it will be <$effect $target>
 // For instance, Deploy a random card from your hand is Deploy $target
 function generateEffect() {
@@ -166,7 +166,7 @@ const forgeGenerators = [
     type: 'addEffectOnTrigger',
     chance: 1,
     generate: (level) => {
-      // TODO
+      // @TODO
       const trigger = generateTrigger(level);
       const effect = generateEffect(level);
 

@@ -31,7 +31,7 @@ module.exports = {
 };
 
 /* eslint-disable max-len */
-// General TODO and WARNING:
+// General @TODO and WARNING:
 // We need to ensure any effect that might chain only applies a max number of times (maybe 1, 2 or 5)
 // Example:
 // Unit 1: Whenever a friendly unit activates a triggereable effect, trigger a triggereable effect of a friendly unit

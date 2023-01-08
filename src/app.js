@@ -8,6 +8,7 @@ const { buildSchema } = require('graphql');
 const graphqlApi = require('./graphqlApi');
 const restApi = require('./restApi');
 const { authMiddleware } = require('./utils/middlewares');
+require('./lib/jobs');
 
 const app = express();
 const port = process.env.PORT;
@@ -35,14 +36,13 @@ app.get('/alive', (req, res) => {
 app.use(express.json());
 app.use('/api', restApi);
 
-// 404 fallback
 app.use((req, res) => {
   res.status(404).json({
     message: 'Endpoint not found',
   });
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`App listening at http://localhost:${port}`);
 });
@@ -59,4 +59,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+module.exports = { app, server };

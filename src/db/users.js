@@ -3,7 +3,7 @@ const { ObjectId } = require('mongodb');
 
 const { getDatabase } = require('../utils/getDatabase');
 
-const DB_VERSION = 1;
+const DB_VERSION = parseInt(process.env.DB_VERSION, 10);
 
 const baseUser = {
   version: DB_VERSION,
