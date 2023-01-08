@@ -26,7 +26,7 @@ describe('Users database methods', () => {
     beforeEach(() => getDatabase('users')
       .then((users) => users.insertMany([
         { _id: ObjectId('111111111111111111111111'), name: 'foo' },
-        { _id: ObjectId('222222222222222222222222'), name: 'bar' },
+        { _id: ObjectId('122222222222222222222222'), name: 'bar' },
       ])));
 
     it('Should return foo if requested for id 111111111111111111111111', () => new Promise((resolve, reject) => {
@@ -40,8 +40,8 @@ describe('Users database methods', () => {
         });
     }));
 
-    it('Should return bar if requested for id 222222222222222222222222', () => new Promise((resolve, reject) => {
-      getById('222222222222222222222222')
+    it('Should return bar if requested for id 122222222222222222222222', () => new Promise((resolve, reject) => {
+      getById('122222222222222222222222')
         .then((retrievedUser) => {
           expect(retrievedUser).toHaveProperty('name', 'bar');
           resolve();
@@ -71,7 +71,7 @@ describe('Users database methods', () => {
     ])
       .then(([users, bazPassword, quxPassword]) => users.insertMany([
         { _id: ObjectId('111111111111111111111111'), name: 'foo', password: bazPassword },
-        { _id: ObjectId('222222222222222222222222'), name: 'bar', password: quxPassword },
+        { _id: ObjectId('122222222222222222222222'), name: 'bar', password: quxPassword },
       ])));
 
     it('Should return 111111111111111111111111 user if provided foo name and baz password', () => new Promise((resolve, reject) => {
@@ -85,10 +85,10 @@ describe('Users database methods', () => {
         });
     }));
 
-    it('Should return 222222222222222222222222 user if provided foo name and qux password', () => new Promise((resolve, reject) => {
+    it('Should return 122222222222222222222222 user if provided foo name and qux password', () => new Promise((resolve, reject) => {
       verify('bar', 'qux')
         .then((retrievedUser) => {
-          expect(retrievedUser).toHaveProperty('_id', ObjectId('222222222222222222222222'));
+          expect(retrievedUser).toHaveProperty('_id', ObjectId('122222222222222222222222'));
           resolve();
         })
         .catch((error) => {

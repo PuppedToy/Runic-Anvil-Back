@@ -1,6 +1,9 @@
 const request = require('supertest');
 
 jest.mock('../db');
+jest.mock('cron', () => ({
+  CronJob: jest.fn(),
+}));
 jest.mock('../lib/generateCard', () => ({
   generateCard: (level) => {
     if (level === 5) {
@@ -15,9 +18,13 @@ jest.mock('../lib/generateCard', () => ({
   },
 }));
 
-const app = require('../app');
+const { app, server } = require('../app');
 
 describe('API', () => {
+  afterEach(() => {
+    server.close();
+  });
+
   it('Should return status 200 return on GET /alive', () => request(app)
     .get('/alive')
     .then((response) => {

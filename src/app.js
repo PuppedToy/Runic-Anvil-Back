@@ -8,6 +8,7 @@ const { buildSchema } = require('graphql');
 const graphqlApi = require('./graphqlApi');
 const restApi = require('./restApi');
 const { authMiddleware } = require('./utils/middlewares');
+require('./lib/jobs');
 
 const app = express();
 const port = process.env.PORT;
@@ -42,7 +43,7 @@ app.use((req, res) => {
   });
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`App listening at http://localhost:${port}`);
 });
@@ -59,4 +60,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+module.exports = { app, server };

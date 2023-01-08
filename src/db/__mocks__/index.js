@@ -23,4 +23,10 @@ module.exports = {
       }
     })),
   },
+  cards: {
+    getById: jest.fn(() => Promise.resolve({
+      id: 'foo',
+    })),
+    create: jest.fn(() => Promise.resolve()),
+  },
 };
