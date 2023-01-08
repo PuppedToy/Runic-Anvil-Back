@@ -42,6 +42,21 @@ describe('API', () => {
         expect(response.body).toHaveProperty('accessToken');
       });
 
+      it('Should return 200 when requesting /auth/login with correct user and JWT_EXPIRATION is unset', async () => {
+        const previousExpiration = process.env.JWT_EXPIRATION;
+        delete process.env.JWT_EXPIRATION;
+        const response = await request(app)
+          .post('/api/auth/login')
+          .send({
+            username: 'foo',
+            password: 'password',
+          })
+          .set('Accept', 'application/json');
+
+        process.env.JWT_EXPIRATION = previousExpiration;
+        expect(response.statusCode).toBe(200);
+      });
+
       it('Should return 401 when requesting /auth/login with wrong user', async () => {
         const response = await request(app)
           .post('/api/auth/login')
@@ -52,6 +67,19 @@ describe('API', () => {
           .set('Accept', 'application/json');
 
         expect(response.statusCode).toBe(401);
+        expect(response.body).toHaveProperty('message');
+      });
+
+      it('Should return 500 if an error occurs', async () => {
+        const response = await request(app)
+          .post('/api/auth/login')
+          .send({
+            username: 'error',
+            password: 'password',
+          })
+          .set('Accept', 'application/json');
+
+        expect(response.statusCode).toBe(500);
         expect(response.body).toHaveProperty('message');
       });
     });
