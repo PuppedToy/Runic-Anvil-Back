@@ -104,11 +104,8 @@ async function generateImage(card) {
   const ckpt = MODEL;
   const quantity = 1;
 
-  const { query, promise } = requestQuery(prompt, seed, ckpt, quantity);
+  const { promise } = requestQuery(prompt, seed, ckpt, quantity);
   const results = await promise;
-  console.log('Promise fulfilled!');
-  console.log('Query:', query);
-  console.log('Results:', results);
   const [result] = results;
   return {
     generationData: {

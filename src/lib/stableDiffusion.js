@@ -17,10 +17,16 @@ const moment = require('moment');
 const debug = debugFactory('stableDiffusion');
 const debugError = debugFactory('stableDiffusion:error');
 
-const TMP_DIR = process.env.TMP_DIR || `${__dirname}/stableOut`;
+function getEnvPath(path, defaultPath) {
+  if (path) {
+    return path.replace('__dirname', __dirname);
+  }
+  return defaultPath;
+}
+const TMP_DIR = getEnvPath(process.env.TMP_DIR, `${__dirname}/stableOut`);
 const TMP_DIR_SAMPLES = `${TMP_DIR}/samples`;
 const DEFAULT_FILE_DIR = `${__dirname}/tmp`;
-const FILE_DIR = process.env.FILE_DIR || DEFAULT_FILE_DIR;
+const FILE_DIR = getEnvPath(process.env.FILE_DIR, DEFAULT_FILE_DIR);
 
 let stableDiffusion;
 
@@ -32,12 +38,6 @@ function cleanDirectory(dir) {
   }
   mkdirSync(dir);
 }
-
-if (!process.env.FILE_DIR) {
-  cleanDirectory(DEFAULT_FILE_DIR);
-}
-cleanDirectory(TMP_DIR);
-cleanDirectory(TMP_DIR_SAMPLES);
 
 let status = 'STARTING';
 let currentQuery = null;
@@ -145,7 +145,6 @@ function requestQuery(prompt, seed, ckpt, quantity) {
   const promise = new Promise((resolve) => {
     const promiseInterval = setInterval(() => {
       if (query.status === 'DONE') {
-        debug(`Query ${query.id} is done`);
         clearInterval(promiseInterval);
         resolve(query.results);
       }
@@ -163,86 +162,94 @@ function requestQuery(prompt, seed, ckpt, quantity) {
 }
 
 function start() {
+  if (stableDiffusion) return;
+
+  if (!process.env.STABLE_DIFFUSION_CWD) {
+    throw new Error('STABLE_DIFFUSION_CWD is not set');
+  }
+
   if (!process.env.STABLE_DIFFUSION_SPAWN_COMMAND) {
     throw new Error('STABLE_DIFFUSION_SPAWN_COMMAND is not set');
   }
 
+  if (!process.env.FILE_DIR) {
+    cleanDirectory(DEFAULT_FILE_DIR);
+  }
+  cleanDirectory(TMP_DIR);
+  cleanDirectory(TMP_DIR_SAMPLES);
+
   const [command, ...args] = process.env.STABLE_DIFFUSION_SPAWN_COMMAND.split(' ');
 
-  if (!stableDiffusion) {
-    stableDiffusion = spawn(command, args, {
-      cwd: process.env.STABLE_DIFFUSION_CWD,
-    });
+  stableDiffusion = spawn(command, args, {
+    cwd: process.env.STABLE_DIFFUSION_CWD,
+  });
 
-    stableDiffusion.stdout.on('data', (data) => {
-      const msg = data.toString();
-      debug(msg);
-      if (msg.match(/(.*)(\(base\))(.*)(>)(.*)/)) {
-        stableDiffusion.stdin.write(commands.ACTIVATE);
-        return;
+  stableDiffusion.stdout.on('data', (data) => {
+    const msg = data.toString();
+    debug(msg);
+    if (msg.match(/(.*)(\(base\))(.*)(>)(.*)/)) {
+      stableDiffusion.stdin.write(commands.ACTIVATE);
+      return;
+    }
+
+    if (msg.match(/(.*)(\(ldm\))(.*)(>)(.*)/)) {
+      if (currentQuery && currentQuery.status === 'PROCESSING') {
+        const files = readdirSync(TMP_DIR_SAMPLES).filter((file) => file.match(/.*\.png/));
+        files.forEach((file) => {
+          const currentFileData = readFileSync(`${TMP_DIR_SAMPLES}/${file}`);
+          writeFileSync(`${FILE_DIR}/${currentQuery.id}/${file}`, currentFileData);
+          unlinkSync(`${TMP_DIR_SAMPLES}/${file}`);
+          currentQuery.results.push(`/pics/${currentQuery.id}/${file}`);
+        });
+        currentQuery.status = 'DONE';
+        currentQuery = null;
       }
-
-      if (msg.match(/(.*)(\(ldm\))(.*)(>)(.*)/)) {
-        if (currentQuery && currentQuery.status === 'PROCESSING') {
-          const files = readdirSync(TMP_DIR_SAMPLES).filter((file) => file.match(/.*\.png/));
-          files.forEach((file) => {
-            const currentFileData = readFileSync(`${TMP_DIR_SAMPLES}/${file}`);
-            writeFileSync(`${FILE_DIR}/${currentQuery.id}/${file}`, currentFileData);
-            unlinkSync(`${TMP_DIR_SAMPLES}/${file}`);
-            currentQuery.results.push(`/pics/${currentQuery.id}/${file}`);
-          });
-          currentQuery.status = 'DONE';
-          currentQuery = null;
-        }
-        if (queue.length > 0) {
-          queue.forEach((query) => {
-            query.positionInQueue -= 1;
-            query.totalQueue = queue.length - 1;
-          });
-          processQuery(queue.shift());
-        } else {
-          status = 'IDLE';
-        }
+      if (queue.length > 0) {
+        queue.forEach((query) => {
+          query.positionInQueue -= 1;
+          query.totalQueue = queue.length - 1;
+        });
+        processQuery(queue.shift());
+      } else {
+        status = 'IDLE';
       }
-    });
+    }
+  });
 
-    stableDiffusion.stderr.on('data', (data) => {
-      const msg = data.toString();
+  stableDiffusion.stderr.on('data', (data) => {
+    const msg = data.toString();
 
-      let regexResults = /.*?PLMS Sampler.*?([0-9]+)%/.exec(msg);
-      if (regexResults) {
-        const [, progress] = regexResults;
-        currentQuery.progress.currentPicturePercentage = parseInt(progress, 10);
-        currentQuery.progress.totalPercentage = currentQuery.progress.currentPicture
-            * (100 / currentQuery.progress.maxPictures)
-            + progress / currentQuery.progress.maxPictures;
-        return;
-      }
-      regexResults = /.*?Sampling:.*?([0-9]+)%.*?([0-9]+)\/([0-9]+)/.exec(msg);
-      if (regexResults) {
-        const [, progress, currentPicture, maxPictures] = regexResults;
-        currentQuery.progress.totalPercentage = parseInt(progress, 10);
-        currentQuery.progress.currentPicture = parseInt(currentPicture, 10);
-        currentQuery.progress.maxPictures = parseInt(maxPictures, 10);
-        return;
-      }
+    let regexResults = /.*?PLMS Sampler.*?([0-9]+)%/.exec(msg);
+    if (regexResults) {
+      const [, progress] = regexResults;
+      currentQuery.progress.currentPicturePercentage = parseInt(progress, 10);
+      currentQuery.progress.totalPercentage = currentQuery.progress.currentPicture
+          * (100 / currentQuery.progress.maxPictures)
+          + progress / currentQuery.progress.maxPictures;
+      return;
+    }
+    regexResults = /.*?Sampling:.*?([0-9]+)%.*?([0-9]+)\/([0-9]+)/.exec(msg);
+    if (regexResults) {
+      const [, progress, currentPicture, maxPictures] = regexResults;
+      currentQuery.progress.totalPercentage = parseInt(progress, 10);
+      currentQuery.progress.currentPicture = parseInt(currentPicture, 10);
+      currentQuery.progress.maxPictures = parseInt(maxPictures, 10);
+      return;
+    }
 
-      if (msg.trim()) debugError(msg);
-    });
+    if (msg.trim()) debugError(msg);
+  });
 
-    stableDiffusion.on('spawn', () => {
-      debug('stableDiffusion process opened');
-    });
+  stableDiffusion.on('spawn', () => {
+    debug('stableDiffusion process opened');
+  });
 
-    stableDiffusion.on('close', (code) => {
-      if (code !== 0) {
-        debugError(`stableDiffusion process exited with code ${code}`);
-      }
-      debug('end');
-    });
-  } else {
-    debugError('Stable diffusion is already running');
-  }
+  stableDiffusion.on('close', (code) => {
+    if (code !== 0) {
+      debugError(`stableDiffusion process exited with code ${code}`);
+    }
+    debug('end');
+  });
 }
 
 function end() {
