@@ -15,6 +15,17 @@ async function getById(id) {
   } : null;
 }
 
+async function findOneWithoutImage() {
+  const db = await getDatabase(DATABASE_NAME);
+  // find one card that has image to null or that doesn't have image
+  const card = await db.findOne({ $or: [{ image: null }, { image: { $exists: false } }] });
+
+  return card ? {
+    id: card._id,
+    ...card,
+  } : null;
+}
+
 async function create(card) {
   if (!card) {
     throw new Error('card can\'t be null');
@@ -31,7 +42,24 @@ async function create(card) {
   return result.ops[0];
 }
 
+async function update(id, card) {
+  if (!card) {
+    throw new Error('card can\'t be null');
+  }
+
+  const db = await getDatabase(DATABASE_NAME);
+
+  const result = await db.updateOne(
+    { _id: ObjectId(id) },
+    { $set: { ...card } },
+  );
+
+  return result;
+}
+
 module.exports = {
   getById,
+  findOneWithoutImage,
   create,
+  update,
 };
