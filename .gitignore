@@ -1,6 +1,7 @@
 # General project
 **/node_modules
 .env
+tmp
 
 # VSCode
 .vscode/*

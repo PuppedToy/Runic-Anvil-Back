@@ -1,7 +1,7 @@
-// const {
-//   start,
-//   requestQuery,
-// } = require('./stableDiffusion');
+const {
+  start,
+  requestQuery,
+} = require('./stableDiffusion');
 
 const weightedSample = require('../utils/weightedSample');
 
@@ -97,17 +97,19 @@ function generatePrompt(card) {
 }
 
 async function generateImage(card) {
-  //   start();
+  start();
 
   const prompt = generatePrompt(card);
   const seed = parseInt(Math.random() * 1000000, 10);
   const ckpt = MODEL;
   const quantity = 1;
 
-  //   const { promise } = requestQuery(prompt, seed, ckpt, quantity);
-  //   const results = await promise;
-  //   const [result] = results;
-  const result = null;
+  const { query, promise } = requestQuery(prompt, seed, ckpt, quantity);
+  const results = await promise;
+  console.log('Promise fulfilled!');
+  console.log('Query:', query);
+  console.log('Results:', results);
+  const [result] = results;
   return {
     generationData: {
       prompt,
