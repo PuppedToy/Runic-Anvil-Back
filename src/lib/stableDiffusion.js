@@ -288,4 +288,6 @@ module.exports = {
   getStableDiffusionProcess: () => stableDiffusion,
   start,
   end,
+
+  commands,
 };

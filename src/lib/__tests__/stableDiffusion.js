@@ -1,6 +1,5 @@
 const {
   rmdirSync,
-  mkdirSync,
   existsSync,
   readdirSync,
   writeFileSync,
@@ -58,6 +57,8 @@ const {
   getStableDiffusionProcess,
   start,
   end,
+
+  commands,
 } = stableDiffusion;
 
 describe('Stable Diffusion Library', () => {
@@ -144,5 +145,37 @@ describe('Stable Diffusion Library', () => {
       processQuery(query);
       expect(mockStableDiffusionProcess.stdin.write).toHaveBeenCalledWith(expectedInput);
     });
+  });
+
+  describe('Stable Diffusion Data Handler', () => {
+    it('Should not call write with an unexpected input', () => {
+      const inputData = 'foo';
+      stableDiffusionDataHandler(inputData);
+      expect(mockStableDiffusionProcess.stdin.write).not.toHaveBeenCalled();
+    });
+
+    it('Should not change status with an unexpected input', () => {
+      const inputData = 'foo';
+      const previousStatus = stableDiffusion.getStatus();
+      stableDiffusionDataHandler(inputData);
+      const currentStatus = stableDiffusion.getStatus();
+      expect(currentStatus).toBe(previousStatus);
+    });
+
+    it('Should call ACTIVATE command with the (base) input', () => {
+      const inputData = 'foo(base)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      expect(mockStableDiffusionProcess.stdin.write).toHaveBeenCalledWith(commands.ACTIVATE);
+    });
+
+    it('Should not change status if called with the (base) input', () => {
+      const inputData = 'foo(base)foo>foo';
+      const previousStatus = stableDiffusion.getStatus();
+      stableDiffusionDataHandler(inputData);
+      const currentStatus = stableDiffusion.getStatus();
+      expect(currentStatus).toBe(previousStatus);
+    });
+
+    // @TODO tests for the (ldm) command
   });
 });
