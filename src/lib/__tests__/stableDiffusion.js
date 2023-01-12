@@ -3,6 +3,7 @@ const {
   existsSync,
   readdirSync,
   writeFileSync,
+  mkdirSync,
 } = require('fs');
 
 const mockStableDiffusionProcess = {
@@ -40,6 +41,14 @@ const expectedDirname = __dirname.replace(/(.*)[\\/]__tests__/, '$1');
 
 const stableDiffusion = require('../stableDiffusion');
 
+const exampleQuery = {
+  status: 'STARTING',
+  ckpt: 'foo',
+  seed: 0,
+  prompt: 'bar',
+  quantity: 1,
+};
+
 const {
   getEnvPath,
   processQuery,
@@ -52,7 +61,7 @@ const {
   getModels,
   getStatus,
   getQuery,
-  getQueueLength,
+  getQueue,
   getCurrentQuery,
   getStableDiffusionProcess,
   start,
@@ -114,18 +123,18 @@ describe('Stable Diffusion Library', () => {
   describe('Process Query', () => {
     let query;
     beforeEach(() => {
-      query = {
-        status: 'STARTING',
-        ckpt: 'foo',
-        seed: 0,
-        prompt: 'bar',
-        quantity: 1,
-      };
+      query = { ...exampleQuery };
     });
 
     it('Should change a query status', () => {
       processQuery(query);
       expect(query.status).toBe('PROCESSING');
+    });
+
+    it('Should change the currentQuery value', () => {
+      expect(getCurrentQuery()).toBe(null);
+      processQuery(query);
+      expect(getCurrentQuery()).toEqual(expect.objectContaining(query));
     });
 
     // @TODO This test is not working because I don't know how the spy method works I suppose
@@ -176,6 +185,103 @@ describe('Stable Diffusion Library', () => {
       expect(currentStatus).toBe(previousStatus);
     });
 
-    // @TODO tests for the (ldm) command
+    it('Should not call stdin if called with the (ldm) input and there is no query', () => {
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      expect(mockStableDiffusionProcess.stdin.write).not.toHaveBeenCalled();
+    });
+
+    it('Should set the IDLE status with the (ldm) input and there is no query', () => {
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      const status = getStatus();
+      expect(status).toBe('IDLE');
+    });
+
+    it('Should shift the queue if there is no currentQuery and called with a queue (ldm) input and there is no query', () => {
+      const elements = [
+        {
+          positionInQueue: 1,
+          totalQueue: 3,
+        },
+        {
+          positionInQueue: 2,
+          totalQueue: 3,
+        },
+        {
+          positionInQueue: 3,
+          totalQueue: 3,
+        },
+      ];
+      const expectedQueue = [
+        {
+          positionInQueue: 1,
+          totalQueue: 2,
+        },
+        {
+          positionInQueue: 2,
+          totalQueue: 2,
+        },
+      ];
+      elements.forEach((element) => {
+        getQueue().push(element);
+      });
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      expect(getQueue()).toEqual(expectedQueue);
+    });
+
+    it('Should change the currentQueryStatus if called with (ldm) input and there is current query', () => {
+      const query = { ...exampleQuery };
+      processQuery(query);
+      const currentQuery = getCurrentQuery();
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      expect(currentQuery.status).toBe('DONE');
+    });
+
+    it('Should set currentQuery to null if called with (ldm) input and there is current query', () => {
+      const query = { ...exampleQuery };
+      processQuery(query);
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      expect(getCurrentQuery()).toBe(null);
+    });
+
+    it('Should have results if called with (ldm) input and there is current query', () => {
+      const query = { ...exampleQuery, id: 1, results: [] };
+      processQuery(query);
+      writeFileSync(`${expectedDirname}/../../tmp/test/samples/0.png`, 'foo');
+      writeFileSync(`${expectedDirname}/../../tmp/test/samples/1.png`, 'bar');
+      mkdirSync(`${expectedDirname}/../../tmp/test/1`);
+      const currentQuery = getCurrentQuery();
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      expect(currentQuery.results.length).toBe(2);
+    });
+
+    it('Should have empty samples directory if called with (ldm) input and there is current query', () => {
+      const query = { ...exampleQuery, id: 1, results: [] };
+      processQuery(query);
+      writeFileSync(`${expectedDirname}/../../tmp/test/samples/0.png`, 'foo');
+      writeFileSync(`${expectedDirname}/../../tmp/test/samples/1.png`, 'bar');
+      mkdirSync(`${expectedDirname}/../../tmp/test/1`);
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      const samplesContents = readdirSync(`${expectedDirname}/../../tmp/test/samples`);
+      expect(samplesContents.length).toBe(0);
+    });
+
+    it('Should have 2 files in FILE_DIR directory if called with (ldm) input and there is current query', () => {
+      const query = { ...exampleQuery, id: 1, results: [] };
+      processQuery(query);
+      writeFileSync(`${expectedDirname}/../../tmp/test/samples/0.png`, 'foo');
+      writeFileSync(`${expectedDirname}/../../tmp/test/samples/1.png`, 'bar');
+      mkdirSync(`${expectedDirname}/../../tmp/test/1`);
+      const inputData = 'foo(ldm)foo>foo';
+      stableDiffusionDataHandler(inputData);
+      const fileDirContents = readdirSync(`${expectedDirname}/../../tmp/test/1`);
+      expect(fileDirContents.length).toBe(2);
+    });
   });
 });

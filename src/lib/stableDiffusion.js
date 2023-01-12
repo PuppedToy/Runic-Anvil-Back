@@ -283,7 +283,7 @@ module.exports = {
   getModels: () => Object.entries(models).map(([key, value]) => ({ key, ...value })),
   getStatus: () => status,
   getQuery: (id) => queries[id],
-  getQueueLength: () => queue.length,
+  getQueue: () => queue,
   getCurrentQuery: () => currentQuery,
   getStableDiffusionProcess: () => stableDiffusion,
   start,
