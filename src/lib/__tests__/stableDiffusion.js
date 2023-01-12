@@ -284,4 +284,63 @@ describe('Stable Diffusion Library', () => {
       expect(fileDirContents.length).toBe(2);
     });
   });
+
+  describe('Stable Diffusion Error Data Handler', () => {
+    let query;
+    beforeEach(() => {
+      query = {
+        ...exampleQuery,
+        progress: {
+          maxPictures: 2,
+          currentPicture: 0,
+          currentPicturePercentage: 0,
+          totalPercentage: 0,
+        },
+      };
+    });
+
+    it('Should advance current image progress if message is of type PLMS Sampler', () => {
+      processQuery(query);
+      const message = 'foo PLMS Sampler foo 50%';
+      const expectedProgress = {
+        maxPictures: 2,
+        currentPicture: 0,
+        currentPicturePercentage: 50,
+        totalPercentage: 25,
+      };
+      stableDiffusionErrorDataHandler(message);
+      expect(getCurrentQuery().progress).toEqual(expectedProgress);
+    });
+
+    it('Should jump to next image if message is of type Sampling', () => {
+      processQuery(query);
+      const message = 'foo PLMS Sampling: foo 50% foo 1/2';
+      const expectedProgress = {
+        maxPictures: 2,
+        currentPicture: 1,
+        currentPicturePercentage: 0,
+        totalPercentage: 50,
+      };
+      stableDiffusionErrorDataHandler(message);
+      expect(getCurrentQuery().progress).toEqual(expectedProgress);
+    });
+
+    it('Should call debug error if message is not empty', () => {
+      const message = 'foo';
+      stableDiffusionErrorDataHandler(message);
+      expect(mockDebugError).toHaveBeenCalledWith('foo');
+    });
+
+    it('Should not call debug error if message is empty', () => {
+      const message = '';
+      stableDiffusionErrorDataHandler(message);
+      expect(mockDebugError).not.toHaveBeenCalled();
+    });
+
+    it('Should not call debug error if message is only white spaces', () => {
+      const message = '   ';
+      stableDiffusionErrorDataHandler(message);
+      expect(mockDebugError).not.toHaveBeenCalled();
+    });
+  });
 });
