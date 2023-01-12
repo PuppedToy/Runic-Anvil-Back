@@ -4,6 +4,8 @@ const {
   readdirSync,
   writeFileSync,
   mkdirSync,
+  unlinkSync,
+  readFileSync,
 } = require('fs');
 
 const mockStableDiffusionProcess = {
@@ -60,6 +62,7 @@ const {
   requestQuery,
   getModels,
   getStatus,
+  setStatus,
   getQuery,
   getQueue,
   getCurrentQuery,
@@ -504,6 +507,82 @@ describe('Stable Diffusion Library', () => {
       const message = '   ';
       stableDiffusionErrorDataHandler(message);
       expect(mockDebugError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Stable Diffusion Request Query', () => {
+    let basePrompt;
+    let baseSeed;
+    let baseCkpt;
+    let baseQuantity;
+    let baseReturnPromise;
+    let baseArgs;
+    beforeEach(() => {
+      basePrompt = 'foo';
+      baseSeed = 1;
+      baseCkpt = 'sd4';
+      baseQuantity = 4;
+      baseReturnPromise = false;
+      baseArgs = [basePrompt, baseSeed, baseCkpt, baseQuantity, baseReturnPromise];
+    });
+
+    it('Should create a log file if it does not exist', () => {
+      const expectedLogPath = `${expectedDirname}/../../tmp/test/log.txt`;
+
+      if (existsSync(expectedLogPath)) {
+        unlinkSync(expectedLogPath);
+      }
+      requestQuery(...baseArgs);
+      const logExists = existsSync(expectedLogPath);
+      expect(logExists).toBe(true);
+    });
+
+    it('Should write to the log file if it exists', () => {
+      const expectedLogPath = `${expectedDirname}/../../tmp/test/log.txt`;
+
+      if (existsSync(expectedLogPath)) {
+        unlinkSync(expectedLogPath);
+      }
+      writeFileSync(expectedLogPath, 'foo');
+      requestQuery(...baseArgs);
+      const logContents = readFileSync(expectedLogPath, 'utf8');
+      expect(logContents.includes('foo')).toBeTruthy();
+      expect(logContents).not.toBe('foo');
+    });
+
+    it('Should change to processing status if it was IDLE', () => {
+      setStatus('IDLE');
+      requestQuery(...baseArgs);
+      expect(getStatus()).toBe('PROCESSING');
+    });
+
+    it('Should push to the queue if the status was not IDLE', () => {
+      setStatus('STARTING');
+      requestQuery(...baseArgs);
+      expect(getStatus()).toBe('STARTING');
+      expect(getQueue().length).toBe(1);
+    });
+
+    it('Should return the expected query', () => {
+      const expectedQuery = {
+        id: expect.any(String),
+        status: 'PENDING',
+        positionInQueue: 1,
+        totalQueue: 2,
+        ckpt: 'models/ldm/stable-diffusion-v1-4/model.ckpt',
+        quantity: 4,
+        seed: 1,
+        prompt: 'foo',
+        progress: {
+          maxPictures: 4,
+          currentPicture: 0,
+          currentPicturePercentage: 0,
+          totalPercentage: 0,
+        },
+        results: [],
+      };
+      const { query } = requestQuery(...baseArgs);
+      expect(query).toEqual(expectedQuery);
     });
   });
 });

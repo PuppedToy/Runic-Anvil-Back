@@ -117,7 +117,7 @@ function processQuery(query) {
   stableDiffusion.stdin.write(input);
 }
 
-function requestQuery(prompt, seed, ckpt, quantity) {
+function requestQuery(prompt, seed, ckpt, quantity, returnPromise = true) {
   const id = uuid();
   const query = {
     id,
@@ -142,14 +142,14 @@ function requestQuery(prompt, seed, ckpt, quantity) {
   rmSync(`${FILE_DIR}/${id}`, { recursive: true, force: true });
   mkdirSync(`${FILE_DIR}/${id}`);
   writeFileSync(`${FILE_DIR}/${id}/query.json`, JSON.stringify(query));
-  const promise = new Promise((resolve) => {
+  const promise = returnPromise ? new Promise((resolve) => {
     const promiseInterval = setInterval(() => {
       if (query.status === 'DONE') {
         clearInterval(promiseInterval);
         resolve(query.results);
       }
     }, 1000);
-  });
+  }) : null;
   if (status === 'IDLE') {
     processQuery(query);
   } else {
@@ -282,6 +282,7 @@ module.exports = {
   requestQuery,
   getModels: () => Object.entries(models).map(([key, value]) => ({ key, ...value })),
   getStatus: () => status,
+  setStatus: (newStatus) => { status = newStatus; },
   getQuery: (id) => queries[id],
   getQueue: () => queue,
   getCurrentQuery: () => currentQuery,
