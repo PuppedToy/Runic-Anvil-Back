@@ -9,10 +9,18 @@ const mockGenerateCard = jest.fn();
 jest.mock('../generateCard', () => ({
   generateCard: mockGenerateCard,
 }));
+const mockGenerateCardImage = jest.fn(() => Promise.resolve({
+  generationData: {},
+  result: ['foo'],
+}));
+jest.mock('../generateCardImage', () => ({
+  generateImage: mockGenerateCardImage,
+}));
 
 require('../jobs');
 
 const createCardJob = require('../jobs/createCardJob');
+const cardImageJob = require('../jobs/cardImageJob');
 const db = require('../../db');
 
 describe('Jobs', () => {
@@ -35,6 +43,37 @@ describe('Jobs', () => {
       db.cards.create.mockClear();
       await createCardJob();
       expect(db.cards.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('Generate card image job', () => {
+    it('Should be a function', () => {
+      expect(cardImageJob).toBeInstanceOf(Function);
+    });
+
+    it('Should have called generateCard on cardImageJob', async () => {
+      mockGenerateCardImage.mockClear();
+      await cardImageJob();
+      expect(mockGenerateCardImage).toHaveBeenCalled();
+    });
+
+    it('Should have called db.cards.findOneWithoutImage on cardImageJob', async () => {
+      db.cards.findOneWithoutImage.mockClear();
+      await cardImageJob();
+      expect(db.cards.findOneWithoutImage).toHaveBeenCalled();
+    });
+
+    it('Should have called db.cards.update on cardImageJob', async () => {
+      db.cards.update.mockClear();
+      await cardImageJob();
+      expect(db.cards.update).toHaveBeenCalled();
+    });
+
+    it('Should return null if no card is available', async () => {
+      db.cards.findOneWithoutImage.mockClear();
+      db.cards.findOneWithoutImage.mockReturnValueOnce(null);
+      const result = await cardImageJob();
+      expect(result).toBeNull();
     });
   });
 });
