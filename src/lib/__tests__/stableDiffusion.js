@@ -520,7 +520,7 @@ describe('Stable Diffusion Library', () => {
     beforeEach(() => {
       basePrompt = 'foo';
       baseSeed = 1;
-      baseCkpt = 'sd4';
+      baseCkpt = 'sd14';
       baseQuantity = 4;
       baseReturnPromise = false;
       baseArgs = [basePrompt, baseSeed, baseCkpt, baseQuantity, baseReturnPromise];
@@ -583,6 +583,177 @@ describe('Stable Diffusion Library', () => {
       };
       const { query } = requestQuery(...baseArgs);
       expect(query).toEqual(expectedQuery);
+    });
+
+    it('Should return the expected query if prompt is missing', () => {
+      const expectedQuery = {
+        id: expect.any(String),
+        status: 'PENDING',
+        positionInQueue: 1,
+        totalQueue: 2,
+        ckpt: 'models/ldm/stable-diffusion-v1-4/model.ckpt',
+        quantity: 4,
+        seed: 1,
+        prompt: 'Question mark',
+        progress: {
+          maxPictures: 4,
+          currentPicture: 0,
+          currentPicturePercentage: 0,
+          totalPercentage: 0,
+        },
+        results: [],
+      };
+      const { query } = requestQuery(
+        undefined,
+        baseSeed,
+        baseCkpt,
+        baseQuantity,
+        baseReturnPromise,
+      );
+      expect(query).toEqual(expectedQuery);
+    });
+
+    it('Should return the expected query if seed is missing', () => {
+      const expectedQuery = {
+        id: expect.any(String),
+        status: 'PENDING',
+        positionInQueue: 1,
+        totalQueue: 2,
+        ckpt: 'models/ldm/stable-diffusion-v1-4/model.ckpt',
+        quantity: 4,
+        seed: expect.any(Number),
+        prompt: 'foo',
+        progress: {
+          maxPictures: 4,
+          currentPicture: 0,
+          currentPicturePercentage: 0,
+          totalPercentage: 0,
+        },
+        results: [],
+      };
+      const { query } = requestQuery(
+        basePrompt,
+        undefined,
+        baseCkpt,
+        baseQuantity,
+        baseReturnPromise,
+      );
+      expect(query).toEqual(expectedQuery);
+    });
+
+    it('Should return the expected query if ckpt is missing', () => {
+      const expectedQuery = {
+        id: expect.any(String),
+        status: 'PENDING',
+        positionInQueue: 1,
+        totalQueue: 2,
+        ckpt: 'models/ldm/stable-diffusion-v1-4/model.ckpt',
+        quantity: 4,
+        seed: 1,
+        prompt: 'foo',
+        progress: {
+          maxPictures: 4,
+          currentPicture: 0,
+          currentPicturePercentage: 0,
+          totalPercentage: 0,
+        },
+        results: [],
+      };
+      const { query } = requestQuery(
+        basePrompt,
+        baseSeed,
+        undefined,
+        baseQuantity,
+        baseReturnPromise,
+      );
+      expect(query).toEqual(expectedQuery);
+    });
+
+    it('Should return the expected query if quantity is missing', () => {
+      const expectedQuery = {
+        id: expect.any(String),
+        status: 'PENDING',
+        positionInQueue: 1,
+        totalQueue: 2,
+        ckpt: 'models/ldm/stable-diffusion-v1-4/model.ckpt',
+        quantity: 5,
+        seed: 1,
+        prompt: 'foo',
+        progress: {
+          maxPictures: 5,
+          currentPicture: 0,
+          currentPicturePercentage: 0,
+          totalPercentage: 0,
+        },
+        results: [],
+      };
+      const { query } = requestQuery(
+        basePrompt,
+        baseSeed,
+        baseQuantity,
+        undefined,
+        baseReturnPromise,
+      );
+      expect(query).toEqual(expectedQuery);
+    });
+
+    it('Should return the expected query if ckpt has an unknown model', () => {
+      const expectedQuery = {
+        id: expect.any(String),
+        status: 'PENDING',
+        positionInQueue: 1,
+        totalQueue: 2,
+        ckpt: 'models/ldm/stable-diffusion-v1-4/model.ckpt',
+        quantity: 4,
+        seed: 1,
+        prompt: 'foo',
+        progress: {
+          maxPictures: 4,
+          currentPicture: 0,
+          currentPicturePercentage: 0,
+          totalPercentage: 0,
+        },
+        results: [],
+      };
+      const { query } = requestQuery(
+        basePrompt,
+        baseSeed,
+        'unknown',
+        baseQuantity,
+        baseReturnPromise,
+      );
+      expect(query).toEqual(expectedQuery);
+    });
+
+    it('Should return a promise if the 5th param is not set', async () => {
+      const { query, promise } = requestQuery(
+        basePrompt,
+        baseSeed,
+        baseQuantity,
+        baseQuantity,
+      );
+      setTimeout(() => {
+        query.status = 'DONE';
+      }, 1100);
+      await expect(promise).resolves.toEqual([]);
+    });
+
+    it('Should enqueue queries if called more than once', () => {
+      requestQuery(...baseArgs);
+      requestQuery(...baseArgs);
+      expect(getQueue().length).toBe(2);
+    });
+
+    it('Should return an ID that can be used to getQuery', () => {
+      const { query } = requestQuery(...baseArgs);
+      expect(getQuery(query.id).id).toEqual(query.id);
+    });
+
+    it('Should return an ID that can be used to getQuery if called more than once', () => {
+      requestQuery(...baseArgs);
+      const { query } = requestQuery(...baseArgs);
+      requestQuery(...baseArgs);
+      expect(getQuery(query.id).id).toEqual(query.id);
     });
   });
 });
