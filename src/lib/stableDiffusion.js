@@ -19,7 +19,7 @@ const debugError = debugFactory('stableDiffusion:error');
 
 function getEnvPath(path, defaultPath) {
   if (path) {
-    return path.replace('__dirname', __dirname);
+    return path.replace(/__dirname/g, __dirname);
   }
   return defaultPath;
 }
@@ -36,7 +36,7 @@ function cleanDirectory(dir) {
   } catch (err) {
     // Do nothing
   }
-  mkdirSync(dir);
+  mkdirSync(dir, { recursive: true });
 }
 
 let status = 'STARTING';
@@ -101,8 +101,8 @@ const commands = {
   ACTIVATE: 'conda activate ldm\r\n',
 };
 
-const queries = {};
-const queue = [];
+let queries = {};
+let queue = [];
 
 function processQuery(query) {
   status = 'PROCESSING';
@@ -117,7 +117,7 @@ function processQuery(query) {
   stableDiffusion.stdin.write(input);
 }
 
-function requestQuery(prompt, seed, ckpt, quantity) {
+function requestQuery(prompt, seed, ckpt, quantity, returnPromise = true) {
   const id = uuid();
   const query = {
     id,
@@ -142,14 +142,14 @@ function requestQuery(prompt, seed, ckpt, quantity) {
   rmSync(`${FILE_DIR}/${id}`, { recursive: true, force: true });
   mkdirSync(`${FILE_DIR}/${id}`);
   writeFileSync(`${FILE_DIR}/${id}/query.json`, JSON.stringify(query));
-  const promise = new Promise((resolve) => {
+  const promise = returnPromise ? new Promise((resolve) => {
     const promiseInterval = setInterval(() => {
       if (query.status === 'DONE') {
         clearInterval(promiseInterval);
         resolve(query.results);
       }
     }, 1000);
-  });
+  }) : null;
   if (status === 'IDLE') {
     processQuery(query);
   } else {
@@ -159,6 +159,73 @@ function requestQuery(prompt, seed, ckpt, quantity) {
     });
   }
   return { query, promise };
+}
+
+function stableDiffusionDataHandler(data) {
+  const msg = data.toString();
+  debug(msg);
+  if (msg.match(/(.*)(\(base\))(.*)(>)(.*)/)) {
+    stableDiffusion.stdin.write(commands.ACTIVATE);
+    return;
+  }
+
+  if (msg.match(/(.*)(\(ldm\))(.*)(>)(.*)/)) {
+    if (currentQuery && currentQuery.status === 'PROCESSING') {
+      const files = readdirSync(TMP_DIR_SAMPLES).filter((file) => file.match(/.*\.png/));
+      files.forEach((file) => {
+        const currentFileData = readFileSync(`${TMP_DIR_SAMPLES}/${file}`);
+        writeFileSync(`${FILE_DIR}/${currentQuery.id}/${file}`, currentFileData);
+        unlinkSync(`${TMP_DIR_SAMPLES}/${file}`);
+        currentQuery.results.push(`/pics/${currentQuery.id}/${file}`);
+      });
+      currentQuery.status = 'DONE';
+      currentQuery = null;
+    }
+    if (queue.length > 0) {
+      queue.forEach((query) => {
+        query.positionInQueue -= 1;
+        query.totalQueue = queue.length - 1;
+      });
+      processQuery(queue.shift());
+    } else {
+      status = 'IDLE';
+    }
+  }
+}
+
+function stableDiffusionErrorDataHandler(data) {
+  const msg = data.toString();
+
+  let regexResults = /.*?PLMS Sampler.*?([0-9]+)%/.exec(msg);
+  if (regexResults) {
+    const [, progress] = regexResults;
+    currentQuery.progress.currentPicturePercentage = parseInt(progress, 10);
+    currentQuery.progress.totalPercentage = currentQuery.progress.currentPicture
+          * (100 / currentQuery.progress.maxPictures)
+          + progress / currentQuery.progress.maxPictures;
+    return;
+  }
+  regexResults = /.*?Sampling:.*?([0-9]+)%.*?([0-9]+)\/([0-9]+)/.exec(msg);
+  if (regexResults) {
+    const [, progress, currentPicture, maxPictures] = regexResults;
+    currentQuery.progress.totalPercentage = parseInt(progress, 10);
+    currentQuery.progress.currentPicture = parseInt(currentPicture, 10);
+    currentQuery.progress.maxPictures = parseInt(maxPictures, 10);
+    return;
+  }
+
+  if (msg.trim()) debugError(msg);
+}
+
+function stableDiffusionSpawnHandler() {
+  debug('stableDiffusion process opened');
+}
+
+function stableDiffusionCloseHandler(code) {
+  if (code !== 0) {
+    debugError(`stableDiffusion process exited with code ${code}`);
+  }
+  debug('end');
 }
 
 function start() {
@@ -178,78 +245,21 @@ function start() {
   cleanDirectory(TMP_DIR);
   cleanDirectory(TMP_DIR_SAMPLES);
 
+  status = 'STARTING';
+  currentQuery = null;
+  queries = {};
+  queue = [];
+
   const [command, ...args] = process.env.STABLE_DIFFUSION_SPAWN_COMMAND.split(' ');
 
   stableDiffusion = spawn(command, args, {
     cwd: process.env.STABLE_DIFFUSION_CWD,
   });
 
-  stableDiffusion.stdout.on('data', (data) => {
-    const msg = data.toString();
-    debug(msg);
-    if (msg.match(/(.*)(\(base\))(.*)(>)(.*)/)) {
-      stableDiffusion.stdin.write(commands.ACTIVATE);
-      return;
-    }
-
-    if (msg.match(/(.*)(\(ldm\))(.*)(>)(.*)/)) {
-      if (currentQuery && currentQuery.status === 'PROCESSING') {
-        const files = readdirSync(TMP_DIR_SAMPLES).filter((file) => file.match(/.*\.png/));
-        files.forEach((file) => {
-          const currentFileData = readFileSync(`${TMP_DIR_SAMPLES}/${file}`);
-          writeFileSync(`${FILE_DIR}/${currentQuery.id}/${file}`, currentFileData);
-          unlinkSync(`${TMP_DIR_SAMPLES}/${file}`);
-          currentQuery.results.push(`/pics/${currentQuery.id}/${file}`);
-        });
-        currentQuery.status = 'DONE';
-        currentQuery = null;
-      }
-      if (queue.length > 0) {
-        queue.forEach((query) => {
-          query.positionInQueue -= 1;
-          query.totalQueue = queue.length - 1;
-        });
-        processQuery(queue.shift());
-      } else {
-        status = 'IDLE';
-      }
-    }
-  });
-
-  stableDiffusion.stderr.on('data', (data) => {
-    const msg = data.toString();
-
-    let regexResults = /.*?PLMS Sampler.*?([0-9]+)%/.exec(msg);
-    if (regexResults) {
-      const [, progress] = regexResults;
-      currentQuery.progress.currentPicturePercentage = parseInt(progress, 10);
-      currentQuery.progress.totalPercentage = currentQuery.progress.currentPicture
-          * (100 / currentQuery.progress.maxPictures)
-          + progress / currentQuery.progress.maxPictures;
-      return;
-    }
-    regexResults = /.*?Sampling:.*?([0-9]+)%.*?([0-9]+)\/([0-9]+)/.exec(msg);
-    if (regexResults) {
-      const [, progress, currentPicture, maxPictures] = regexResults;
-      currentQuery.progress.totalPercentage = parseInt(progress, 10);
-      currentQuery.progress.currentPicture = parseInt(currentPicture, 10);
-      currentQuery.progress.maxPictures = parseInt(maxPictures, 10);
-      return;
-    }
-
-    if (msg.trim()) debugError(msg);
-  });
-
-  stableDiffusion.on('spawn', () => {
-    debug('stableDiffusion process opened');
-  });
-
-  stableDiffusion.on('close', (code) => {
-    if (code !== 0) {
-      debugError(`stableDiffusion process exited with code ${code}`);
-    }
-    debug('end');
-  });
+  stableDiffusion.stdout.on('data', stableDiffusionDataHandler);
+  stableDiffusion.stderr.on('data', stableDiffusionErrorDataHandler);
+  stableDiffusion.on('spawn', stableDiffusionSpawnHandler);
+  stableDiffusion.on('close', stableDiffusionCloseHandler);
 }
 
 function end() {
@@ -262,13 +272,23 @@ function end() {
 }
 
 module.exports = {
+  getEnvPath,
+  cleanDirectory,
+  processQuery,
+  stableDiffusionDataHandler,
+  stableDiffusionErrorDataHandler,
+  stableDiffusionSpawnHandler,
+  stableDiffusionCloseHandler,
   requestQuery,
   getModels: () => Object.entries(models).map(([key, value]) => ({ key, ...value })),
   getStatus: () => status,
+  setStatus: (newStatus) => { status = newStatus; },
   getQuery: (id) => queries[id],
-  getQueueLength: () => queue.length,
+  getQueue: () => queue,
   getCurrentQuery: () => currentQuery,
   getStableDiffusionProcess: () => stableDiffusion,
   start,
   end,
+
+  commands,
 };

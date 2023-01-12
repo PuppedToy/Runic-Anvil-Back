@@ -47,14 +47,19 @@ async function update(id, card) {
     throw new Error('card can\'t be null');
   }
 
+  const updatedCard = { ...card };
+  if (Object.hasOwnProperty.call(updatedCard, '_id')) {
+    delete updatedCard._id;
+  }
+
   const db = await getDatabase(DATABASE_NAME);
 
   const result = await db.updateOne(
     { _id: ObjectId(id) },
-    { $set: { ...card } },
+    { $set: updatedCard },
   );
 
-  return result;
+  return result.modifiedCount;
 }
 
 module.exports = {

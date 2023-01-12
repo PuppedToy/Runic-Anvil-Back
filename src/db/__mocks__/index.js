@@ -27,6 +27,10 @@ module.exports = {
     getById: jest.fn(() => Promise.resolve({
       id: 'foo',
     })),
+    findOneWithoutImage: jest.fn(() => ({
+      id: 'foo',
+    })),
     create: jest.fn(() => Promise.resolve()),
+    update: jest.fn(() => Promise.resolve()),
   },
 };

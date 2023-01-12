@@ -90,6 +90,8 @@ function getCardImageKeywords(card) {
 }
 
 function generatePrompt(card) {
+  if (!card) throw new Error('No card provided');
+
   const imageContext = new Array(4).fill(0).map(() => weightedSample(contextualWords)).join(', ');
   const imageArtists = new Array(2).fill(0).map(() => weightedSample(artists)).join(' and ');
   const cardImageKeywords = getCardImageKeywords(card).join(', ');
@@ -97,6 +99,8 @@ function generatePrompt(card) {
 }
 
 async function generateImage(card) {
+  if (!card) throw new Error('No card provided');
+
   start();
 
   const prompt = generatePrompt(card);
@@ -119,6 +123,7 @@ async function generateImage(card) {
 }
 
 module.exports = {
+  getCardImageKeywords,
   generatePrompt,
   generateImage,
 };
