@@ -162,7 +162,7 @@ describe('API', () => {
       }));
 
     it('Should return 404 if requesting a non-existing card', () => request(app)
-      .get('/api/cards/123456789012345678901234')
+      .get('/api/cards/a2345678901234567890123f')
       .then((response) => {
         expect(response.statusCode).toBe(404);
         expect(response.body).toHaveProperty('message');
@@ -172,6 +172,20 @@ describe('API', () => {
       .get('/api/cards/000000000000000000000000')
       .then((response) => {
         expect(response.statusCode).toBe(500);
+        expect(response.body).toHaveProperty('message');
+      }));
+
+    it('Should return 400 if the card id has less digits', () => request(app)
+      .get('/api/cards/12345678901234567890123')
+      .then((response) => {
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty('message');
+      }));
+
+    it('Should return 400 if the card id has wrong format', () => request(app)
+      .get('/api/cards/00000000000000000000000z')
+      .then((response) => {
+        expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty('message');
       }));
   });
