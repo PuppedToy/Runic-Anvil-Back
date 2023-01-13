@@ -1,5 +1,5 @@
 const express = require('express');
-const { validate, Joi } = require('express-validation');
+const { validate, Joi } = require('../../utils/joiExtended');
 
 const controller = require('./cards.controller');
 
@@ -7,7 +7,7 @@ const router = express.Router();
 
 const getCardValidator = {
   params: Joi.object({
-    cardId: Joi.string().required(),
+    cardId: Joi.string().mongoObjectId().required(),
   }),
 };
 
