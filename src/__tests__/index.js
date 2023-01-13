@@ -146,4 +146,33 @@ describe('API', () => {
       expect(response.body).toHaveProperty('message');
     });
   });
+
+  describe('Rest API - Get card', () => {
+    it('Should return 200 if requesting an existing card', () => request(app)
+      .get('/api/cards/111111111111111111111111')
+      .then((response) => {
+        const expectedCard = {
+          id: '111111111111111111111111',
+          name: 'bar',
+        };
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty('message');
+        expect(response.body).toHaveProperty('data');
+        expect(response.body.data).toEqual(expectedCard);
+      }));
+
+    it('Should return 404 if requesting a non-existing card', () => request(app)
+      .get('/api/cards/123456789012345678901234')
+      .then((response) => {
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toHaveProperty('message');
+      }));
+
+    it('Should return 500 if an error occurs', () => request(app)
+      .get('/api/cards/000000000000000000000000')
+      .then((response) => {
+        expect(response.statusCode).toBe(500);
+        expect(response.body).toHaveProperty('message');
+      }));
+  });
 });

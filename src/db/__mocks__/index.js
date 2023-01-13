@@ -24,9 +24,22 @@ module.exports = {
     })),
   },
   cards: {
-    getById: jest.fn(() => Promise.resolve({
-      id: 'foo',
-    })),
+    getById: jest.fn((id) => {
+      if (id === 'foo') {
+        Promise.resolve({
+          id: 'foo',
+        });
+      } else if (id === '111111111111111111111111') {
+        Promise.resolve({
+          id: '111111111111111111111111',
+          name: 'bar',
+        });
+      } else if (id === '000000000000000000000000') {
+        Promise.reject(new Error());
+      } else {
+        Promise.resolve(null);
+      }
+    }),
     findOneWithoutImage: jest.fn(() => ({
       id: 'foo',
     })),
