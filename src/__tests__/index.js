@@ -189,4 +189,15 @@ describe('API', () => {
         expect(response.body).toHaveProperty('message');
       }));
   });
+
+  describe('Rest API - Search cards', () => {
+    it('Should return 200 if requesting without params', () => request(app)
+      .get('/api/cards/search')
+      .then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty('message');
+        expect(response.body).toHaveProperty('data');
+        expect(response.body).toHaveProperty('pagination');
+      }));
+  });
 });

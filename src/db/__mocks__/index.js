@@ -44,5 +44,33 @@ module.exports = {
     })),
     create: jest.fn(() => Promise.resolve()),
     update: jest.fn(() => Promise.resolve()),
+    search: jest.fn((query) => {
+      if (query.name === 'error') {
+        return Promise.reject(new Error());
+      }
+      if (query.name === 'empty') {
+        return Promise.resolve({
+          data: [],
+          pagination: {
+            limit: 10,
+            offset: 0,
+            nextOffset: 0,
+            total: 0,
+          },
+        });
+      }
+      return Promise.resolve({
+        data: [{
+          id: '1',
+          name: 'foo',
+        }],
+        pagination: {
+          limit: 10,
+          offset: 0,
+          nextOffset: 0,
+          total: 1,
+        },
+      });
+    }),
   },
 };

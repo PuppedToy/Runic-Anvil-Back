@@ -273,12 +273,12 @@ describe('Cards database methods', () => {
     });
 
     it('Should return all cards with picture if no query is passed', async () => {
-      const { cards } = await search();
-      expect(cards).toHaveLength(4);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'domestic warder');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search();
+      expect(data).toHaveLength(4);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return pagination data if no query is passed', async () => {
@@ -290,167 +290,167 @@ describe('Cards database methods', () => {
     });
 
     it('Should return all cards with picture if empty query is passed', async () => {
-      const { cards } = await search({});
-      expect(cards).toHaveLength(4);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'domestic warder');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({});
+      expect(data).toHaveLength(4);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return all cards if passed flag ignoreImage', async () => {
-      const { cards } = await search({ ignoreImage: true });
-      expect(cards).toHaveLength(5);
+      const { data } = await search({ ignoreImage: true });
+      expect(data).toHaveLength(5);
     });
 
     it('Should return the expected cards if passed part of a name', async () => {
-      const { cards } = await search({ name: 'er' });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'domestic warder');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
+      const { data } = await search({ name: 'er' });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
     });
 
     it('Should return the expected cards if passed full name in capital leters', async () => {
-      const { cards } = await search({ name: 'MORAL SPY, BLACKSMITH' });
-      expect(cards).toHaveLength(1);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      const { data } = await search({ name: 'MORAL SPY, BLACKSMITH' });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
     });
 
     it('Should return the expected cards if passed parts of a name', async () => {
-      const { cards } = await search({ name: 'spy black' });
-      expect(cards).toHaveLength(1);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      const { data } = await search({ name: 'spy black' });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
     });
 
     it('Should return the expected cards if passed a unit type', async () => {
-      const { cards } = await search({ unitType: 'human' });
-      expect(cards).toHaveLength(3);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'domestic warder');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ unitType: 'human' });
+      expect(data).toHaveLength(3);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected cards if passed a type', async () => {
-      const { cards } = await search({ type: 'unit' });
-      expect(cards).toHaveLength(4);
+      const { data } = await search({ type: 'unit' });
+      expect(data).toHaveLength(4);
     });
 
     it('Should return the expected cards if passed a forge', async () => {
-      const { cards } = await search({ forge: 'addPassiveEffect' });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ forge: 'addPassiveEffect' });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected cards if passed a forge and a unit type', async () => {
-      const { cards } = await search({ forge: 'addPassiveEffect', unitType: 'human' });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ forge: 'addPassiveEffect', unitType: 'human' });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected card if passed a exact cost', async () => {
-      const { cards } = await search({ cost: 340 });
-      expect(cards).toHaveLength(1);
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ cost: 340 });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected cards if passed a minimum cost', async () => {
-      const { cards } = await search({ minCost: 312 });
-      expect(cards).toHaveLength(3);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ minCost: 312 });
+      expect(data).toHaveLength(3);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected cards if passed a maximum cost', async () => {
-      const { cards } = await search({ maxCost: 312 });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'domestic warder');
+      const { data } = await search({ maxCost: 312 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
     });
 
     it('Should return the expected cards if passed a minimum and a maximum cost', async () => {
-      const { cards } = await search({ minCost: 311, maxCost: 341 });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ minCost: 311, maxCost: 341 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return no cards if maximum cost is less than minimum', async () => {
-      const { cards } = await search({ minCost: 341, maxCost: 311 });
-      expect(cards).toHaveLength(0);
+      const { data } = await search({ minCost: 341, maxCost: 311 });
+      expect(data).toHaveLength(0);
     });
 
     it('Should return the expected cards if passed a exact attack', async () => {
-      const { cards } = await search({ attack: 4 });
-      expect(cards).toHaveLength(1);
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
+      const { data } = await search({ attack: 4 });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
     });
 
     it('Should return the expected cards if passed a minimum attack', async () => {
-      const { cards } = await search({ minAttack: 2 });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
+      const { data } = await search({ minAttack: 2 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
     });
 
     it('Should return the expected cards if passed a maximum attack', async () => {
-      const { cards } = await search({ maxAttack: 2 });
-      expect(cards).toHaveLength(3);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'domestic warder');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ maxAttack: 2 });
+      expect(data).toHaveLength(3);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected cards if passed a minimum and a maximum attack', async () => {
-      const { cards } = await search({ minAttack: 1, maxAttack: 3 });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ minAttack: 1, maxAttack: 3 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return no cards if maximum attack is less than minimum', async () => {
-      const { cards } = await search({ minAttack: 3, maxAttack: 1 });
-      expect(cards).toHaveLength(0);
+      const { data } = await search({ minAttack: 3, maxAttack: 1 });
+      expect(data).toHaveLength(0);
     });
 
     it('Should return the expected cards if passed a exact hp', async () => {
-      const { cards } = await search({ hp: 5 });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
+      const { data } = await search({ hp: 5 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
     });
 
     it('Should return the expected cards if passed a minimum hp', async () => {
-      const { cards } = await search({ minHp: 3 });
-      expect(cards).toHaveLength(3);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
-      expect(cards.shift()).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ minHp: 3 });
+      expect(data).toHaveLength(3);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected cards if passed a maximum hp', async () => {
-      const { cards } = await search({ maxHp: 3 });
-      expect(cards).toHaveLength(1);
-      expect(cards.shift()).toHaveProperty('name', 'domestic warder');
+      const { data } = await search({ maxHp: 3 });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
     });
 
     it('Should return the expected cards if passed a minimum and a maximum hp', async () => {
-      const { cards } = await search({ minHp: 4, maxHp: 5 });
-      expect(cards).toHaveLength(2);
-      expect(cards.shift()).toHaveProperty('name', 'moral spy, blacksmith');
-      expect(cards.shift()).toHaveProperty('name', 'olympic sorcerer');
+      const { data } = await search({ minHp: 4, maxHp: 5 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
     });
 
     it('Should return no cards if maximum hp is less than minimum', async () => {
-      const { cards } = await search({ minHp: 5, maxHp: 2 });
-      expect(cards).toHaveLength(0);
+      const { data } = await search({ minHp: 5, maxHp: 2 });
+      expect(data).toHaveLength(0);
     });
 
     it('Should return the expected cards if passed a limit', async () => {
-      const { cards } = await search({ limit: 2 });
-      expect(cards).toHaveLength(2);
+      const { data } = await search({ limit: 2 });
+      expect(data).toHaveLength(2);
     });
 
     it('Should return the expected pagination if passed a limit', async () => {
@@ -462,10 +462,10 @@ describe('Cards database methods', () => {
     });
 
     it('Should return the expected cards if passed an offset', async () => {
-      const { cards } = await search({ offset: 2 });
-      expect(cards).toHaveLength(2);
-      expect(cards[0]).toHaveProperty('name', 'olympic sorcerer');
-      expect(cards[1]).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ offset: 2 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return the expected pagination if passed an offset', async () => {
@@ -477,9 +477,9 @@ describe('Cards database methods', () => {
     });
 
     it('Should return the expected cards if passed a limit and an offset', async () => {
-      const { cards } = await search({ limit: 1, offset: 2 });
-      expect(cards).toHaveLength(1);
-      expect(cards[0]).toHaveProperty('name', 'olympic sorcerer');
+      const { data } = await search({ limit: 1, offset: 2 });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
     });
 
     it('Should return the expected pagination if passed an offset', async () => {
@@ -491,14 +491,14 @@ describe('Cards database methods', () => {
     });
 
     it('Should return the expected cards if passed a high offset', async () => {
-      const { cards } = await search({ offset: 3 });
-      expect(cards).toHaveLength(1);
-      expect(cards[0]).toHaveProperty('name', 'gastric blacksmith');
+      const { data } = await search({ offset: 3 });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
     });
 
     it('Should return no cards if passed an offset higher than the number of cards', async () => {
-      const { cards } = await search({ offset: 4 });
-      expect(cards).toHaveLength(0);
+      const { data } = await search({ offset: 4 });
+      expect(data).toHaveLength(0);
     });
 
     it('Should return the expected pagination if passed an offset higher than the number of cards', async () => {

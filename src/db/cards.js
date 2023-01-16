@@ -84,7 +84,7 @@ async function search(query = {}) {
   }
 
   const findQuery = $and.length ? { $and } : {};
-  const cards = await db.find(findQuery)
+  const data = await db.find(findQuery)
     .sort({ _id: 1 })
     .limit(pagination.limit)
     .skip(pagination.skip)
@@ -93,7 +93,7 @@ async function search(query = {}) {
   const total = await db.countDocuments(findQuery);
 
   return {
-    cards: cards.map((card) => ({
+    data: data.map((card) => ({
       id: card._id,
       name: card.name,
     })),
