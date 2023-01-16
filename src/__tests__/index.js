@@ -257,6 +257,22 @@ describe('API', () => {
         expect(response.body).toHaveProperty('message');
       }));
 
+    it('Should return 200 if requesting with sample', () => request(app)
+      .get('/api/cards/search?sample=true')
+      .then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveProperty('message');
+        expect(response.body).toHaveProperty('data');
+        expect(response.body).toHaveProperty('pagination');
+      }));
+
+    it('Should return 400 if requesting with wrong sample', () => request(app)
+      .get('/api/cards/search?sample=foo')
+      .then((response) => {
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty('message');
+      }));
+
     it('Should return 200 if requesting with type creature', () => request(app)
       .get('/api/cards/search?type=creature')
       .then((response) => {

@@ -508,5 +508,20 @@ describe('Cards database methods', () => {
       expect(pagination).toHaveProperty('nextOffset', null);
       expect(pagination).toHaveProperty('total', 4);
     });
+
+    it('Should return 1 card if limit is undefined and sample is true', async () => {
+      const { data } = await search({ sample: true });
+      expect(data).toHaveLength(1);
+    });
+
+    it('Should return 0 cards if sample is true and name is unknown', async () => {
+      const { data } = await search({ sample: true, name: 'unknown' });
+      expect(data).toHaveLength(0);
+    });
+
+    it('Should return 6 cards if limit is 6 and sample is true', async () => {
+      const { data } = await search({ limit: 6, sample: true });
+      expect(data).toHaveLength(6);
+    });
   });
 });

@@ -13,6 +13,7 @@ const searchValidator = {
   query: Joi.object({
     name: Joi.string(),
     ignoreImage: Joi.boolean(),
+    sample: Joi.boolean(),
     type: Joi.string().valid(...cardTypes),
     unitType: Joi.string().valid(...Object.keys(unitTypes)),
     forge: Joi.string().valid(...forgeGenerators.map((forge) => forge.type)),

@@ -84,12 +84,27 @@ async function search(query = {}) {
   }
 
   const findQuery = $and.length ? { $and } : {};
-  const data = await db.find(findQuery)
-    .sort({ _id: 1 })
-    .limit(pagination.limit)
-    .skip(pagination.skip)
-    .project({ _id: 1, name: 1 })
-    .toArray();
+  let data = [];
+  if (query.sample) {
+    const promisesResult = await Promise.all(new Array(query.limit || 1).fill().map(async () => {
+      const cards = await db.aggregate([
+        { $match: findQuery },
+        { $sample: { size: 1 } },
+      ]).toArray();
+      if (cards.length) {
+        return cards[0];
+      }
+      return null;
+    }));
+    data = promisesResult.filter((card) => card !== null);
+  } else {
+    data = await db.find(findQuery)
+      .sort({ _id: 1 })
+      .limit(pagination.limit)
+      .skip(pagination.skip)
+      .project({ _id: 1, name: 1 })
+      .toArray();
+  }
   const total = await db.countDocuments(findQuery);
 
   return {
