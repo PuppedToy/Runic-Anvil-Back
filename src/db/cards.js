@@ -5,6 +5,123 @@ const DB_VERSION = parseInt(process.env.DB_VERSION, 10);
 const { CARD_VERSION } = process.env;
 const DATABASE_NAME = 'cards';
 
+async function search(query = {}) {
+  const db = await getDatabase(DATABASE_NAME);
+
+  const $and = [];
+
+  if (!query.ignoreImage) {
+    $and.push({ image: { $exists: true } });
+  }
+
+  if (query.name) {
+    const parts = query.name.split(' ');
+    parts.forEach((part) => {
+      $and.push({ name: { $regex: part, $options: 'i' } });
+    });
+  }
+
+  if (query.type) {
+    $and.push({ type: query.type });
+  }
+
+  if (query.unitType) {
+    $and.push({ unitType: query.unitType });
+  }
+
+  if (query.forge) {
+    $and.push({ 'forge.type': query.forge });
+  }
+
+  if (query.cost) {
+    $and.push({ cost: query.cost });
+  }
+
+  if (query.minCost) {
+    $and.push({ cost: { $gte: query.minCost } });
+  }
+
+  if (query.maxCost) {
+    $and.push({ cost: { $lte: query.maxCost } });
+  }
+
+  if (query.attack) {
+    $and.push({ attack: query.attack });
+  }
+
+  if (query.minAttack) {
+    $and.push({ attack: { $gte: query.minAttack } });
+  }
+
+  if (query.maxAttack) {
+    $and.push({ attack: { $lte: query.maxAttack } });
+  }
+
+  if (query.hp) {
+    $and.push({ hp: query.hp });
+  }
+
+  if (query.minHp) {
+    $and.push({ hp: { $gte: query.minHp } });
+  }
+
+  if (query.maxHp) {
+    $and.push({ hp: { $lte: query.maxHp } });
+  }
+
+  const pagination = {};
+
+  if (query.limit) {
+    pagination.limit = query.limit;
+  } else {
+    pagination.limit = 10;
+  }
+
+  if (query.offset) {
+    pagination.skip = query.offset;
+  } else {
+    pagination.skip = 0;
+  }
+
+  const findQuery = $and.length ? { $and } : {};
+  let data = [];
+  if (query.sample) {
+    const promisesResult = await Promise.all(new Array(query.limit || 1).fill().map(async () => {
+      const cards = await db.aggregate([
+        { $match: findQuery },
+        { $sample: { size: 1 } },
+      ]).toArray();
+      if (cards.length) {
+        return cards[0];
+      }
+      return null;
+    }));
+    data = promisesResult.filter((card) => card !== null);
+  } else {
+    data = await db.find(findQuery)
+      .sort({ _id: 1 })
+      .limit(pagination.limit)
+      .skip(pagination.skip)
+      .project({ _id: 1, name: 1 })
+      .toArray();
+  }
+  const total = await db.countDocuments(findQuery);
+
+  return {
+    data: data.map((card) => ({
+      id: card._id,
+      name: card.name,
+    })),
+    pagination: {
+      limit: pagination.limit,
+      offset: pagination.skip,
+      nextOffset: pagination.skip + pagination.limit < total
+        ? pagination.skip + pagination.limit : null,
+      total,
+    },
+  };
+}
+
 async function getById(id) {
   const db = await getDatabase(DATABASE_NAME);
   const card = await db.findOne({ _id: ObjectId(id) });
@@ -63,6 +180,7 @@ async function update(id, card) {
 }
 
 module.exports = {
+  search,
   getById,
   findOneWithoutImage,
   create,

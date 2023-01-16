@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const { readFileSync } = require('fs');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
+const { ValidationError } = require('express-validation');
 
 const graphqlApi = require('./graphqlApi');
 const restApi = require('./restApi');
@@ -50,6 +51,13 @@ const server = app.listen(port, () => {
 // Error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
+  if (err instanceof ValidationError) {
+    res.status(400).json({
+      message: err.message,
+      errors: err.details,
+    });
+  }
+
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line no-console
     console.error(err.stack);
