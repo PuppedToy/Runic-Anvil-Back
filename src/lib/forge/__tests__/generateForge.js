@@ -138,15 +138,35 @@ describe('Forge generation', () => {
   });
 
   describe('Forge Generators', () => {
-    it('Should return an object when called generate for any element', () => {
+    const expectedBaseCard = {
+      name: 'foo',
+    };
+    const baseCard = {
+      name: 'foo',
+    };
+
+    it('Should return an object with properties forge and card when called generate for any element', () => {
       forgeGenerators.forEach((generator) => {
         expect(generator).toHaveProperty('generate');
-        expect(typeof generator.generate(1)).toBe('object');
+        const generated = generator.generate(1, baseCard);
+        expect(generated).toHaveProperty('forge');
+        expect(generated).toHaveProperty('card');
+      });
+    });
+
+    it('Should not modify the baseCard object for any element', () => {
+      forgeGenerators.forEach((generator) => {
+        generator.generate(1, baseCard);
+        expect(baseCard).toEqual(expectedBaseCard);
       });
     });
   });
 
-  it('Should return an object', () => {
-    expect(typeof generateForge(1)).toBe('object');
+  it('Should return an object with type, forge and card properties', () => {
+    const generated = generateForge(1, { name: 'foo' });
+    expect(generated).toHaveProperty('type');
+    expect(generated).toHaveProperty('forge');
+    expect(generated).toHaveProperty('card');
+    expect(generated.card).toHaveProperty('name', 'foo');
   });
 });

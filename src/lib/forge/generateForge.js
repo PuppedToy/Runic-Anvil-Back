@@ -140,24 +140,41 @@ const forgeGenerators = [
   {
     type: 'addUnitType',
     chance: 1,
-    generate: (level) => {
+    generate: (level, card) => {
+      // @TODO This forge at higher levels could add a "counts as another type"
+      // so a unit can actually have 2 types. This can also be one of
+      // the permanent effects. Like auras. For example:
+      // While at war: all units count as <type>. Something like that.
+
       const sample = weightedSample(unitTypes, [forgeLevelFilter(level)]);
       const text = sample.name;
       return {
-        ...sample,
-        text,
+        forge: {
+          ...sample,
+          text,
+        },
+        card: {
+          ...card,
+          unitType: sample,
+        },
       };
     },
   },
   {
     type: 'addPassiveEffect',
     chance: 1,
-    generate: (level) => {
+    generate: (level, card) => {
       const sample = weightedSample(passiveEffects, [forgeLevelFilter(level)]);
       const text = sample.name;
       return {
-        ...sample,
-        text,
+        forge: {
+          ...sample,
+          text,
+        },
+        card: {
+          ...card,
+          passiveEffects: [...(card.passiveEffects || []), sample],
+        },
       };
     },
   },
@@ -165,25 +182,40 @@ const forgeGenerators = [
   {
     type: 'addEffectOnTrigger',
     chance: 1,
-    generate: (level) => {
-      // @TODO
+    generate: (level, card) => {
       const trigger = generateTrigger(level);
       const effect = generateEffect(level);
+      const text = `${trigger.name}: ${effect.text}`;
 
       return {
-        trigger,
-        effect,
-        text: `${trigger.name}: ${effect.text}`,
+        forge: {
+          trigger,
+          effect,
+          text,
+        },
+        card: {
+          ...card,
+          text,
+        },
       };
     },
   },
 ];
 
-function generateForge(level) {
+function generateForge(level, card) {
+  if (level < 1 || level > 5) {
+    throw new Error('Level must be between 1 and 5');
+  }
+  if (!card || typeof card !== 'object') {
+    throw new Error('Card is required');
+  }
+
   const forgeGenerator = weightedSample(forgeGenerators);
+  const { forge, card: newCard } = forgeGenerator.generate(level, card);
   return {
     type: forgeGenerator.type,
-    ...forgeGenerator.generate(level),
+    forge,
+    card: newCard,
   };
 }
 
