@@ -155,7 +155,7 @@ const forgeGenerators = [
         },
         card: {
           ...card,
-          unitType: sample,
+          unitType: sample.key,
         },
       };
     },
@@ -203,18 +203,23 @@ const forgeGenerators = [
 ];
 
 function generateForge(level, card) {
-  if (level < 1 || level > 5) {
+  if (level < 0 || level > 5) {
     throw new Error('Level must be between 1 and 5');
   }
   if (!card || typeof card !== 'object') {
     throw new Error('Card is required');
   }
+  if (!card.type) {
+    throw new Error('Card type is required');
+  }
 
   const forgeGenerator = weightedSample(forgeGenerators);
   const { forge, card: newCard } = forgeGenerator.generate(level, card);
   return {
-    type: forgeGenerator.type,
-    forge,
+    forge: {
+      tyoe: forgeGenerator.type,
+      ...forge,
+    },
     card: newCard,
   };
 }

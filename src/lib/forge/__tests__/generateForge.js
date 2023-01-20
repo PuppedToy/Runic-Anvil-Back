@@ -140,9 +140,11 @@ describe('Forge generation', () => {
   describe('Forge Generators', () => {
     const expectedBaseCard = {
       name: 'foo',
+      type: 'unit',
     };
     const baseCard = {
       name: 'foo',
+      type: 'unit',
     };
 
     it('Should return an object with properties forge and card when called generate for any element', () => {
@@ -162,11 +164,31 @@ describe('Forge generation', () => {
     });
   });
 
-  it('Should return an object with type, forge and card properties', () => {
-    const generated = generateForge(1, { name: 'foo' });
-    expect(generated).toHaveProperty('type');
+  it('Should return an object with forge and card properties', () => {
+    const generated = generateForge(1, { name: 'foo', type: 'unit' });
     expect(generated).toHaveProperty('forge');
     expect(generated).toHaveProperty('card');
     expect(generated.card).toHaveProperty('name', 'foo');
+  });
+
+  it('Should throw if passed no card', () => {
+    expect(() => generateForge(1)).toThrow();
+  });
+
+  it('Should throw if passed negative level', () => {
+    expect(() => generateForge(-1, { name: 'foo', type: 'unit' })).toThrow();
+  });
+
+  it('Should throw if passed level higher than 5', () => {
+    expect(() => generateForge(6, { name: 'foo', type: 'unit' })).toThrow();
+  });
+
+  it('Should not throw in the correct range of levels', () => {
+    expect(() => generateForge(0, { name: 'foo', type: 'unit' })).not.toThrow();
+    expect(() => generateForge(5, { name: 'foo', type: 'unit' })).not.toThrow();
+  });
+
+  it('Should throw if passed a card without type', () => {
+    expect(() => generateForge(1, { name: 'foo' })).toThrow();
   });
 });

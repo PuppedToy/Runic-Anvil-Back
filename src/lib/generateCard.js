@@ -10,13 +10,11 @@ function generateUnit(level = 1) {
     unitType: 'human',
     level,
   };
-  const { card, type, forge } = generateForge(level, baseCard);
-  card.type = type;
+  const { card, forge } = generateForge(level, baseCard);
   card.forge = forge;
 
   card.cost = parseInt((card.attack * 30 + card.hp * 50) * randomFloat(0.9, 1.1), 10);
   card.name = generateName(card);
-  console.log(card);
   return card;
 }
 
