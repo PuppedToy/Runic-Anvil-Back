@@ -159,6 +159,7 @@ const forgeGenerators = [
         },
       };
     },
+    filter: (level, card) => card.type && card.type === 'unit' && card.unitType === 'human',
   },
   {
     type: 'addPassiveEffect',
@@ -177,6 +178,7 @@ const forgeGenerators = [
         },
       };
     },
+    filter: (level, card) => card.type && card.type === 'unit',
   },
   // Basic: Trigger: effect
   {
@@ -199,13 +201,14 @@ const forgeGenerators = [
         },
       };
     },
+    filter: (level, card) => card.type && card.type === 'unit',
   },
 ];
 
-function generateForge(level, card) {
-  if (level < 0 || level > 5) {
-    throw new Error('Level must be between 1 and 5');
-  }
+function generateForge(card) {
+  // @TODO forge does not have any specific level.
+  // It should take level from card
+  const forgeLevel = (card.level || 0) + 1;
   if (!card || typeof card !== 'object') {
     throw new Error('Card is required');
   }
@@ -213,8 +216,21 @@ function generateForge(level, card) {
     throw new Error('Card type is required');
   }
 
-  const forgeGenerator = weightedSample(forgeGenerators);
-  const { forge, card: newCard } = forgeGenerator.generate(level, card);
+  const filter = (generator) => {
+    if (
+      generator.type === 'addUnitType'
+      && (
+        card.type !== 'unit'
+        || card.unitType !== 'human'
+      )
+    ) return false;
+    if (generator.type === 'addPassiveEffect' && card.type !== 'unit') return false;
+    if (generator.type === 'addEffectOnTrigger' && card.type !== 'unit') return false;
+    if (generator.filter && !generator.filter(forgeLevel, card)) return false;
+    return true;
+  };
+  const forgeGenerator = weightedSample(forgeGenerators, filter);
+  const { forge, card: newCard } = forgeGenerator.generate(forgeLevel, card);
   return {
     forge: {
       tyoe: forgeGenerator.type,

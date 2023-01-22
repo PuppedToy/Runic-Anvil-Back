@@ -184,7 +184,7 @@ describe('Forge generation', () => {
   });
 
   it('Should not throw in the correct range of levels', () => {
-    expect(() => generateForge(0, { name: 'foo', type: 'unit' })).not.toThrow();
+    expect(() => generateForge(1, { name: 'foo', type: 'unit' })).not.toThrow();
     expect(() => generateForge(5, { name: 'foo', type: 'unit' })).not.toThrow();
   });
 
