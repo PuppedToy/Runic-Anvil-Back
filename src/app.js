@@ -34,6 +34,9 @@ app.get('/alive', (req, res) => {
   res.send('true');
 });
 
+const staticFiles = process.env.FILE_DIR.replace(/.*\/(.*)/, '$1');
+app.use('/pics', express.static(staticFiles));
+
 app.use(express.json());
 app.use('/api', restApi);
 
