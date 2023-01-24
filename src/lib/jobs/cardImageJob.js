@@ -8,8 +8,10 @@ async function createCardJob() {
   }
 
   const { generationData, result } = await generateImage(card);
+  const image = `${process.env.BASE_URL}${result}`;
+
   const updatedCard = await db.cards.update(card.id, {
-    image: result,
+    image,
     imageGenerationData: generationData,
   });
 
