@@ -110,10 +110,7 @@ async function search(query = {}) {
   const total = await db.countDocuments(findQuery);
 
   return {
-    data: data.map((card) => ({
-      id: card._id,
-      name: card.name,
-    })),
+    data: data.map((card) => ({ id: card._id, ...card })),
     pagination: {
       limit: pagination.limit,
       offset: pagination.skip,
