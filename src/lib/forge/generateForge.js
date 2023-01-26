@@ -223,7 +223,10 @@ function generateForge(level) {
 function applyForge(forge, card) {
   const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
   if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
-  return forgeGenerator.apply(forge, card);
+  const newCard = forgeGenerator.apply(forge, card);
+  if (!newCard.rarityLevel) newCard.rarityLevel = 0;
+  newCard.rarityLevel += 1;
+  return newCard;
 }
 
 module.exports = {
