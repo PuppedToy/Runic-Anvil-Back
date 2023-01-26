@@ -221,6 +221,7 @@ function generateForge(level) {
 function applyForge(forge, card) {
   const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
   if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
+  if (!card) throw new Error('Card is required');
   const newCard = forgeGenerator.apply(forge, card);
   if (forge.text) {
     newCard.text = mergeTexts(card.text, forge.text);
@@ -238,7 +239,8 @@ module.exports = {
   processText,
   processValue,
   generateEffect,
-  forgeGenerators,
   generateForge,
   applyForge,
+
+  forgeGenerators,
 };
