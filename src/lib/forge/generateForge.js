@@ -153,13 +153,11 @@ function generateEffect() {
 const forgeGenerators = [
   {
     type: 'addUnitType',
-    chance: 1,
+    weight: 1,
     generate: (level) => {
       const sample = weightedSample(unitTypes, [forgeLevelFilter(level)]);
-      const text = sample.name;
       return {
         ...sample,
-        text,
       };
     },
     apply: (forge, card) => {
@@ -170,7 +168,7 @@ const forgeGenerators = [
   },
   {
     type: 'addPassiveEffect',
-    chance: 1,
+    weight: 1,
     generate: (level) => {
       const sample = weightedSample(passiveEffects, [forgeLevelFilter(level)]);
       const text = sample.name;
@@ -181,14 +179,15 @@ const forgeGenerators = [
     },
     apply: (forge, card) => {
       const newCard = { ...card };
-      newCard.text = mergeTexts(card.text, forge.text);
+      newCard.passiveEffects = newCard.passiveEffects || [];
+      newCard.passiveEffects.push(forge.key);
       return newCard;
     },
   },
   // Basic: Trigger: effect
   {
     type: 'addEffectOnTrigger',
-    chance: 1,
+    weight: 1,
     generate: (level) => {
       const trigger = generateTrigger(level);
       const effect = generateEffect(level);
@@ -201,7 +200,6 @@ const forgeGenerators = [
     },
     apply: (forge, card) => {
       const newCard = { ...card };
-      newCard.text = mergeTexts(card.text, forge.text);
       if (!newCard.triggers) newCard.triggers = [];
       newCard.triggers.push({
         trigger: cleanDefinitionObject(forge.trigger),
@@ -224,6 +222,9 @@ function applyForge(forge, card) {
   const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
   if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
   const newCard = forgeGenerator.apply(forge, card);
+  if (forge.text) {
+    newCard.text = mergeTexts(card.text, forge.text);
+  }
   if (!newCard.rarityLevel) newCard.rarityLevel = 0;
   newCard.rarityLevel += 1;
   return newCard;

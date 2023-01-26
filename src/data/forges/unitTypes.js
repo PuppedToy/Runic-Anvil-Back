@@ -1,7 +1,7 @@
 // Although any passive effect is considered a tribe itself,
 // tribes are also filters for some triggers and effects of the game
 // These tribes may also have slight modificators to their
-// stats or forge chances. We'll see
+// stats or forge weights. We'll see
 
 const unitTypes = {
   // Default
