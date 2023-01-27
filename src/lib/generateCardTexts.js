@@ -49,6 +49,10 @@ function addWeightsToObjectListComparingWithAKeywordList(list = [], keywordList 
   return result;
 }
 
+function upperFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function generateName(card, options = {}) {
   let template;
 
@@ -104,7 +108,7 @@ function generateName(card, options = {}) {
       throw new Error(`Unknown template: ${match}`);
     }
     try {
-      return weighedSample(dictionary).word;
+      return upperFirstLetter(weighedSample(dictionary).word);
     } catch (error) {
       console.error(`Detected error while trying to read the chosen template: ${chosenTemplate.value}. The current result is ${result} and the match is ${match}`);
       console.error(`Card: ${JSON.stringify(card)}`, null, 2);
