@@ -134,7 +134,13 @@ async function getById(id) {
 async function findOneWithoutImage() {
   const db = await getDatabase(DATABASE_NAME);
   // find one card that has image to null or that doesn't have image
-  const card = await db.findOne({ $or: [{ image: null }, { image: { $exists: false } }] });
+  const imageCondition = { $or: [{ image: null }, { image: { $exists: false } }] };
+  const cardVersionAndImageCondition = { $and: [{ cardVersion: CARD_VERSION }, imageCondition] };
+  // Prioritize cards with latest cardVersion
+  let card = await db.findOne(cardVersionAndImageCondition);
+  if (!card) {
+    card = await db.findOne(imageCondition);
+  }
 
   return card ? {
     id: card._id,
