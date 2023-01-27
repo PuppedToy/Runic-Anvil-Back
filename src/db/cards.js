@@ -1,8 +1,8 @@
 const { ObjectId } = require('mongodb');
 const { getDatabase } = require('../utils/getDatabase');
+const { constants } = require('../data/enums');
 
-const DB_VERSION = parseInt(process.env.DB_VERSION, 10);
-const { CARD_VERSION } = process.env;
+const { DB_VERSION, CARD_VERSION } = constants;
 const DATABASE_NAME = 'cards';
 
 async function search(query = {}) {

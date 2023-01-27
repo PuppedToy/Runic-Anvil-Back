@@ -188,7 +188,6 @@ describe('Cards database methods', () => {
               name: 'Retires',
               effectType: 'trigger',
               onEffect: 'retire',
-              weight: 0,
             },
             effect: {
               name: 'Modify investment',

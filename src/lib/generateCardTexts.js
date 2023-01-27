@@ -49,6 +49,10 @@ function addWeightsToObjectListComparingWithAKeywordList(list = [], keywordList 
   return result;
 }
 
+function upperFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function generateName(card, options = {}) {
   let template;
 
@@ -71,7 +75,11 @@ function generateName(card, options = {}) {
   const keyWords = getKeywords(card);
   let result = chosenTemplate.value;
 
-  const mainNouns = nouns.main[card.unitType || 'human'];
+  let mainNouns = nouns.main[card.unitType || 'human'];
+  if (!mainNouns.length) {
+    console.warn(`No main nouns found for unit type ${card.unitType}`);
+    mainNouns = nouns.main.human;
+  }
   const otherNouns = nouns.other;
   const allNouns = [...mainNouns, ...otherNouns];
   const professionNouns = allNouns.filter((noun) => Boolean(noun.profession));
@@ -99,7 +107,15 @@ function generateName(card, options = {}) {
     } else {
       throw new Error(`Unknown template: ${match}`);
     }
-    return weighedSample(dictionary).word;
+    try {
+      return upperFirstLetter(weighedSample(dictionary).word);
+    } catch (error) {
+      console.error(`Detected error while trying to read the chosen template: ${chosenTemplate.value}. The current result is ${result} and the match is ${match}`);
+      console.error(`Card: ${JSON.stringify(card)}`, null, 2);
+      console.error(`Keywords: ${JSON.stringify(keyWords)}`);
+      console.error(`Dictionary: ${JSON.stringify(dictionary)}`, null, 2);
+      throw error;
+    }
   });
 
   return result;

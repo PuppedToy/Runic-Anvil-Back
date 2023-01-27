@@ -1,9 +1,9 @@
-function getItemChance(item) {
-  if (typeof item !== 'object' || !Object.hasOwnProperty.call(item, 'chance')) {
+function getItemWeight(item) {
+  if (typeof item !== 'object' || !Object.hasOwnProperty.call(item, 'weight')) {
     return 1;
   }
 
-  return item.chance;
+  return item.weight;
 }
 
 function weightedSample(collection, filters) {
@@ -41,11 +41,11 @@ function weightedSample(collection, filters) {
 
   // Remove items with no chance of appearing
   collectionData = collectionData.filter((item) => typeof item !== 'object'
-        || !Object.hasOwnProperty.call(item, 'chance')
-        || item.chance > 0);
+        || !Object.hasOwnProperty.call(item, 'weight')
+        || item.weight > 0);
 
   if (collectionData.length <= 0) {
-    throw new Error('The received collection has no data with positive chances');
+    throw new Error('The received collection has no data with positive weights');
   }
 
   // Apply filters
@@ -57,12 +57,12 @@ function weightedSample(collection, filters) {
   }
 
   // Calculate the weight sum
-  let maxWeight = collectionData.reduce((total, item) => total + getItemChance(item), 0);
+  let maxWeight = collectionData.reduce((total, item) => total + getItemWeight(item), 0);
   const randomMark = Math.random() * maxWeight;
 
   const result = collectionData.find((item) => {
-    const itemChance = getItemChance(item);
-    maxWeight -= itemChance;
+    const itemWeight = getItemWeight(item);
+    maxWeight -= itemWeight;
     return randomMark > maxWeight;
   });
 

@@ -11,7 +11,7 @@ const createCard = new CronJob(
 );
 
 const cardImage = new CronJob(
-  '*/5 * * * *',
+  '*/3 * * * *',
   cardImageJob,
   null,
   true,

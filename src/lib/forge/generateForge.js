@@ -36,6 +36,20 @@ function generateTrigger(level) {
 //   return eligibleTarget;
 // }
 
+function mergeTexts(previousCardText, newCardText) {
+  if (!previousCardText) return `${newCardText}.`;
+  return `${previousCardText}\n${newCardText}.`;
+}
+
+function cleanDefinitionObject(definitionObject) {
+  const unwantedProperties = ['name', 'description', 'textContext', 'text', 'weight'];
+  const result = { ...definitionObject };
+  unwantedProperties.forEach((property) => {
+    delete result[property];
+  });
+  return result;
+}
+
 const processTextRegex = /\$([^.$ ]*?\.?)+?[^.$ ]+?(?=\s|$)/;
 function processText(text, textContext) {
   if (!text) throw new Error('Text is required to process text');
@@ -139,19 +153,22 @@ function generateEffect() {
 const forgeGenerators = [
   {
     type: 'addUnitType',
-    chance: 1,
+    weight: 1,
     generate: (level) => {
       const sample = weightedSample(unitTypes, [forgeLevelFilter(level)]);
-      const text = sample.name;
       return {
         ...sample,
-        text,
       };
+    },
+    apply: (forge, card) => {
+      const newCard = { ...card };
+      newCard.unitType = forge.key;
+      return newCard;
     },
   },
   {
     type: 'addPassiveEffect',
-    chance: 1,
+    weight: 1,
     generate: (level) => {
       const sample = weightedSample(passiveEffects, [forgeLevelFilter(level)]);
       const text = sample.name;
@@ -160,13 +177,18 @@ const forgeGenerators = [
         text,
       };
     },
+    apply: (forge, card) => {
+      const newCard = { ...card };
+      newCard.passiveEffects = newCard.passiveEffects || [];
+      newCard.passiveEffects.push(forge.key);
+      return newCard;
+    },
   },
   // Basic: Trigger: effect
   {
     type: 'addEffectOnTrigger',
-    chance: 1,
+    weight: 1,
     generate: (level) => {
-      // @TODO
       const trigger = generateTrigger(level);
       const effect = generateEffect(level);
 
@@ -175,6 +197,15 @@ const forgeGenerators = [
         effect,
         text: `${trigger.name}: ${effect.text}`,
       };
+    },
+    apply: (forge, card) => {
+      const newCard = { ...card };
+      if (!newCard.triggers) newCard.triggers = [];
+      newCard.triggers.push({
+        trigger: cleanDefinitionObject(forge.trigger),
+        effect: cleanDefinitionObject(forge.effect),
+      });
+      return newCard;
     },
   },
 ];
@@ -187,12 +218,29 @@ function generateForge(level) {
   };
 }
 
+function applyForge(forge, card) {
+  const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
+  if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
+  if (!card) throw new Error('Card is required');
+  const newCard = forgeGenerator.apply(forge, card);
+  if (forge.text) {
+    newCard.text = mergeTexts(card.text, forge.text);
+  }
+  if (!newCard.rarityLevel) newCard.rarityLevel = 0;
+  newCard.rarityLevel += 1;
+  return newCard;
+}
+
 module.exports = {
   forgeLevelFilter,
   generateTrigger,
+  cleanDefinitionObject,
+  mergeTexts,
   processText,
   processValue,
   generateEffect,
-  forgeGenerators,
   generateForge,
+  applyForge,
+
+  forgeGenerators,
 };
