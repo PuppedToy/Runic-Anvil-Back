@@ -5,6 +5,9 @@ const { constants } = require('../data/enums');
 const { DB_VERSION, CARD_VERSION } = constants;
 const DATABASE_NAME = 'cards';
 
+const CARD_VERSION_PARTS = CARD_VERSION.split('.');
+const [cardMajor, cardMinor] = CARD_VERSION_PARTS;
+
 async function search(query = {}) {
   const db = await getDatabase(DATABASE_NAME);
 
@@ -70,6 +73,41 @@ async function search(query = {}) {
     $and.push({ hp: { $lte: query.maxHp } });
   }
 
+  if (query.rarity) {
+    $and.push({ rarityLevel: query.rarity });
+  }
+
+  if (query.minRarity) {
+    $and.push({ rarityLevel: { $gte: query.minRarity } });
+  }
+
+  if (query.maxRarity) {
+    $and.push({ rarityLevel: { $lte: query.maxRarity } });
+  }
+
+  if (query.cardVersion) {
+    if (query.cardVersion === 'latest') {
+      $and.push({ cardVersion: CARD_VERSION });
+    } else if (query.cardVersion === '^latest') {
+      $and.push({ cardVersion: { $regex: new RegExp(`${cardMajor}\\.[0-9]+?\\.[0-9]+?`) } });
+    } else if (query.cardVersion === '~latest') {
+      $and.push({ cardVersion: { $regex: new RegExp(`${cardMajor}\\.${cardMinor}\\.[0-9]+?`) } });
+    } else if (query.cardVersion[0] === '^') {
+      const version = query.cardVersion.substring(1);
+      const versionParts = version.split('.');
+      const [major] = versionParts;
+      const $regex = new RegExp(`${major}\\.[0-9]+?\\.[0-9]+?`);
+      $and.push({ cardVersion: { $regex } });
+    } else if (query.cardVersion[0] === '~') {
+      const version = query.cardVersion.substring(1);
+      const versionParts = version.split('.');
+      const [major, minor] = versionParts;
+      $and.push({ cardVersion: { $regex: new RegExp(`${major}\\.${minor}\\.[0-9]+?`) } });
+    } else {
+      $and.push({ cardVersion: query.cardVersion });
+    }
+  }
+
   const pagination = {};
 
   if (query.limit) {
@@ -85,6 +123,7 @@ async function search(query = {}) {
   }
 
   const findQuery = $and.length ? { $and } : {};
+  // console.log(JSON.stringify(findQuery, null, 2));
   let data = [];
   if (query.sample) {
     const promisesResult = await Promise.all(
@@ -134,7 +173,13 @@ async function getById(id) {
 async function findOneWithoutImage() {
   const db = await getDatabase(DATABASE_NAME);
   // find one card that has image to null or that doesn't have image
-  const card = await db.findOne({ $or: [{ image: null }, { image: { $exists: false } }] });
+  const imageCondition = { $or: [{ image: null }, { image: { $exists: false } }] };
+  const cardVersionAndImageCondition = { $and: [{ cardVersion: CARD_VERSION }, imageCondition] };
+  // Prioritize cards with latest cardVersion
+  let card = await db.findOne(cardVersionAndImageCondition);
+  if (!card) {
+    card = await db.findOne(imageCondition);
+  }
 
   return card ? {
     id: card._id,

@@ -83,7 +83,11 @@ describe('Cards database methods', () => {
   });
 
   describe('findOneWithoutImage', () => {
-    afterEach(async () => {
+    beforeEach(async () => {
+      await emptyDatabase();
+    });
+
+    afterAll(async () => {
       await emptyDatabase();
     });
 
@@ -91,6 +95,18 @@ describe('Cards database methods', () => {
       await cardsDb.insertMany([
         { _id: ObjectId('311111111111111111111111'), name: 'foo', image: 'fooImage' },
         { _id: ObjectId('322222222222222222222222'), name: 'bar', image: null },
+      ]);
+
+      const card = await findOneWithoutImage();
+      expect(card).toHaveProperty('name', 'bar');
+    });
+
+    it('Should return the card with the latest card version', async () => {
+      await cardsDb.insertMany([
+        { _id: ObjectId('341111111111111111111111'), name: 'foo', image: null },
+        {
+          _id: ObjectId('342222222222222222222222'), name: 'bar', image: null, cardVersion: '0.1.0',
+        },
       ]);
 
       const card = await findOneWithoutImage();
@@ -171,6 +187,7 @@ describe('Cards database methods', () => {
           cost: 312,
           name: 'moral spy, blacksmith',
           cardVersion: '0.0.1',
+          rarityLevel: 1,
           version: 1,
           image: '/pics/54c642ff-b9de-493b-9ce9-d4e864f7c478/00000.png',
         },
@@ -206,6 +223,7 @@ describe('Cards database methods', () => {
           cost: 92,
           name: 'domestic warder',
           cardVersion: '0.0.1',
+          rarityLevel: 1,
           version: 1,
           image: '/pics/7940934a-3d70-4986-97a9-95e740d99f5e/00000.png',
         },
@@ -225,7 +243,8 @@ describe('Cards database methods', () => {
           },
           cost: 358,
           name: 'olympic sorcerer',
-          cardVersion: '0.0.1',
+          cardVersion: '0.0.2',
+          rarityLevel: 2,
           version: 1,
           image: '/pics/87179d42-fc91-4918-ba68-fd5e3a2f482d/00000.png',
         },
@@ -245,7 +264,8 @@ describe('Cards database methods', () => {
           },
           cost: 340,
           name: 'gastric blacksmith',
-          cardVersion: '0.0.1',
+          cardVersion: '0.1.0',
+          rarityLevel: 3,
           version: 1,
           image: '/pics/d82811db-dab5-49af-beaa-ca2be4994974/00000.png',
         },
@@ -265,7 +285,7 @@ describe('Cards database methods', () => {
           },
           cost: 248,
           name: 'opposite goblin of thirst',
-          cardVersion: '0.0.1',
+          cardVersion: '0.1.0',
           version: 1,
         },
       ]);
@@ -444,6 +464,101 @@ describe('Cards database methods', () => {
 
     it('Should return no cards if maximum hp is less than minimum', async () => {
       const { data } = await search({ minHp: 5, maxHp: 2 });
+      expect(data).toHaveLength(0);
+    });
+
+    it('Should return the expected cards if asked for the latest cardVersion', async () => {
+      const { data } = await search({ cardVersion: 'latest' });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
+    });
+
+    it('Should return the expected cards if asked for the latest cardVersion', async () => {
+      const { data } = await search({ cardVersion: '~latest' });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
+    });
+
+    it('Should return the expected cards if asked for the ^latest cardVersion', async () => {
+      const { data } = await search({ cardVersion: '^latest' });
+      expect(data).toHaveLength(4);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
+    });
+
+    it('Should return the expected cards if asked for the 0.1.0 cardVersion', async () => {
+      const { data } = await search({ cardVersion: '0.1.0' });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
+    });
+
+    it('Should return the expected cards if asked for the 0.0.1 cardVersion', async () => {
+      const { data } = await search({ cardVersion: '0.0.1' });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+    });
+
+    it('Should return the expected cards if asked for the 0.0.2 cardVersion', async () => {
+      const { data } = await search({ cardVersion: '0.0.2' });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+    });
+
+    it('Should return no cards if asked for the 0.0.3 cardVersion', async () => {
+      const { data } = await search({ cardVersion: '0.0.3' });
+      expect(data).toHaveLength(0);
+    });
+
+    it('Should return no cards if asked for the ^0.0.1 version', async () => {
+      const { data } = await search({ cardVersion: '^0.0.1' });
+      expect(data).toHaveLength(4);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
+    });
+
+    it('Should return no cards if asked for the ~0.0.1 version', async () => {
+      const { data } = await search({ cardVersion: '~0.0.1' });
+      expect(data).toHaveLength(3);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+    });
+
+    it('Should return the expected cards if passed a minimum rarity', async () => {
+      const { data } = await search({ rarity: 2 });
+      expect(data).toHaveLength(1);
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+    });
+
+    it('Should return the expected cards if passed a minimum rarity', async () => {
+      const { data } = await search({ minRarity: 2 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
+    });
+
+    it('Should return the expected cards if passed a maximum rarity', async () => {
+      const { data } = await search({ maxRarity: 2 });
+      expect(data).toHaveLength(3);
+      expect(data.shift()).toHaveProperty('name', 'moral spy, blacksmith');
+      expect(data.shift()).toHaveProperty('name', 'domestic warder');
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+    });
+
+    it('Should return the expected cards if passed a minimum and a maximum rarity', async () => {
+      const { data } = await search({ minRarity: 2, maxRarity: 3 });
+      expect(data).toHaveLength(2);
+      expect(data.shift()).toHaveProperty('name', 'olympic sorcerer');
+      expect(data.shift()).toHaveProperty('name', 'gastric blacksmith');
+    });
+
+    it('Should return no cards if maximum rarity is less than minimum', async () => {
+      const { data } = await search({ minRarity: 3, maxRarity: 2 });
       expect(data).toHaveLength(0);
     });
 
