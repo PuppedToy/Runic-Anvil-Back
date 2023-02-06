@@ -28,6 +28,10 @@ const searchValidator = {
     maxHp: Joi.number().integer().min(0),
     limit: Joi.number().integer().min(1),
     offset: Joi.number().integer().min(0),
+    rarity: Joi.number().integer().min(0),
+    minRarity: Joi.number().integer().min(0),
+    maxRarity: Joi.number().integer().min(0),
+    cardVersion: Joi.string().regex(/^(\^|~)?(latest|([0-9]+?\.){2}[0-9]+)$/),
   }),
 };
 
