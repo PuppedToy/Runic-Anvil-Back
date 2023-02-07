@@ -1,4 +1,15 @@
 const { ObjectId } = require('mongodb');
+
+let _eval = () => {};
+try {
+  // This dep is very dangerous in production environment and will only
+  // be used in development environment
+  // eslint-disable-next-line import/no-extraneous-dependencies, global-require
+  _eval = require('eval');
+} catch (e) {
+  // Do nothing
+}
+
 const { getDatabase } = require('../utils/getDatabase');
 const { constants } = require('../data/enums');
 
@@ -123,7 +134,6 @@ async function search(query = {}) {
   }
 
   const findQuery = $and.length ? { $and } : {};
-  // console.log(JSON.stringify(findQuery, null, 2));
   let data = [];
   if (query.sample) {
     const promisesResult = await Promise.all(
@@ -223,10 +233,54 @@ async function update(id, card) {
   return result.modifiedCount;
 }
 
+async function customQuery(query) {
+  if (process.env === 'production') {
+    throw new Error('customQuery is not allowed in production');
+  }
+
+  const db = await getDatabase(DATABASE_NAME);
+  return db.find(query).toArray();
+}
+
+async function bulkUpdate(query, stringUpdateCardMethod) {
+  if (process.env === 'production') {
+    throw new Error('bulkEdit is not allowed in production');
+  }
+
+  const db = await getDatabase(DATABASE_NAME);
+  const cards = await db.find(query).toArray();
+  const promises = [];
+  const errors = [];
+  cards.forEach((card) => {
+    const updateCard = _eval(`${stringUpdateCardMethod}; module.exports = updateCard;`);
+    try {
+      const updatedCard = updateCard(card);
+      promises.push(db.updateOne(
+        { _id: card._id },
+        {
+          $set: {
+            ...updatedCard,
+          },
+        },
+      ).catch((error) => {
+        errors.push(error);
+      }));
+    } catch (error) {
+      errors.push(error);
+    }
+  });
+
+  const results = await Promise.all(promises);
+
+  return { results, errors };
+}
+
 module.exports = {
   search,
   getById,
   findOneWithoutImage,
   create,
   update,
+  customQuery,
+  bulkUpdate,
 };

@@ -1,4 +1,4 @@
-const { Joi, ...otherExpressValidationItems } = require('express-validation');
+const { Joi, validate, ...otherExpressValidationItems } = require('express-validation');
 
 const JoiExtended = Joi.extend((joi) => ({
   type: 'string',
@@ -21,5 +21,6 @@ const JoiExtended = Joi.extend((joi) => ({
 
 module.exports = {
   Joi: JoiExtended,
+  validate: (schema, options, ...args) => validate(schema, { context: true, ...options }, ...args),
   ...otherExpressValidationItems,
 };

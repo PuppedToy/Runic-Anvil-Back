@@ -1,5 +1,5 @@
 const express = require('express');
-const { validate, Joi } = require('express-validation');
+const { validate, Joi } = require('../../utils/joiExtended');
 
 const controller = require('./auth.controller');
 
