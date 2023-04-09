@@ -150,6 +150,58 @@ function generateEffect() {
   return forge;
 }
 
+function improveEffect(effect) {
+  // @TODO
+  // I don't know how to modularize this code. For now this will be a big switch
+  // In the future, I might want to have a mods.js somewhere with all this code.
+
+  const newEffect = { ...effect };
+
+  if (!effect.mods || effects.mods.length) {
+    console.warn('Effect has no mods or mods is empty');
+    return newEffect;
+  }
+
+  const mod = weightedSample(effect.mods, [forgeLevelFilter(effect.level)]);
+  let usedMod = mod;
+
+  switch (mod) {
+    case 'ADD_OR_IMPROVE_TARGET':
+      if (Math.random() < 0.5) {
+        usedMod = 'ADD_TARGET';
+        if (!mod.targetAmount) mod.targetAmount = 2;
+        else mod.targetAmount += 1;
+      } else {
+        usedMod = 'IMPROVE_TARGET';
+        // @TODO Here it comes a decission tree
+        mod.target = 'user';
+      }
+      break;
+    case 'ADD_OR_IMPROVE_SELECTOR':
+    case 'ADD_OR_IMPROVE_CONDITION':
+    case 'ANOTHER_KINGDOM':
+    case 'ANOTHER_PLACE':
+    case 'UPGRADE_VALUE':
+    case 'UPGRADE_TARGET_CARD':
+    case 'ADD_SELECTOR':
+    case 'IMPROVE_TARGET_KINGDOM':
+    case 'IMPROVE_CARD_SELECTOR':
+    case 'DISCARD':
+    case 'CHANGE_PLACE':
+    default:
+      console.warn(`Mod ${mod} not found`);
+      return newEffect;
+  }
+
+  if (!newEffect.appliedMods)  {
+    newEffect.appliedMods = [];
+  }
+  newEffect.appliedMods.push(usedMod);
+  newEffect.level += 1;
+  return newEffect;
+
+}
+
 const forgeGenerators = [
   {
     type: 'addUnitType',
