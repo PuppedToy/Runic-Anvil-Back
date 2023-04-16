@@ -131,13 +131,14 @@ function generateEffect() {
   const effect = weightedSample(effects, [forgeLevelFilter(1)]);
 
   const {
-    name, description, text, default: defaultForge, generalTextContext = {},
+    key, name, description, text, default: defaultForge, generalTextContext = {},
   } = effect;
 
   const value = processValue(defaultForge.value);
   const textContext = { ...(defaultForge.textContext || {}), ...generalTextContext };
 
   const forge = {
+    key,
     name,
     description,
     ...defaultForge,

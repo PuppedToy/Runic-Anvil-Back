@@ -36,6 +36,7 @@ const DEFAULT_MODS = [
 
 const effects = {
   deploy: {
+    key: 'deploy',
     name: 'Deploy',
     description: 'Deploy a card to the target place',
     text: 'deploy $card',
@@ -66,6 +67,7 @@ const effects = {
     ],
   },
   draw: {
+    key: 'draw',
     name: 'Draw',
     description: 'Draw cards from the target place',
     text: 'draw $amount card$plural from $from',
@@ -89,6 +91,7 @@ const effects = {
     ],
   },
   dealDamage: {
+    key: 'dealDamage',
     name: 'Deal damage',
     description: 'Deal damage to the target card',
     text: 'deal $value damage to $card',
@@ -106,6 +109,7 @@ const effects = {
     },
   },
   modifyInvestment: {
+    key: 'modifyInvestment',
     name: 'Modify investment',
     description: 'Modify the investment of the target kingdom',
     text: '$operation $value investment to $target',
@@ -124,6 +128,7 @@ const effects = {
     },
   },
   modifyCurrency: {
+    key: 'modifyCurrency',
     name: 'Modify currency',
     description: 'Modify the currency of the target kingdom',
     text: '$operation $value $currency to $target',

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/app.js",
+    "start:nocards": "nodemon src/app.js --nocards",
     "lint": "eslint . --fix",
     "lint:staged": "lint-staged",
     "test": "jest",
