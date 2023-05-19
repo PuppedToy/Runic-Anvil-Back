@@ -1,12 +1,7 @@
 const { generateImage } = require('../generateCardImage');
 const db = require('../../db');
 
-async function createCardJob() {
-  const card = await db.cards.findOneWithoutImage();
-  if (!card) {
-    return null;
-  }
-
+async function addImageToCard(card) {
   const { generationData, result } = await generateImage(card);
   const image = `${process.env.BASE_URL}${result}`;
 
@@ -18,4 +13,16 @@ async function createCardJob() {
   return updatedCard;
 }
 
-module.exports = createCardJob;
+async function addImageToAnyCard() {
+  const card = await db.cards.findOneWithoutImage();
+  if (!card) {
+    return null;
+  }
+
+  return addImageToCard(card);
+}
+
+module.exports = {
+  addImageToCard,
+  addImageToAnyCard,
+};

@@ -1,4 +1,4 @@
-const { randomInt, randomFloat } = require('../utils/random');
+const { randomInt } = require('../utils/random');
 const { generateForge, applyForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardTexts');
 
@@ -11,7 +11,7 @@ function generateUnit(level = 1) {
     type: 'unit',
     unitType: 'human',
   };
-  card.cost = parseInt((card.attack * 30 + card.hp * 50) * randomFloat(0.9, 1.1), 10);
+  card.cost = parseInt((card.attack * 40 + card.hp * 40), 10);
 
   const forges = [];
   for (let accumulator = 0; accumulator < level; accumulator += 1) {

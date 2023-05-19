@@ -12,24 +12,24 @@ const triggers = {
     onEffect: 'destroy',
     costModificator: ({ cost }) => cost * 0.9,
   },
-  resurrected: {
-    name: 'Resurrected',
-    effectType: 'trigger',
-    onEffect: 'resurrect',
-    costModificator: ({ cost }) => cost * 0.6,
-  },
-  banished: {
-    name: 'Banished',
-    effectType: 'trigger',
-    onEffect: 'banish',
-    costModificator: ({ cost }) => cost * 0.3,
-  },
-  discarded: {
-    name: 'Discarded',
-    effectType: 'trigger',
-    onEffect: 'discard',
-    costModificator: ({ cost }) => cost * 0.5,
-  },
+  // resurrected: {
+  //   name: 'Resurrected',
+  //   effectType: 'trigger',
+  //   onEffect: 'resurrect',
+  //   costModificator: ({ cost }) => cost * 0.6,
+  // },
+  // banished: {
+  //   name: 'Banished',
+  //   effectType: 'trigger',
+  //   onEffect: 'banish',
+  //   costModificator: ({ cost }) => cost * 0.3,
+  // },
+  // discarded: {
+  //   name: 'Discarded',
+  //   effectType: 'trigger',
+  //   onEffect: 'discard',
+  //   costModificator: ({ cost }) => cost * 0.5,
+  // },
   moved: {
     name: 'Moved',
     effectType: 'trigger',
@@ -48,12 +48,12 @@ const triggers = {
     onEffect: 'dealingDamage',
     costModificator: ({ cost }) => cost * 1.3,
   },
-  retires: {
-    name: 'Retires',
-    effectType: 'trigger',
-    onEffect: 'retire',
-    costModificator: ({ cost }) => cost * 0.7,
-  },
+  // retires: {
+  //   name: 'Retires',
+  //   effectType: 'trigger',
+  //   onEffect: 'retire',
+  //   costModificator: ({ cost }) => cost * 0.7,
+  // },
   attacking: {
     name: 'Attacking',
     effectType: 'trigger',
@@ -70,13 +70,13 @@ const triggers = {
     name: 'War',
     effectType: 'stageChange',
     onEffect: 'war',
-    costModificator: ({ cost }) => cost * 2.5,
+    costModificator: ({ cost }) => cost * 1.5,
   },
   siege: {
     name: 'Siege',
     effectType: 'stageChange',
     onEffect: 'siege',
-    costModificator: ({ cost }) => cost * 1.75,
+    costModificator: ({ cost }) => cost * 1.1,
   },
   turnBeginning: {
     name: 'Beginning of the turn',
@@ -96,12 +96,6 @@ const triggers = {
     onEffect: 'invest',
     costModificator: ({ cost }) => cost * 4,
   },
-  receiveToken: {
-    name: 'A kingdom receives the token',
-    effectType: 'kingdomTrigger',
-    onEffect: 'token',
-    costModificator: ({ cost }) => cost * 6,
-  },
   draw: {
     name: 'A kingdom draws a card',
     effectType: 'kingdomTrigger',
@@ -118,7 +112,7 @@ const triggers = {
     name: 'Another card trigger',
     description: 'Another card triggers any of the trigger effects',
     effectType: 'otherTrigger',
-    costModificator: ({ cost }) => cost,
+    costModificator: ({ cost }) => cost * 8,
   },
 };
 

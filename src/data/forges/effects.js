@@ -64,6 +64,7 @@ const effects = {
       'UPGRADE_TARGET_CARD',
       'ADD_SELECTOR', // or improve
     ],
+    price: ({ value }) => value * 0.75,
   },
   draw: {
     name: 'Draw',
@@ -87,6 +88,7 @@ const effects = {
       'DISCARD',
       'CHANGE_PLACE',
     ],
+    price: () => 20,
   },
   dealDamage: {
     name: 'Deal damage',
@@ -104,6 +106,7 @@ const effects = {
         },
       },
     },
+    price: ({ value }) => value * 50,
   },
   modifyInvestment: {
     name: 'Modify investment',
@@ -117,11 +120,12 @@ const effects = {
       operation: 'add',
       value: {
         range: {
-          min: 1,
-          max: 19,
+          min: 10,
+          max: 49,
         },
       },
     },
+    price: ({ value }) => value,
   },
   modifyCurrency: {
     name: 'Modify currency',
@@ -141,6 +145,7 @@ const effects = {
       },
       currency: 'gold',
     },
+    price: ({ value }) => value * 0.8,
   },
 };
 

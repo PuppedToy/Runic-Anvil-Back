@@ -131,7 +131,7 @@ function generateEffect() {
   const effect = weightedSample(effects, [forgeLevelFilter(1)]);
 
   const {
-    name, description, text, default: defaultForge, generalTextContext = {},
+    name, description, text, default: defaultForge, generalTextContext = {}, price,
   } = effect;
 
   const value = processValue(defaultForge.value);
@@ -143,6 +143,7 @@ function generateEffect() {
     ...defaultForge,
     value,
     textContext,
+    price,
   };
 
   forge.text = processText(text, { ...forge, ...textContext });
@@ -181,6 +182,7 @@ const forgeGenerators = [
       const newCard = { ...card };
       newCard.passiveEffects = newCard.passiveEffects || [];
       newCard.passiveEffects.push(forge.key);
+      newCard.cost = forge.costModificator ? forge.costModificator(newCard) : card.cost;
       return newCard;
     },
   },
@@ -205,6 +207,13 @@ const forgeGenerators = [
         trigger: cleanDefinitionObject(forge.trigger),
         effect: cleanDefinitionObject(forge.effect),
       });
+      const extraPrice = forge.effect.price ? forge.effect.price(forge.effect) : 0;
+      const extraPriceModded = parseInt(
+        forge.trigger.costModificator
+          ? forge.trigger.costModificator({ cost: extraPrice }) : extraPrice,
+        10,
+      );
+      newCard.cost += extraPriceModded;
       return newCard;
     },
   },
