@@ -5,6 +5,9 @@
         "no-underscore-dangle": 0,
         "linebreak-style": 0
     },
+    "parserOptions": {
+        "ecmaVersion": 2022
+    },
     "env": {
         "jest/globals": true
     }

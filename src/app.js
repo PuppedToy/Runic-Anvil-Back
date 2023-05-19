@@ -9,7 +9,6 @@ const { ValidationError } = require('express-validation');
 const graphqlApi = require('./graphqlApi');
 const restApi = require('./restApi');
 const { authMiddleware } = require('./utils/middlewares');
-require('./lib/jobs');
 
 const app = express();
 const port = process.env.PORT;
