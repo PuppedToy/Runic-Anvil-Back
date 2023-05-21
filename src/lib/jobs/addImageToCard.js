@@ -5,7 +5,7 @@ async function addImageToCard(card) {
   const { generationData, result } = await generateImage(card);
   const image = `${process.env.BASE_URL}${result}`;
 
-  const updatedCard = await db.cards.update(card.id, {
+  const updatedCard = await db.cards.update(card._id, {
     image,
     imageGenerationData: generationData,
   });
