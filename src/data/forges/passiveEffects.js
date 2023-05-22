@@ -9,11 +9,11 @@ const passiveEffects = {
       + (attack * constants.CARD_PRICE_PER_ATTACK_POINT)
       - (hp * constants.CARD_PRICE_PER_HP_POINT),
   },
-  // siege: {
-  //   name: 'Siege',
-  //   description: 'Siege units deal half of their damage to any non-wall or non-building card and double damage to any wall or building card. In the war phase, siege units attack after ranged layer -at siege layer- and when sieging, they can\'t be blocked unless any other taunt, berserker, melee and ranged unit have been blocked.',
-  //   costModificator: ({ cost }) => cost - 50,
-  // },
+  siege: {
+    name: 'Siege',
+    description: 'Siege units deal half of their damage to any non-wall or non-building card and double damage to any wall or building card. In the war phase, siege units attack after ranged layer -at siege layer- and when sieging, they can\'t be blocked unless any other taunt, berserker, melee and ranged unit have been blocked.',
+    costModificator: ({ cost }) => cost - 50,
+  },
   // building: {
   //   name: 'Building',
   //   description: 'The unit can be deployed in any zone, but after that, it can\'t be moved nor forced to move. The unit is immune to betray effect.',
