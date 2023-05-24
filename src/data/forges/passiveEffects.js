@@ -117,7 +117,7 @@ const passiveEffects = {
   slow: {
     name: 'Slow',
     description: 'This unit can only move to a zone if it is adjacent. In combat, the unit will strike last and, if it is destroyed, it won\'t do any combat damage.',
-    costModificator: ({ cost, attack, defense }) => cost - attack * Math.floor(constants.CARD_PRICE_PER_ATTACK_POINT / 2) - defense * Math.floor(constants.CARD_PRICE_PER_DEFENSE_POINT / 2),
+    costModificator: ({ cost, attack, defense }) => cost - attack * Math.floor(constants.CARD_PRICE_PER_ATTACK_POINT / 2) - defense * Math.floor(constants.CARD_PRICE_PER_HP_POINT / 2),
     // forgeLevel: 2,
   },
   // haste: {
