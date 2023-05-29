@@ -3,12 +3,23 @@ const { generateForge, applyForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardTexts');
 const { constants } = require('../data/enums');
 
+function exponential(min, range, probability = 0.5) {
+  let result = min;
+  while (Math.random() < probability && result < range) {
+    result += 1;
+  }
+  return result;
+}
+
 function generateUnit(level = 1) {
   if (level < 0) throw new Error('Level must be positive');
 
+  const minAttack = randomInt(0, 4);
+  const minHp = randomInt(1, 4);
+
   let card = {
-    attack: randomInt(0, 6),
-    hp: randomInt(1, 6),
+    attack: exponential(minAttack, 50, 0.6),
+    hp: exponential(minHp, 50, 0.6),
     type: 'unit',
     unitType: 'human',
   };
