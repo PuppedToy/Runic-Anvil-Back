@@ -325,7 +325,7 @@ const effects = {
     key: 'betray',
     name: 'Betray',
     description: 'Betray the target card',
-    text: 'a $card betrays',
+    text: '$card betrays',
     default: {
       card: {
         target: 'randomEnemy',
