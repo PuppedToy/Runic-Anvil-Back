@@ -98,24 +98,6 @@ function processText(text, textContext) {
   return resultText;
 }
 
-function processValue(value) {
-  if (typeof value === 'number') return value;
-  if (Array.isArray(value)) {
-    return weightedSample(value);
-  }
-  if (typeof value === 'object') {
-    if (Object.hasOwnProperty.call(value, 'range')) {
-      const { range } = value;
-      if (!Object.hasOwnProperty.call(range, 'min') || !Object.hasOwnProperty.call(range, 'max')) {
-        throw new Error('Range must have min and max');
-      }
-
-      return randomInt(range.min, range.max);
-    }
-  }
-  return value;
-}
-
 const processOperations = {
   range: (range) => {
     if (!Object.hasOwnProperty.call(range, 'min') || !Object.hasOwnProperty.call(range, 'max')) {
@@ -143,17 +125,23 @@ const processOperations = {
 };
 
 function processDefaultForge(defaultForge) {
-  const resultDefaultForge = { ...defaultForge };
-  if (!Array.isArray(resultDefaultForge) && typeof resultDefaultForge === 'object') {
+  if (!Array.isArray(defaultForge) && typeof defaultForge === 'object') {
+    const resultDefaultForge = { ...defaultForge };
     Object.entries(resultDefaultForge).forEach(([key, value]) => {
       const keyWithoutDollar = key.replace('$', '');
       if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
         resultDefaultForge[key] = processOperations[keyWithoutDollar](value);
       }
-      resultDefaultForge[key] = processValue(resultDefaultForge[key]);
+      resultDefaultForge[key] = processDefaultForge(resultDefaultForge[key]);
+      Object.keys(resultDefaultForge[key]).forEach((subKey) => {
+        if (subKey[0] === '$') {
+          resultDefaultForge[key] = resultDefaultForge[key][subKey];
+        }
+      });
     });
+    return resultDefaultForge;
   }
-  return resultDefaultForge;
+  return defaultForge;
 }
 
 // Effects
@@ -189,7 +177,12 @@ function generateEffect() {
     price,
   };
 
-  forge.text = processText(text, { ...forge, ...textContext });
+  try {
+    forge.text = processText(text, { ...forge, ...textContext });
+  } catch (err) {
+    console.error(`Error processing text for ${JSON.stringify(forge)}`);
+    throw err;
+  }
 
   return forge;
 }
@@ -289,7 +282,6 @@ module.exports = {
   cleanDefinitionObject,
   mergeTexts,
   processText,
-  processValue,
   generateEffect,
   generateForge,
   applyForge,

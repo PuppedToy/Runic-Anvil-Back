@@ -190,7 +190,7 @@ const effects = {
     key: 'modifyStat',
     name: 'Modify stat',
     description: 'Modify the stat of the target card',
-    text: '$operation $value $stat to $card',
+    text: 'Give $value $stat to $card',
     default: {
       card: {
         target: 'randomAlly',
@@ -302,7 +302,7 @@ const effects = {
     key: 'heal',
     name: 'Heal',
     description: 'Heal to the target card',
-    text: 'heal $value hp for $card',
+    text: 'heal $value hp of $card',
     default: {
       card: {
         target: 'randomInjuredAlly',
