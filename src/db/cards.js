@@ -12,8 +12,9 @@ try {
 
 const { getDatabase } = require('../utils/getDatabase');
 const { constants } = require('../data/enums');
+const { getCost } = require('../lib/forge/generateForge');
 
-const { DB_VERSION, CARD_VERSION } = constants;
+const { DB_VERSION, CARD_VERSION, COST_CACHE_VERSION } = constants;
 const DATABASE_NAME = 'cards';
 
 const CARD_VERSION_PARTS = CARD_VERSION.split('.');
@@ -48,16 +49,24 @@ async function search(query = {}) {
     $and.push({ 'forge.type': query.forge });
   }
 
+  let usesCosts = false;
   if (query.cost) {
-    $and.push({ cost: query.cost });
+    $and.push({ costCache: query.cost });
+    usesCosts = true;
   }
 
   if (query.minCost) {
-    $and.push({ cost: { $gte: query.minCost } });
+    $and.push({ costCache: { $gte: query.minCost } });
+    usesCosts = true;
   }
 
   if (query.maxCost) {
-    $and.push({ cost: { $lte: query.maxCost } });
+    $and.push({ costCache: { $lte: query.maxCost } });
+    usesCosts = true;
+  }
+
+  if (usesCosts) {
+    $and.push({ costCacheVersion: COST_CACHE_VERSION });
   }
 
   if (query.attack) {
@@ -258,6 +267,37 @@ async function customQuery(query) {
   return db.find(query).toArray();
 }
 
+async function cacheCosts() {
+  const db = await getDatabase(DATABASE_NAME);
+  const allUncachedCards = await db.find({
+    $or: [
+      { costCache: { $exists: false } },
+      { costCacheVersion: { $ne: COST_CACHE_VERSION } },
+    ],
+  });
+
+  let processedCards = 0;
+  const totalCards = await allUncachedCards.count();
+
+  while (await allUncachedCards.hasNext()) {
+    const card = await allUncachedCards.next();
+    const newCost = getCost(card);
+
+    await db.updateOne(
+      { _id: card._id },
+      {
+        $set: {
+          costCache: newCost,
+          costCacheVersion: COST_CACHE_VERSION,
+        },
+      }
+    );
+
+    processedCards++;
+    console.log(`Processed ${processedCards} of ${totalCards} cards.`);
+  }
+}
+
 async function bulkUpdate(query, stringUpdateCardMethod) {
   if (process.env === 'production') {
     throw new Error('bulkEdit is not allowed in production');
@@ -300,4 +340,5 @@ module.exports = {
   update,
   customQuery,
   bulkUpdate,
+  cacheCosts,
 };

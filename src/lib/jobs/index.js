@@ -1,5 +1,6 @@
 const createCard = require('./createCard');
 const { addImageToCard, addImageToAnyCard } = require('./addImageToCard');
+const db = require('../../db');
 
 async function generateFullCard() {
   const newCard = await createCard();
@@ -29,6 +30,10 @@ async function generateCardsWithoutImage(n) {
   return cards;
 }
 
+function cacheCosts() {
+  return db.cards.cacheCosts()
+}
+
 module.exports = {
   generateFullCard,
   generateCards,
@@ -36,4 +41,5 @@ module.exports = {
   createCard,
   addImageToCard,
   addImageToAnyCard,
+  cacheCosts,
 };

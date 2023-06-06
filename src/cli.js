@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { generateCards, generateCardsWithoutImage } = require('./lib/jobs');
+const { generateCards, generateCardsWithoutImage, cacheCosts } = require('./lib/jobs');
 
 const [command, ...args] = process.argv.slice(2);
 const DEFAULT_AMOUNT_IMAGE_GENERATION = 50;
@@ -24,6 +24,18 @@ if (command === 'generate') {
   method(amount)
     .then((cards) => {
       console.log(`Generated ${cards.length} cards`);
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}
+
+if (command == 'cache-costs') {
+  cacheCosts()
+    .then(() => {
+      console.log('Cached costs');
       process.exit(0);
     })
     .catch((err) => {

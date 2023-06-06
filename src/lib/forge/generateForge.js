@@ -300,6 +300,20 @@ const forgeGenerators = [
   },
 ];
 
+function getCost(card) {
+  let baseCost = getCardBaseCost(card);
+  let newCard = { ...card };
+  newCard.cost = baseCost;
+  const forges = card.forges || [];
+  forges.forEach((forge) => {
+    const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
+    if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
+    newCard = forgeGenerator.applyCost(baseCost, forge, card);
+    baseCost += newCard.cost;
+  });
+  return newCard.cost;
+}
+
 function generateForge(level) {
   const forgeGenerator = weightedSample(forgeGenerators);
   return {
@@ -346,6 +360,7 @@ module.exports = {
   generateEffect,
   generateForge,
   applyForge,
+  getCost,
   applyCardCostAndText,
 
   forgeGenerators,
