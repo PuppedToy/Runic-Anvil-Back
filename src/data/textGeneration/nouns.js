@@ -1,6 +1,6 @@
 const nouns = {
   main: {
-    human: [
+    generic: [
       {
         word: 'warrior',
         attackRange: '2-x',
@@ -18,13 +18,13 @@ const nouns = {
       },
       {
         word: 'engineer',
-        keywords: ['summon', 'building', 'civic'],
+        keywords: ['create', 'summon', 'building', 'civic'],
         attackRange: '0-2',
         profession: true,
       },
       {
         word: 'architect',
-        keywords: ['summon', 'building', 'civic'],
+        keywords: ['create', 'summon', 'building', 'civic'],
         attackRange: '0-1',
         profession: true,
       },
@@ -33,12 +33,6 @@ const nouns = {
         keywords: ['summon', 'civic'],
         attackRange: '0-2',
         profession: true,
-      },
-      {
-        word: 'berserker',
-        attackRange: '2-x',
-        profession: true,
-        keywords: ['berserk'],
       },
       {
         word: 'mercenary',
@@ -142,6 +136,99 @@ const nouns = {
         profession: true,
       },
       {
+        word: 'gardener',
+        attackRange: '0-2',
+        keywords: ['civic'],
+        elements: ['earth'],
+        profession: true,
+      },
+      {
+        word: 'farmer',
+        attackRange: '0-2',
+        keywords: ['civic'],
+        elements: ['earth'],
+        profession: true,
+      },
+      {
+        word: 'hoarder',
+        keywords: ['invest', 'earn'],
+        profession: true,
+      },
+      {
+        word: 'berserker',
+        attackRange: '2-x',
+        profession: true,
+        keywords: ['berserker'],
+      },
+      {
+        word: 'trapper',
+        keywords: ['secret', 'surprise'],
+        profession: true,
+      },
+      {
+        word: 'leader',
+        keywords: ['summon', 'buff'],
+        profession: true,
+      },
+      {
+        word: 'explorer',
+        attackRange: '0-2',
+        keywords: ['scout'],
+        profession: true,
+      },
+      {
+        word: 'seer',
+        attackRange: '1-3',
+        keywords: ['cast', 'scout', 'secret', 'civic'],
+        profession: true,
+      },
+      {
+        word: 'seeker',
+        attackRange: '1-3',
+        keywords: ['cast', 'scout', 'secret', 'civic'],
+        profession: true,
+      },
+      {
+        word: 'scout',
+        keywords: ['scout'],
+        profession: true,
+      },
+      {
+        word: 'hunter',
+        attackRange: '1-x',
+        keywords: ['ranged', 'stealth', 'secret'],
+        profession: true,
+      },
+      {
+        word: 'infiltrator',
+        keywords: ['stealth'],
+        profession: true,
+      },
+      {
+        word: 'scoundrel',
+        keywords: ['stealth'],
+        profession: true,
+      },
+      {
+        word: 'assasssin',
+        keywords: ['stealth', 'damage'],
+        profession: true,
+      },
+      {
+        word: 'giant',
+        keywords: ['big', 'huge', 'titan'],
+      },
+      {
+        word: 'titan',
+        keywords: ['titan'],
+      },
+      {
+        word: 'raider',
+        profession: true,
+      },
+    ],
+    human: [
+      {
         word: 'dancer',
         attackRange: '0-1',
         keywords: ['buff', 'civic'],
@@ -207,20 +294,6 @@ const nouns = {
         attackRange: '0-2',
         keywords: ['civic'],
         elements: ['water'],
-        profession: true,
-      },
-      {
-        word: 'gardener',
-        attackRange: '0-2',
-        keywords: ['civic'],
-        elements: ['earth'],
-        profession: true,
-      },
-      {
-        word: 'farmer',
-        attackRange: '0-2',
-        keywords: ['civic'],
-        elements: ['earth'],
         profession: true,
       },
       {
@@ -300,11 +373,6 @@ const nouns = {
         profession: true,
       },
       {
-        word: 'hoarder',
-        keywords: ['invest', 'earn'],
-        profession: true,
-      },
-      {
         word: 'doctor',
         attackRange: '0-2',
         keywords: ['heal', 'damage'],
@@ -349,16 +417,6 @@ const nouns = {
         word: 'bomber',
         attackRange: '0-2',
         keywords: ['damage'],
-        profession: true,
-      },
-      {
-        word: 'trapper',
-        keywords: ['secret', 'surprise'],
-        profession: true,
-      },
-      {
-        word: 'leader',
-        keywords: ['summon', 'buff'],
         profession: true,
       },
       {
@@ -440,36 +498,13 @@ const nouns = {
         profession: true,
       },
       {
-        word: 'explorer',
-        attackRange: '0-2',
-        keywords: ['scout'],
-        profession: true,
-      },
-      {
         word: 'gossiper',
         attackRange: '0-1',
         keywords: ['scout', 'civic'],
         profession: true,
       },
       {
-        word: 'seer',
-        attackRange: '1-3',
-        keywords: ['cast', 'scout', 'secret', 'civic'],
-        profession: true,
-      },
-      {
-        word: 'seeker',
-        attackRange: '1-3',
-        keywords: ['cast', 'scout', 'secret', 'civic'],
-        profession: true,
-      },
-      {
         word: 'sailor',
-        keywords: ['scout'],
-        profession: true,
-      },
-      {
-        word: 'scout',
         keywords: ['scout'],
         profession: true,
       },
@@ -490,27 +525,6 @@ const nouns = {
         profession: true,
       },
       {
-        word: 'hunter',
-        attackRange: '1-x',
-        keywords: ['ranged', 'stealth', 'secret'],
-        profession: true,
-      },
-      {
-        word: 'infiltrator',
-        keywords: ['stealth'],
-        profession: true,
-      },
-      {
-        word: 'scoundrel',
-        keywords: ['stealth'],
-        profession: true,
-      },
-      {
-        word: 'assasssin',
-        keywords: ['stealth', 'damage'],
-        profession: true,
-      },
-      {
         word: 'gnome',
       },
       {
@@ -527,18 +541,6 @@ const nouns = {
       },
       {
         word: 'orc',
-      },
-      {
-        word: 'giant',
-        keywords: ['big', 'huge', 'titan'],
-      },
-      {
-        word: 'titan',
-        keywords: ['titan'],
-      },
-      {
-        word: 'raider',
-        profession: true,
       },
       {
         word: 'wizard',
@@ -722,6 +724,74 @@ const nouns = {
       {
         word: 'phoenix',
       },
+      {
+        word: 'scavenger',
+        profession: true,
+      },
+      {
+        word: 'migrant',
+        profession: true,
+      },
+      {
+        word: 'songster',
+        profession: true,
+      },
+      {
+        word: 'dancer',
+        profession: true,
+      },
+      {
+        word: 'fisherman',
+        profession: true,
+      },
+      {
+        word: 'diver',
+        profession: true,
+      },
+      {
+        word: 'hoverer',
+        profession: true,
+      },
+      {
+        word: 'nectarivore',
+        profession: true,
+      },
+      {
+        word: 'frugivore',
+        profession: true,
+      },
+      {
+        word: 'seed-cracker',
+        profession: true,
+      },
+      {
+        word: 'stalker',
+        profession: true,
+      },
+      {
+        word: 'wader',
+        profession: true,
+      },
+      {
+        word: 'resident',
+        profession: true,
+      },
+      {
+        word: 'nester',
+        profession: true,
+      },
+      {
+        word: 'digger',
+        profession: true,
+      },
+      {
+        word: 'sandpiper',
+        profession: true,
+      },
+      {
+        word: 'hummingbird',
+        profession: true,
+      },
     ],
     insect: [
       {
@@ -795,6 +865,51 @@ const nouns = {
       },
       {
         word: 'slug',
+      },
+      {
+        word: 'pollinator',
+        attackRange: '0-1',
+        profession: true,
+      },
+      {
+        word: 'queen',
+        profession: true,
+      },
+      {
+        word: 'drone',
+        profession: true,
+      },
+      {
+        word: 'forager',
+        attackRange: '0-1',
+        profession: true,
+      },
+      {
+        word: 'leaf-cutter',
+        attackRange: '1-3',
+        profession: true,
+      },
+      {
+        word: 'brood-tender',
+        attackRange: '0-2',
+        profession: true,
+      },
+      {
+        word: 'parasite',
+        attackRange: '2-x',
+        profession: true,
+      },
+      {
+        word: 'decomposer',
+        profession: true,
+      },
+      {
+        word: 'symbiont',
+        profession: true,
+      },
+      {
+        word: 'weaver',
+        profession: true,
       },
     ],
     ape: [
@@ -979,6 +1094,18 @@ const nouns = {
       {
         word: 'basilisk',
       },
+      {
+        word: 'burrower',
+        profession: true,
+      },
+      {
+        word: 'constrictor',
+        profession: true,
+      },
+      {
+        word: 'poisoner',
+        profession: true,
+      },
     ],
     fish: [
       {
@@ -1058,6 +1185,14 @@ const nouns = {
       },
       {
         word: 'urchin',
+      },
+      {
+        word: 'schooler',
+        profession: true,
+      },
+      {
+        word: 'angler',
+        profession: true,
       },
     ],
     tree: [], /* {

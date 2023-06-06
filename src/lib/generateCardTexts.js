@@ -75,11 +75,9 @@ function generateName(card, options = {}) {
   const keyWords = getKeywords(card);
   let result = chosenTemplate.value;
 
-  let mainNouns = nouns.main[card.unitType || 'human'];
-  if (!mainNouns.length) {
-    console.warn(`No main nouns found for unit type ${card.unitType}`);
-    mainNouns = nouns.main.human;
-  }
+  const genericMainNouns = nouns.main.generic;
+  const specificMainNouns = nouns.main[card.unitType || 'human'];
+  const mainNouns = [...genericMainNouns, ...specificMainNouns];
   const otherNouns = nouns.other;
   const allNouns = [...mainNouns, ...otherNouns];
   const professionNouns = allNouns.filter((noun) => Boolean(noun.profession));
