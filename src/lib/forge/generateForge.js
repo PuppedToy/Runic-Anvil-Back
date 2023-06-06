@@ -236,7 +236,9 @@ const forgeGenerators = [
     },
     applyCost: (baseCost, forge, card) => {
       const newCard = { ...card };
-      newCard.cost = baseCost + forge.costModificator ? forge.costModificator(newCard) : card.cost;
+      const foundPassiveEffect = passiveEffects[forge.key];
+      newCard.cost = baseCost;
+      newCard.cost = foundPassiveEffect.costModificator ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
       return newCard;
     },
     getText: (forge) => {
