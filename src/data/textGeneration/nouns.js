@@ -791,18 +791,6 @@ const nouns = {
         word: 'cicada',
       },
       {
-        word: 'crab',
-      },
-      {
-        word: 'lobster',
-      },
-      {
-        word: 'prawn',
-      },
-      {
-        word: 'shrimp',
-      },
-      {
         word: 'snail',
       },
       {
