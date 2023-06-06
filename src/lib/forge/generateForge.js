@@ -54,7 +54,6 @@ function cleanDefinitionObject(definitionObject) {
 
 const processTextRegex = /\$([^.$ ]*?\.?)+?[^.$ ]+?(?=\s|$)/;
 function processText(text, textContext = {}) {
-  console.log(`Processing text ${text} with context:\n${JSON.stringify(textContext, null, 2)}`);
   if (!text) return '';
 
   let resultText = text;
