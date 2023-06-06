@@ -1,4 +1,5 @@
 const db = require('../../db');
+const { applyCardCostAndText } = require('../../lib/forge/generateForge');
 
 async function searchController(req, res, next) {
   try {
@@ -11,7 +12,7 @@ async function searchController(req, res, next) {
 
     res.status(200).json({
       message: 'Cards found',
-      data,
+      data: data.map((card) => applyCardCostAndText(card)),
       pagination,
     });
   } catch (error) {
@@ -26,7 +27,7 @@ async function getCardController(req, res, next) {
     if (card) {
       res.status(200).json({
         message: 'Card found',
-        data: card,
+        data: applyCardCostAndText(card),
       });
     } else {
       res.status(404).json({ message: 'Card not found' });

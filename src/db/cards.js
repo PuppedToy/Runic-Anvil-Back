@@ -186,6 +186,16 @@ async function getById(id) {
   } : null;
 }
 
+async function getByHash(hash) {
+  const db = await getDatabase(DATABASE_NAME);
+  const card = await db.findOne({ hash });
+
+  return card ? {
+    id: card._id,
+    ...card,
+  } : null;
+}
+
 async function findOneWithoutImage() {
   const db = await getDatabase(DATABASE_NAME);
   // find one card that has image to null or that doesn't have image
@@ -284,6 +294,7 @@ async function bulkUpdate(query, stringUpdateCardMethod) {
 module.exports = {
   search,
   getById,
+  getByHash,
   findOneWithoutImage,
   create,
   update,
