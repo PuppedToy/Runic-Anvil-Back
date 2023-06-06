@@ -89,9 +89,6 @@ const effects = {
         place: 'deck',
         text: 'the owner\'s deck',
       },
-      textContext: {
-        plural: (context) => (context.amount > 1 ? 's' : ''),
-      },
       // amount: 1,
       amount: {
         $exponential: {
@@ -100,6 +97,9 @@ const effects = {
           probability: 0.2,
         },
       },
+    },
+    textContext: {
+      plural: (context) => (context.amount > 1 ? 's' : ''),
     },
     mods: [
       ...DEFAULT_MODS,

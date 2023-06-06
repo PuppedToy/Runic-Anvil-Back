@@ -165,7 +165,13 @@ function generateEffect() {
   const effect = weightedSample(effects, [forgeLevelFilter(1)]);
 
   const {
-    key, name, description, text, default: defaultForge, generalTextContext = {}, price,
+    key,
+    name,
+    description,
+    text,
+    default: defaultForge,
+    textContext: generalTextContext = {},
+    price,
   } = effect;
 
   const processedDefaultForge = processDefaultForge(defaultForge);
@@ -219,10 +225,8 @@ const forgeGenerators = [
     weight: 1,
     generate: (level) => {
       const sample = weightedSample(passiveEffects, [forgeLevelFilter(level)]);
-      const text = sample.name;
       return {
         ...sample,
-        text,
       };
     },
     apply: (forge, card) => {
@@ -236,6 +240,10 @@ const forgeGenerators = [
       newCard.cost = baseCost + forge.costModificator ? forge.costModificator(newCard) : card.cost;
       return newCard;
     },
+    getText: (forge) => {
+      const foundPassiveEffect = passiveEffects[forge.key];
+      return foundPassiveEffect.name;
+    },
   },
   // Basic: Trigger: effect
   {
@@ -248,10 +256,7 @@ const forgeGenerators = [
       return {
         trigger,
         effect,
-        text: `${trigger.name}: ${effect.text}`,
         textContext: {
-          ...trigger,
-          ...effect,
           ...(trigger.textContext || {}),
           ...(effect.textContext || {}),
         },
@@ -278,6 +283,19 @@ const forgeGenerators = [
       );
       newCard.cost = baseCost + extraPriceModded;
       return newCard;
+    },
+    getText: (forge) => {
+      const foundEffect = effects[forge.effect.key];
+      const foundTrigger = triggers[forge.trigger.key];
+      const textContext = {
+        ...(forge.effect),
+        ...(forge.trigger),
+        ...(forge.effect.textContext || {}),
+        ...(forge.trigger.textContext || {}),
+        ...(foundEffect.textContext || {}),
+        ...(foundTrigger.textContext || {}),
+      };
+      return processText(`${foundTrigger.name}: ${foundEffect.text}`, textContext);
     },
   },
 ];
@@ -311,14 +329,10 @@ function applyCardCostAndText(card) {
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
     newCard = forgeGenerator.applyCost(baseCost, forge, card);
     baseCost += newCard.cost;
-    try {
-      texts.push(processText(forge.text, { ...forge, ...forge.textContext }));
-    } catch (err) {
-      console.error(`Error processing text for ${JSON.stringify(forge)}`);
-      throw err;
-    }
+    if (forgeGenerator.getText) texts.push(forgeGenerator.getText(forge, card));
   });
-  newCard.text = mergeTexts(texts);
+  const text = mergeTexts(texts);
+  newCard.text = text ? `${text}.` : '';
   delete newCard.forges;
   return newCard;
 }
