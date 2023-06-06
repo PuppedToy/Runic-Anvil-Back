@@ -96,6 +96,12 @@ async function search(query = {}) {
     $and.push({ rarityLevel: { $lte: query.maxRarity } });
   }
 
+  if (query.triggerEffect) {
+    $and.push({ triggers: { $exists: true } });
+  } else if (query.triggerEffect === false) {
+    $and.push({ triggers: { $exists: false } });
+  }
+
   if (query.cardVersion) {
     if (query.cardVersion === 'latest') {
       $and.push({ cardVersion: CARD_VERSION });
