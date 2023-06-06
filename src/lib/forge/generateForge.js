@@ -6,6 +6,7 @@ const {
   triggers,
   effects,
 } = require('../../data/forges');
+const { constants } = require('../../data/enums');
 
 // Filters
 const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
@@ -36,9 +37,10 @@ function generateTrigger(level) {
 //   return eligibleTarget;
 // }
 
-function mergeTexts(previousCardText, newCardText) {
-  if (!previousCardText) return `${newCardText}.`;
-  return `${previousCardText}\n${newCardText}.`;
+function mergeTexts(textList) {
+  return textList.map(
+    (text) => (text[text.length - 1] === '.' ? text.slice(0, -1) : text),
+  ).join('.\n');
 }
 
 function cleanDefinitionObject(definitionObject) {
@@ -51,8 +53,9 @@ function cleanDefinitionObject(definitionObject) {
 }
 
 const processTextRegex = /\$([^.$ ]*?\.?)+?[^.$ ]+?(?=\s|$)/;
-function processText(text, textContext) {
-  if (!text) throw new Error('Text is required to process text');
+function processText(text, textContext = {}) {
+  console.log(`Processing text ${text} with context:\n${JSON.stringify(textContext, null, 2)}`);
+  if (!text) return '';
 
   let resultText = text;
   let lastResult = null;
@@ -174,17 +177,20 @@ function generateEffect() {
     description,
     ...processedDefaultForge,
     textContext,
+    text,
     price,
   };
 
-  try {
-    forge.text = processText(text, { ...forge, ...textContext });
-  } catch (err) {
-    console.error(`Error processing text for ${JSON.stringify(forge)}`);
-    throw err;
-  }
-
   return forge;
+}
+
+function getCardBaseCost(card) {
+  return parseInt(
+    (
+      card.attack * constants.CARD_PRICE_PER_ATTACK_POINT
+      + card.hp * constants.CARD_PRICE_PER_HP_POINT
+    ), 10,
+  );
 }
 
 const forgeGenerators = [
@@ -200,6 +206,11 @@ const forgeGenerators = [
     apply: (forge, card) => {
       const newCard = { ...card };
       newCard.unitType = forge.key;
+      return newCard;
+    },
+    applyCost: (baseCost, _, card) => {
+      const newCard = { ...card };
+      newCard.cost = baseCost;
       return newCard;
     },
   },
@@ -218,7 +229,11 @@ const forgeGenerators = [
       const newCard = { ...card };
       newCard.passiveEffects = newCard.passiveEffects || [];
       newCard.passiveEffects.push(forge.key);
-      newCard.cost = forge.costModificator ? forge.costModificator(newCard) : card.cost;
+      return newCard;
+    },
+    applyCost: (baseCost, forge, card) => {
+      const newCard = { ...card };
+      newCard.cost = baseCost + forge.costModificator ? forge.costModificator(newCard) : card.cost;
       return newCard;
     },
   },
@@ -234,6 +249,12 @@ const forgeGenerators = [
         trigger,
         effect,
         text: `${trigger.name}: ${effect.text}`,
+        textContext: {
+          ...trigger,
+          ...effect,
+          ...(trigger.textContext || {}),
+          ...(effect.textContext || {}),
+        },
       };
     },
     apply: (forge, card) => {
@@ -243,13 +264,19 @@ const forgeGenerators = [
         trigger: cleanDefinitionObject(forge.trigger),
         effect: cleanDefinitionObject(forge.effect),
       });
-      const extraPrice = forge.effect.price ? forge.effect.price(forge.effect) : 0;
+      return newCard;
+    },
+    applyCost: (baseCost, forge, card) => {
+      const newCard = { ...card };
+      const foundEffect = effects[forge.effect.key];
+      const extraPrice = foundEffect.price ? foundEffect.price(forge.effect) : 0;
+      const foundTrigger = triggers[forge.trigger.key];
       const extraPriceModded = parseInt(
-        forge.trigger.costModificator
-          ? forge.trigger.costModificator({ cost: extraPrice }) : extraPrice,
+        foundTrigger.costModificator
+          ? foundTrigger.costModificator({ cost: extraPrice }) : extraPrice,
         10,
       );
-      newCard.cost += extraPriceModded;
+      newCard.cost = baseCost + extraPriceModded;
       return newCard;
     },
   },
@@ -268,11 +295,31 @@ function applyForge(forge, card) {
   if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
   if (!card) throw new Error('Card is required');
   const newCard = forgeGenerator.apply(forge, card);
-  if (forge.text) {
-    newCard.text = mergeTexts(card.text, forge.text);
-  }
   if (!newCard.rarityLevel) newCard.rarityLevel = 0;
   newCard.rarityLevel += 1;
+  return newCard;
+}
+
+function applyCardCostAndText(card) {
+  let baseCost = getCardBaseCost(card);
+  const forges = card.forges || [];
+  let newCard = { ...card };
+  const texts = [];
+  // @TODO This is an arbitrary order to apply costs. It will change
+  forges.forEach((forge) => {
+    const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
+    if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
+    newCard = forgeGenerator.applyCost(baseCost, forge, card);
+    baseCost += newCard.cost;
+    try {
+      texts.push(processText(forge.text, { ...forge, ...forge.textContext }));
+    } catch (err) {
+      console.error(`Error processing text for ${JSON.stringify(forge)}`);
+      throw err;
+    }
+  });
+  newCard.text = mergeTexts(texts);
+  delete newCard.forges;
   return newCard;
 }
 
@@ -285,6 +332,7 @@ module.exports = {
   generateEffect,
   generateForge,
   applyForge,
+  applyCardCostAndText,
 
   forgeGenerators,
 };

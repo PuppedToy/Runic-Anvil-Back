@@ -24,12 +24,12 @@ const triggers = {
   //   onEffect: 'banish',
   //   costModificator: ({ cost }) => cost * 0.3,
   // },
-  discarded: {
-    name: 'Discarded',
-    effectType: 'trigger',
-    onEffect: 'discard',
-    costModificator: ({ cost }) => cost * 0.2,
-  },
+  // discarded: {
+  //   name: 'Discarded',
+  //   effectType: 'trigger',
+  //   onEffect: 'discard',
+  //   costModificator: ({ cost }) => cost * 0.2,
+  // },
   moved: {
     name: 'Moved',
     effectType: 'trigger',

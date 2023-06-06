@@ -1,7 +1,6 @@
 const { randomInt } = require('../utils/random');
 const { generateForge, applyForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardTexts');
-const { constants } = require('../data/enums');
 
 function exponential(min, range, probability = 0.5) {
   let result = min;
@@ -23,12 +22,6 @@ function generateUnit(level = 1) {
     type: 'unit',
     unitType: 'human',
   };
-  card.cost = parseInt(
-    (
-      card.attack * constants.CARD_PRICE_PER_ATTACK_POINT
-      + card.hp * constants.CARD_PRICE_PER_HP_POINT
-    ), 10,
-  );
 
   const forges = [];
   for (let accumulator = 0; accumulator < level; accumulator += 1) {
