@@ -1,3 +1,4 @@
+const md5 = require('md5');
 const { randomInt } = require('../utils/random');
 const { generateForge, applyForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardTexts');
@@ -8,6 +9,20 @@ function exponential(min, range, probability = 0.5) {
     result += 1;
   }
   return result;
+}
+
+function generateHash(card) {
+  const {
+    rarityLevel, attack, hp, unitType, passiveEffects = [], triggers = [],
+  } = card;
+  const sortedPassiveEffects = JSON.stringify(passiveEffects.sort());
+  const sortedTriggers = JSON.stringify(triggers.sort((t1, t2) => {
+    const triggerComparison = t1.trigger.key.localeCompare(t2.trigger.key);
+    if (triggerComparison !== 0) return triggerComparison;
+    return t1.effect.key.localeCompare(t2.effect.key);
+  }));
+  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${sortedPassiveEffects}|${sortedTriggers}`;
+  return { hashContent, hash: md5(hashContent) };
 }
 
 function generateUnit(level = 1) {
@@ -32,6 +47,9 @@ function generateUnit(level = 1) {
 
   card.forges = forges;
   card.name = generateName(card);
+  const { hashContent, hash } = generateHash(card);
+  card.hashContent = hashContent;
+  card.hash = hash;
   return card;
 }
 
