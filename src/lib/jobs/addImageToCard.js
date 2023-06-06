@@ -3,7 +3,7 @@ const db = require('../../db');
 
 async function addImageToCard(card) {
   const { generationData, result } = await generateImage(card);
-  const image = `${process.env.BASE_URL}${result}`;
+  const image = result;
 
   const updatedCard = await db.cards.update(card._id, {
     image,
