@@ -622,30 +622,456 @@ const nouns = {
         profession: true,
       },
     ],
-    bird: [], /* {
-      name: 'Bird',
-      forgeLevel: 1,
-    }, */
-    insect: [], /* {
-      name: 'Insect',
-      forgeLevel: 1,
-    }, */
-    ape: [], /* {
-      name: 'Ape',
-      forgeLevel: 1,
-    }, */
-    beast: [], /* {
-      name: 'Beast',
-      forgeLevel: 1,
-    }, */
-    reptile: [], /* {
-      name: 'Reptile',
-      forgeLevel: 1,
-    }, */
-    fish: [], /* {
-      name: 'Fish',
-      forgeLevel: 1,
-    }, */
+    bird: [
+      {
+        word: 'raven',
+      },
+      {
+        word: 'crow',
+      },
+      {
+        word: 'eagle',
+      },
+      {
+        word: 'hawk',
+      },
+      {
+        word: 'falcon',
+      },
+      {
+        word: 'owl',
+      },
+      {
+        word: 'parrot',
+      },
+      {
+        word: 'peacock',
+      },
+      {
+        word: 'pheasant',
+      },
+      {
+        word: 'swan',
+      },
+      {
+        word: 'goose',
+      },
+      {
+        word: 'duck',
+      },
+      {
+        word: 'gull',
+      },
+      {
+        word: 'pigeon',
+      },
+      {
+        word: 'sparrow',
+      },
+      {
+        word: 'robin',
+      },
+      {
+        word: 'canary',
+      },
+      {
+        word: 'vulture',
+      },
+      {
+        word: 'turkey',
+      },
+      {
+        word: 'quail',
+      },
+      {
+        word: 'dove',
+      },
+      {
+        word: 'woodpecker',
+      },
+      {
+        word: 'hummingbird',
+      },
+      {
+        word: 'pelican',
+      },
+      {
+        word: 'stork',
+      },
+      {
+        word: 'crane',
+      },
+      {
+        word: 'flamingo',
+      },
+      {
+        word: 'ostrich',
+      },
+      {
+        word: 'emu',
+      },
+      {
+        word: 'kiwi',
+      },
+      {
+        word: 'penguin',
+      },
+      {
+        word: 'dodo',
+      },
+      {
+        word: 'phoenix',
+      },
+    ],
+    insect: [
+      {
+        word: 'ant',
+      },
+      {
+        word: 'bee',
+      },
+      {
+        word: 'beetle',
+      },
+      {
+        word: 'butterfly',
+      },
+      {
+        word: 'caterpillar',
+      },
+      {
+        word: 'cockroach',
+      },
+      {
+        word: 'cricket',
+      },
+      {
+        word: 'dragonfly',
+      },
+      {
+        word: 'flea',
+      },
+      {
+        word: 'fly',
+      },
+      {
+        word: 'grasshopper',
+      },
+      {
+        word: 'ladybug',
+      },
+      {
+        word: 'louse',
+      },
+      {
+        word: 'mantis',
+      },
+      {
+        word: 'moth',
+      },
+      {
+        word: 'mosquito',
+      },
+      {
+        word: 'scorpion',
+      },
+      {
+        word: 'spider',
+      },
+      {
+        word: 'termite',
+      },
+      {
+        word: 'wasp',
+      },
+      {
+        word: 'worm',
+      },
+      {
+        word: 'cicada',
+      },
+      {
+        word: 'crab',
+      },
+      {
+        word: 'lobster',
+      },
+      {
+        word: 'prawn',
+      },
+      {
+        word: 'shrimp',
+      },
+      {
+        word: 'snail',
+      },
+      {
+        word: 'slug',
+      },
+    ],
+    ape: [
+      {
+        word: 'ape',
+      },
+      {
+        word: 'chimpanzee',
+      },
+      {
+        word: 'gorilla',
+      },
+      {
+        word: 'baboon',
+      },
+      {
+        word: 'monkey',
+      },
+      {
+        word: 'lemur',
+      },
+      {
+        word: 'orangutan',
+      },
+      {
+        word: 'gibbon',
+      },
+      {
+        word: 'mandrill',
+      },
+      {
+        word: 'marmoset',
+      },
+      {
+        word: 'tamarin',
+      },
+      {
+        word: 'macaque',
+      },
+    ],
+    beast: [
+      {
+        word: 'bear',
+      },
+      {
+        word: 'boar',
+      },
+      {
+        word: 'buffalo',
+      },
+      {
+        word: 'bull',
+      },
+      {
+        word: 'camel',
+      },
+      {
+        word: 'cow',
+      },
+      {
+        word: 'deer',
+      },
+      {
+        word: 'elk',
+      },
+      {
+        word: 'gazelle',
+      },
+      {
+        word: 'goat',
+      },
+      {
+        word: 'hippo',
+      },
+      {
+        word: 'horse',
+      },
+      {
+        word: 'kangaroo',
+      },
+      {
+        word: 'lion',
+      },
+      {
+        word: 'lynx',
+      },
+      {
+        word: 'moose',
+      },
+      {
+        word: 'ox',
+      },
+      {
+        word: 'pig',
+      },
+      {
+        word: 'rhino',
+      },
+      {
+        word: 'sheep',
+      },
+      {
+        word: 'tiger',
+      },
+      {
+        word: 'wolf',
+      },
+      {
+        word: 'zebra',
+      },
+      {
+        word: 'antelope',
+      },
+      {
+        word: 'cheetah',
+      },
+      {
+        word: 'cougar',
+      },
+      {
+        word: 'panther',
+      },
+      {
+        word: 'leopard',
+      },
+      {
+        word: 'jaguar',
+      },
+      {
+        word: 'bobcat',
+      },
+      {
+        word: 'puma',
+      },
+    ],
+    reptile: [
+      {
+        word: 'alligator',
+      },
+      {
+        word: 'crocodile',
+      },
+      {
+        word: 'gecko',
+      },
+      {
+        word: 'iguana',
+      },
+      {
+        word: 'lizard',
+      },
+      {
+        word: 'snake',
+      },
+      {
+        word: 'turtle',
+      },
+      {
+        word: 'chameleon',
+      },
+      {
+        word: 'komodo',
+      },
+      {
+        word: 'rattlesnake',
+      },
+      {
+        word: 'cobra',
+      },
+      {
+        word: 'viper',
+      },
+      {
+        word: 'python',
+      },
+      {
+        word: 'boa',
+      },
+      {
+        word: 'anaconda',
+      },
+      {
+        word: 'basilisk',
+      },
+    ],
+    fish: [
+      {
+        word: 'fish',
+      },
+      {
+        word: 'shark',
+      },
+      {
+        word: 'whale',
+      },
+      {
+        word: 'dolphin',
+      },
+      {
+        word: 'eel',
+      },
+      {
+        word: 'ray',
+      },
+      {
+        word: 'stingray',
+      },
+      {
+        word: 'orca',
+      },
+      {
+        word: 'seal',
+      },
+      {
+        word: 'sealion',
+      },
+      {
+        word: 'walrus',
+      },
+      {
+        word: 'squid',
+      },
+      {
+        word: 'octopus',
+      },
+      {
+        word: 'jellyfish',
+      },
+      {
+        word: 'crab',
+      },
+      {
+        word: 'lobster',
+      },
+      {
+        word: 'shrimp',
+      },
+      {
+        word: 'prawn',
+      },
+      {
+        word: 'oyster',
+      },
+      {
+        word: 'clam',
+      },
+      {
+        word: 'scallop',
+      },
+      {
+        word: 'mussel',
+      },
+      {
+        word: 'coral',
+      },
+      {
+        word: 'starfish',
+      },
+      {
+        word: 'sponge',
+      },
+      {
+        word: 'urchin',
+      },
+    ],
     tree: [], /* {
       name: 'Tree',
       forgeLevel: 2,
