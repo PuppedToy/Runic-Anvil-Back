@@ -24,12 +24,12 @@ const triggers = {
   //   onEffect: 'banish',
   //   costModificator: ({ cost }) => cost * 0.3,
   // },
-  discarded: {
-    name: 'Discarded',
-    effectType: 'trigger',
-    onEffect: 'discard',
-    costModificator: ({ cost }) => cost * 0.2,
-  },
+  // discarded: {
+  //   name: 'Discarded',
+  //   effectType: 'trigger',
+  //   onEffect: 'discard',
+  //   costModificator: ({ cost }) => cost * 0.2,
+  // },
   moved: {
     name: 'Moved',
     effectType: 'trigger',
@@ -58,7 +58,7 @@ const triggers = {
     name: 'Fighting',
     effectType: 'trigger',
     onEffect: 'fight',
-    costModificator: ({ cost }) => cost * 1.75,
+    costModificator: ({ cost }) => cost * 2,
   },
   defending: {
     name: 'Defending',
@@ -76,7 +76,7 @@ const triggers = {
     name: 'Siege',
     effectType: 'stageChange',
     onEffect: 'siege',
-    costModificator: ({ cost }) => cost * 1.1,
+    costModificator: ({ cost }) => cost * 0.8,
   },
   turnBeginning: {
     name: 'Beginning of the turn',
@@ -106,7 +106,7 @@ const triggers = {
     name: 'A kingdom earns money',
     effectType: 'kingdomTrigger',
     onEffect: 'earn',
-    costModificator: ({ cost }) => cost * 4,
+    costModificator: ({ cost }) => cost * 3,
   },
   otherTrigger: {
     name: 'Another card trigger',
@@ -124,7 +124,7 @@ const triggers = {
     name: 'Damage a wall',
     effectType: 'trigger',
     onEffect: 'wallDamage',
-    costModificator: ({ cost }) => cost * 0.5,
+    costModificator: ({ cost }) => cost * 0.3,
   },
   wallDamaged: {
     name: 'Our wall is damaged',

@@ -31,6 +31,7 @@ const searchValidator = {
     rarity: Joi.number().integer().min(0),
     minRarity: Joi.number().integer().min(0),
     maxRarity: Joi.number().integer().min(0),
+    triggerEffect: Joi.boolean(),
     cardVersion: Joi.string().regex(/^(\^|~)?(latest|([0-9]+?\.){2}[0-9]+)$/),
   }),
 };
