@@ -98,19 +98,50 @@ function processText(text, textContext) {
   return resultText;
 }
 
-function processValue(value) {
-  if (typeof value === 'number') return value;
-  if (typeof value === 'object') {
-    if (Object.hasOwnProperty.call(value, 'range')) {
-      const { range } = value;
-      if (!Object.hasOwnProperty.call(range, 'min') || !Object.hasOwnProperty.call(range, 'max')) {
-        throw new Error('Range must have min and max');
-      }
-
-      return randomInt(range.min, range.max);
+const processOperations = {
+  range: (range) => {
+    if (!Object.hasOwnProperty.call(range, 'min') || !Object.hasOwnProperty.call(range, 'max')) {
+      throw new Error('Range must have min and max');
     }
+
+    return randomInt(range.min, range.max);
+  },
+  sample: (sample) => weightedSample(sample),
+  exponential: (exponential) => {
+    if (!Object.hasOwnProperty.call(exponential, 'min')) {
+      throw new Error('Range must have min and max');
+    }
+    const { min } = exponential;
+    const max = exponential.max || 99999; // This is for safety purposes against infinite loops
+    const step = exponential.step || 1;
+    const probability = exponential.probability || 0.5;
+
+    let result = min;
+    while (Math.random() < probability && result < max) {
+      result += step;
+    }
+    return result;
+  },
+};
+
+function processDefaultForge(defaultForge) {
+  if (!Array.isArray(defaultForge) && typeof defaultForge === 'object') {
+    const resultDefaultForge = { ...defaultForge };
+    Object.entries(resultDefaultForge).forEach(([key, value]) => {
+      const keyWithoutDollar = key.replace('$', '');
+      if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
+        resultDefaultForge[key] = processOperations[keyWithoutDollar](value);
+      }
+      resultDefaultForge[key] = processDefaultForge(resultDefaultForge[key]);
+      Object.keys(resultDefaultForge[key]).forEach((subKey) => {
+        if (subKey[0] === '$') {
+          resultDefaultForge[key] = resultDefaultForge[key][subKey];
+        }
+      });
+    });
+    return resultDefaultForge;
   }
-  return value;
+  return defaultForge;
 }
 
 // Effects
@@ -134,20 +165,24 @@ function generateEffect() {
     key, name, description, text, default: defaultForge, generalTextContext = {}, price,
   } = effect;
 
-  const value = processValue(defaultForge.value);
-  const textContext = { ...(defaultForge.textContext || {}), ...generalTextContext };
+  const processedDefaultForge = processDefaultForge(defaultForge);
+  const textContext = { ...(processedDefaultForge.textContext || {}), ...generalTextContext };
 
   const forge = {
     key,
     name,
     description,
-    ...defaultForge,
-    value,
+    ...processedDefaultForge,
     textContext,
     price,
   };
 
-  forge.text = processText(text, { ...forge, ...textContext });
+  try {
+    forge.text = processText(text, { ...forge, ...textContext });
+  } catch (err) {
+    console.error(`Error processing text for ${JSON.stringify(forge)}`);
+    throw err;
+  }
 
   return forge;
 }
@@ -247,7 +282,6 @@ module.exports = {
   cleanDefinitionObject,
   mergeTexts,
   processText,
-  processValue,
   generateEffect,
   generateForge,
   applyForge,

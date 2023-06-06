@@ -37,14 +37,15 @@ const contextualWords = [
   'sea',
   'river',
   'lake',
+  'beach',
+  'cliff',
+  'abyss',
   'legendary',
   'powerful',
   'sunset',
   'horror',
-  'symmetrical',
-  'ethereal background',
+  'ethereal',
   'closeup portrait',
-  'beautiful',
 ];
 
 const artists = [
@@ -92,10 +93,10 @@ function getCardImageKeywords(card) {
 function generatePrompt(card) {
   if (!card) throw new Error('No card provided');
 
-  const imageContext = new Array(4).fill(0).map(() => weightedSample(contextualWords)).join(', ');
+  const imageContext = `${weightedSample(contextualWords)} and ${weightedSample(contextualWords)} background`;
   const imageArtists = new Array(2).fill(0).map(() => weightedSample(artists)).join(' and ');
   const cardImageKeywords = getCardImageKeywords(card).join(', ');
-  return `Epic drawing of a ${card.name}, ${cardImageKeywords}, ${imageContext}, by ${imageArtists}, hyper detailed, 8k resolution, cinematic, intrincate, concept art, epic, trending in artstation`;
+  return `Epic drawing of a ${card.unitType || 'human'} ${card.name}, ${cardImageKeywords}, ${imageContext} background, by ${imageArtists}, hyper detailed, 8k resolution, cinematic, intrincate, concept art, epic, trending in artstation`;
 }
 
 async function generateImage(card) {

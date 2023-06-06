@@ -12,24 +12,24 @@ const triggers = {
     onEffect: 'destroy',
     costModificator: ({ cost }) => cost * 0.9,
   },
-  // resurrected: {
-  //   name: 'Resurrected',
-  //   effectType: 'trigger',
-  //   onEffect: 'resurrect',
-  //   costModificator: ({ cost }) => cost * 0.6,
-  // },
+  resurrected: {
+    name: 'Resurrected',
+    effectType: 'trigger',
+    onEffect: 'resurrect',
+    costModificator: ({ cost }) => cost * 0.3,
+  },
   // banished: {
   //   name: 'Banished',
   //   effectType: 'trigger',
   //   onEffect: 'banish',
   //   costModificator: ({ cost }) => cost * 0.3,
   // },
-  // discarded: {
-  //   name: 'Discarded',
-  //   effectType: 'trigger',
-  //   onEffect: 'discard',
-  //   costModificator: ({ cost }) => cost * 0.5,
-  // },
+  discarded: {
+    name: 'Discarded',
+    effectType: 'trigger',
+    onEffect: 'discard',
+    costModificator: ({ cost }) => cost * 0.2,
+  },
   moved: {
     name: 'Moved',
     effectType: 'trigger',
@@ -54,10 +54,10 @@ const triggers = {
   //   onEffect: 'retire',
   //   costModificator: ({ cost }) => cost * 0.7,
   // },
-  attacking: {
-    name: 'Attacking',
+  fighting: {
+    name: 'Fighting',
     effectType: 'trigger',
-    onEffect: 'attack',
+    onEffect: 'fight',
     costModificator: ({ cost }) => cost * 1.75,
   },
   defending: {
@@ -113,6 +113,42 @@ const triggers = {
     description: 'Another card triggers any of the trigger effects',
     effectType: 'otherTrigger',
     costModificator: ({ cost }) => cost * 8,
+  },
+  healed: {
+    name: 'Healed',
+    effectType: 'trigger',
+    onEffect: 'heal',
+    costModificator: ({ cost }) => cost * 1.1,
+  },
+  wallDamage: {
+    name: 'Damage a wall',
+    effectType: 'trigger',
+    onEffect: 'wallDamage',
+    costModificator: ({ cost }) => cost * 0.5,
+  },
+  wallDamaged: {
+    name: 'Our wall is damaged',
+    effectType: 'trigger',
+    onEffect: 'wallDamage',
+    costModificator: ({ cost }) => cost * 1,
+  },
+  statChange: {
+    name: 'On stat change',
+    effectType: 'trigger',
+    onEffect: 'statChange',
+    costModificator: ({ cost }) => cost * 1.1,
+  },
+  feared: {
+    name: 'Feared',
+    effectType: 'trigger',
+    onEffect: 'fear',
+    costModificator: ({ cost }) => cost * 0.1,
+  },
+  challenged: {
+    name: 'Challenged',
+    effectType: 'trigger',
+    onEffect: 'challenged',
+    costModificator: ({ cost }) => cost * 0.1,
   },
 };
 
