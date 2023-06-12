@@ -9,7 +9,7 @@ const baseStatusEffect = {
             probability: 0.2,
         },
     },
-    target: {
+    card: {
         $sample: [
             {
                 target: 'randomAlly',
@@ -26,7 +26,7 @@ const baseStatusEffect = {
 };
 
 const positiveStatusEffect = {
-    target: {
+    card: {
         $sample: [
             {
                 target: 'randomAlly',
@@ -47,7 +47,7 @@ const statusEffects = {
         statusEffect: {
             statusKey: 'exhaust',
             name: 'Exhaust',
-            text: 'exhaust a $card',
+            text: 'exhaust $card',
         },
         ...baseStatusEffect,
     },
@@ -55,7 +55,7 @@ const statusEffects = {
         statusEffect: {
             statusKey: 'root',
             name: 'Root',
-            text: 'root a $card',
+            text: 'root $card',
         },
         ...baseStatusEffect,
     },
@@ -63,7 +63,7 @@ const statusEffects = {
         statusEffect: {
             statusKey: 'stun',
             name: 'Stun',
-            text: 'stun a $card',
+            text: 'stun $card',
         },
         ...baseStatusEffect,
     },
@@ -71,7 +71,7 @@ const statusEffects = {
         statusEffect: {
             statusKey: 'silence',
             name: 'Silence',
-            text: 'silence a $card',
+            text: 'silence $card',
         },
         ...baseStatusEffect,
     },
@@ -83,10 +83,10 @@ const statusEffects = {
         },
         ...baseStatusEffect,
     },
-    regrow: {
+    regrowth: {
         statusEffect: {
-            statusKey: 'decay',
-            name: 'Decay',
+            statusKey: 'regrowth',
+            name: 'Regrowth',
             text: 'apply regrowth to $card',
         },
         ...baseStatusEffect,

@@ -34,6 +34,10 @@ function cacheCosts() {
   return db.cards.cacheCosts()
 }
 
+function removeImageless() {
+  return db.cards.removeImageless()
+}
+
 module.exports = {
   generateFullCard,
   generateCards,
@@ -42,4 +46,5 @@ module.exports = {
   addImageToCard,
   addImageToAnyCard,
   cacheCosts,
+  removeImageless,
 };

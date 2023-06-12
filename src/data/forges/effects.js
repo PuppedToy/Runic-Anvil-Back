@@ -434,7 +434,7 @@ const effects = {
     key: 'addStatusEffect',
     name: 'Add status effect',
     description: 'Add a status effect to the target card',
-    text: '$statusEffectText',
+    text: '$statusEffect.text',
     default: {
       $sample: statusEffects,
     },
