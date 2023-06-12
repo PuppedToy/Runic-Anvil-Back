@@ -6,7 +6,7 @@ function getItemWeight(item) {
   return item.weight;
 }
 
-function weightedSample(collection, filters) {
+function weightedSample(collection, filters, options = {}) {
   let collectionType = typeof collection;
   if (collection instanceof Array) collectionType = 'array';
 
@@ -65,6 +65,10 @@ function weightedSample(collection, filters) {
     maxWeight -= itemWeight;
     return randomMark > maxWeight;
   });
+
+  if (options.noKey) {
+    delete result.key;
+  }
 
   return result;
 }

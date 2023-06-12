@@ -32,6 +32,7 @@
 // In the future, tweak them for match their rarity
 
 const { constants } = require('../enums');
+const statusEffects = require('./statusEffects');
 
 const DEFAULT_MODS = [
   'ADD_OR_IMPROVE_TARGET',
@@ -58,16 +59,15 @@ const effects = {
         //   max: 149,
         // },
         $exponential: {
-          min: 50,
-          max: 500,
-          step: 25,
-          probability: 0.8,
+          min: 100,
+          max: 10000,
+          step: 50,
+          probability: 0.85,
         },
       },
       textContext: {
         card: 'a $target $value cost card from $from',
       },
-      valueMultiplier: '$cost + $targetValue',
     },
     mods: [
       'ANOTHER_KINGDOM', // or upgrade
@@ -251,12 +251,10 @@ const effects = {
           {
             place: 'barracks',
             text: 'the barracks',
-            price: ({ card }) => (card.target === 'randomAlly' ? -50 : 50),
           },
           {
             place: 'rangedZone',
             text: 'the ranged zone',
-            price: ({ card }) => (card.target === 'randomAlly' ? -20 : 20),
           },
           {
             place: 'meleeZone',
@@ -265,12 +263,30 @@ const effects = {
           {
             place: 'warZone',
             text: 'the war zone',
-            price: ({ card }) => (card.target === 'randomAlly' ? 25 : -25),
           },
         ],
       },
     },
-    price: ({ place, ...rest }) => (Object.hasOwnProperty.call(place, 'price') ? place.price(rest) : 0),
+    price: ({ place, card }) => {
+      let basePrice = 0;
+      let basePriceMod = 1;
+
+      if (card.target === 'randomEnemy') {
+        basePriceMod = -1;
+      }
+
+      if (place.place === 'barracks') {
+        basePrice = -50;
+      }
+      else if (place.place === 'rangedZone') {
+        basePrice = -20;
+      }
+      else if (place.place === 'warZone') {
+        basePrice = 25;
+      }
+
+      return basePrice * basePriceMod;
+    },
   },
   recall: {
     key: 'recall',
@@ -345,7 +361,7 @@ const effects = {
         text: 'a random ally',
       },
     },
-    price: () => 200,
+    price: () => 300,
   },
   discard: {
     key: 'discard',
@@ -358,7 +374,7 @@ const effects = {
         text: 'a random ally',
       },
     },
-    price: () => -50,
+    price: () => -30,
   },
   summon: {
     key: 'summon',
@@ -374,9 +390,9 @@ const effects = {
         // },
         $exponential: {
           min: 50,
-          max: 1000,
-          step: 25,
-          probability: 0.8,
+          max: 10000,
+          step: 10,
+          probability: 0.94,
         },
       },
       place: {
@@ -386,7 +402,6 @@ const effects = {
       textContext: {
         card: 'a $target $value cost card',
       },
-      valueMultiplier: '$cost + $targetValue',
     },
     price: ({ value }) => value,
   },
@@ -404,17 +419,62 @@ const effects = {
         // },
         $exponential: {
           min: 50,
-          max: 2000,
-          step: 50,
-          probability: 0.9,
+          max: 10000,
+          step: 10,
+          probability: 0.94,
         },
       },
       textContext: {
         card: 'a $target $value cost card',
       },
-      valueMultiplier: '$cost + $targetValue',
     },
     price: ({ value }) => value * 0.1,
+  },
+  addStatusEffect: {
+    key: 'addStatusEffect',
+    name: 'Add status effect',
+    description: 'Add a status effect to the target card',
+    text: '$statusEffectText',
+    default: {
+      $sample: statusEffects,
+    },
+    price: ({ statusEffect, card, value = 1 }) => {
+      let basePrice = 0;
+      let basePriceMod = 1;
+
+      if (card.target === 'randomEnemy') {
+        basePriceMod = -1;
+      }
+
+      if (statusEffect.key === 'exhaust') {
+        basePrice = -30;
+      }
+      if (statusEffect.key === 'root') {
+        basePrice = -40;
+      }
+      if (statusEffect.key === 'stun') {
+        basePrice = -50;
+      }
+      if (statusEffect.key === 'decay') {
+        basePrice = -50;
+      }
+      if (statusEffect.key === 'silence') {
+        if (value === 0) {
+          return -100 * basePriceMod;
+        }
+        else {
+          basePrice = -50;
+        }
+      }
+      if (statusEffect.key === 'regrow') {
+        basePrice = 50;
+      }
+      if (statusEffect.key === 'daze') {
+        basePrice = -10;
+      }
+
+      return basePrice * basePriceMod * value;
+    },
   },
 };
 
