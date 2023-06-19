@@ -3,7 +3,7 @@
 const baseStatusEffect = {
     value: {
         $exponential: {
-            min: 0,
+            min: 1,
             max: 100,
             step: 1,
             probability: 0.2,
@@ -45,32 +45,40 @@ const positiveStatusEffect = {
 const statusEffects = {
     exhaust: {
         statusEffect: {
-            statusKey: 'exhaust',
-            name: 'Exhaust',
+            statusKey: 'exhausted',
+            name: 'Exhausted',
             text: 'exhaust $card',
         },
         ...baseStatusEffect,
+        value: {
+            $exponential: {
+                min: 0,
+                max: 100,
+                step: 1,
+                probability: 0.2,
+            },
+        },
     },
     root: {
         statusEffect: {
-            statusKey: 'root',
-            name: 'Root',
+            statusKey: 'rooted',
+            name: 'Rooted',
             text: 'root $card',
         },
         ...baseStatusEffect,
     },
     stun: {
         statusEffect: {
-            statusKey: 'stun',
-            name: 'Stun',
+            statusKey: 'stunned',
+            name: 'Stunned',
             text: 'stun $card',
         },
         ...baseStatusEffect,
     },
     silence: {
         statusEffect: {
-            statusKey: 'silence',
-            name: 'Silence',
+            statusKey: 'silenced',
+            name: 'Silenced',
             text: 'silence $card',
         },
         ...baseStatusEffect,
