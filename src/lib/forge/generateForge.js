@@ -108,7 +108,7 @@ const processOperations = {
 
     return randomInt(range.min, range.max);
   },
-  sample: (sample) => weightedSample(sample),
+  sample: (sample) => weightedSample(sample, undefined, { noKey: true }),
   exponential: (exponential) => {
     if (!Object.hasOwnProperty.call(exponential, 'min')) {
       throw new Error('Range must have min and max');
@@ -128,19 +128,18 @@ const processOperations = {
 
 function processDefaultForge(defaultForge) {
   if (!Array.isArray(defaultForge) && typeof defaultForge === 'object') {
-    const resultDefaultForge = { ...defaultForge };
+    let resultDefaultForge = { ...defaultForge };
     Object.entries(resultDefaultForge).forEach(([key, value]) => {
       const keyWithoutDollar = key.replace('$', '');
       if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
         resultDefaultForge[key] = processOperations[keyWithoutDollar](value);
       }
       resultDefaultForge[key] = processDefaultForge(resultDefaultForge[key]);
-      Object.keys(resultDefaultForge[key]).forEach((subKey) => {
-        if (subKey[0] === '$') {
-          resultDefaultForge[key] = resultDefaultForge[key][subKey];
-        }
-      });
     });
+    const keys = Object.keys(resultDefaultForge);
+    if (keys.length === 1 && keys[0][0] === '$') {
+      return resultDefaultForge[keys[0]];
+    }
     return resultDefaultForge;
   }
   return defaultForge;

@@ -298,6 +298,27 @@ async function cacheCosts() {
   }
 }
 
+async function removeImageless() {
+  const db = await getDatabase(DATABASE_NAME);
+  const imagelessCards = await db.find({
+    $or: [
+      { image: { $exists: false } },
+      { image: null },
+    ],
+  });
+
+  let processedCards = 0;
+  const totalCards = await imagelessCards.count();
+
+  while (await imagelessCards.hasNext()) {
+    const card = await imagelessCards.next();
+    await db.deleteOne({ _id: card._id });
+
+    processedCards++;
+    console.log(`Deleted ${processedCards} of ${totalCards} imageless cards.`);
+  }
+}
+
 async function bulkUpdate(query, stringUpdateCardMethod) {
   if (process.env === 'production') {
     throw new Error('bulkEdit is not allowed in production');
@@ -341,4 +362,5 @@ module.exports = {
   customQuery,
   bulkUpdate,
   cacheCosts,
+  removeImageless,
 };
