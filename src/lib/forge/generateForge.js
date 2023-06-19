@@ -305,7 +305,7 @@ const forgeGenerators = [
     },
   },
   {
-    type: 'addAction',
+    type: 'addEffectOnAction',
     weight: 1,
     generate (level) {
       const action = generateAction(level);
