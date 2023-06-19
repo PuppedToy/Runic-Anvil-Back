@@ -43,22 +43,22 @@ const positiveStatusEffect = {
 };
 
 const statusEffects = {
-    exhaust: {
-        statusEffect: {
-            statusKey: 'exhausted',
-            name: 'Exhausted',
-            text: 'exhaust $card',
-        },
-        ...baseStatusEffect,
-        value: {
-            $exponential: {
-                min: 0,
-                max: 100,
-                step: 1,
-                probability: 0.2,
-            },
-        },
-    },
+    // exhaust: {
+    //     statusEffect: {
+    //         statusKey: 'exhausted',
+    //         name: 'Exhausted',
+    //         text: 'exhaust $card',
+    //     },
+    //     ...baseStatusEffect,
+    //     value: {
+    //         $exponential: {
+    //             min: 0,
+    //             max: 100,
+    //             step: 1,
+    //             probability: 0.2,
+    //         },
+    //     },
+    // },
     root: {
         statusEffect: {
             statusKey: 'rooted',
