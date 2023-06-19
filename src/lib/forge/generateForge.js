@@ -5,6 +5,7 @@ const {
   passiveEffects,
   triggers,
   effects,
+  actions,
 } = require('../../data/forges');
 const { constants } = require('../../data/enums');
 
@@ -18,6 +19,10 @@ function generateTrigger(level) {
   // "Destroyed by a spell" or "Destroyed by an ally". We can enum all possible triggers for
   // each keyword
   return weightedSample(triggers, [forgeLevelFilter(level)]);
+}
+
+function generateAction(level) {
+  return weightedSample(actions, [forgeLevelFilter(level)]);
 }
 
 // const TARGET_TYPE_CARD = 'TARGET_TYPE_CARD';
@@ -52,8 +57,9 @@ function cleanDefinitionObject(definitionObject) {
   return result;
 }
 
-const processTextRegex = /\$([^.$ ]*?\.?)+?[^.$ ]+?(?=\s|$)/;
+const processTextRegex = /\$([^.$ )\]}:]*?\.?)+?[^.$ )\]}:]+?(?=\s|$|:|\)|\]|\})/;
 function processText(text, textContext = {}) {
+  console.log(text, JSON.stringify(textContext, null, 2));
   if (!text) return '';
 
   let resultText = text;
@@ -72,7 +78,7 @@ function processText(text, textContext = {}) {
     let resultField = textContext;
     parts.forEach((part) => {
       if (!Object.hasOwnProperty.call(resultField, part)) {
-        throw new Error(`Field ${part} not found on ${JSON.stringify(resultField)}`);
+        throw new Error(`Field ${part} not found on ${JSON.stringify(resultField, null, 2)}`);
       }
       if (typeof resultField[part] === 'function') {
         resultField = resultField[part](textContext);
@@ -298,6 +304,81 @@ const forgeGenerators = [
       return processText(`${foundTrigger.name}: ${foundEffect.text}`, textContext);
     },
   },
+  {
+    type: 'addAction',
+    weight: 1,
+    generate (level) {
+      const action = generateAction(level);
+      const effect = generateEffect(level);
+
+      return {
+        action,
+        effect,
+        textContext: {
+          ...(action.textContext || {}),
+          ...(effect.textContext || {}),
+        },
+      };
+    },
+    apply (forge, card) {
+      const newCard = { ...card };
+      if (!newCard.actions) newCard.actions = [];
+      newCard.actions.push({
+        action: cleanDefinitionObject(forge.action),
+        effect: cleanDefinitionObject(forge.effect),
+      });
+      return newCard;
+    },
+    findAction (forge, card) {
+      const { actions } = card;
+      const foundAction = actions.find(
+        ({ action, effect }) => action.key === forge.action.key
+          && effect.key === forge.effect.key,
+      );
+      return foundAction;
+    },
+    applyCost (baseCost, forge, card, forgeIndex) {
+      const newCard = { ...card };
+      const foundEffect = effects[forge.effect.key];
+      const effectPrice = foundEffect.price ? foundEffect.price(forge.effect) : 0;
+      const foundAction = actions[forge.action.key];
+      const extraPriceModded = parseInt(
+        foundAction.cardCostModificator
+          ? foundAction.cardCostModificator({ cost: effectPrice, energy: card.energy || 1 }) : 0,
+        10,
+      );
+      const actionPrice = parseInt(
+        foundAction.effectCostModificator
+          ? foundAction.effectCostModificator({ cost: effectPrice }) : effectPrice,
+        10,
+      );
+      newCard.cost = baseCost + extraPriceModded;
+      const foundForge = newCard.forges[forgeIndex];
+      const newForge = {
+        ...foundForge,
+        cost: actionPrice,
+      };
+      const cardAction = this.findAction(forge, newCard);
+      newCard.forges[forgeIndex] = newForge;
+      cardAction.cost = actionPrice;
+      return newCard;
+    },
+    getText (forge, card, forgeIndex) {
+      const foundEffect = effects[forge.effect.key];
+      const foundAction = actions[forge.action.key];
+      const foundForge = card.forges[forgeIndex];
+      const textContext = {
+        ...(forge.effect),
+        ...(forge.action),
+        ...(forge.effect.textContext || {}),
+        ...(forge.action.textContext || {}),
+        ...(foundEffect.textContext || {}),
+        ...(foundAction.textContext || {}),
+        actionCost: foundForge.cost,
+      };
+      return processText(`${foundAction.text}: ${foundEffect.text}`, textContext);
+    },
+  },
 ];
 
 function getCost(card) {
@@ -305,10 +386,10 @@ function getCost(card) {
   let newCard = { ...card };
   newCard.cost = baseCost;
   const forges = card.forges || [];
-  forges.forEach((forge) => {
+  forges.forEach((forge, forgeIndex) => {
     const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
-    newCard = forgeGenerator.applyCost(baseCost, forge, card);
+    newCard = forgeGenerator.applyCost(baseCost, forge, card, forgeIndex);
     baseCost += newCard.cost;
   });
   return newCard.cost;
@@ -338,12 +419,12 @@ function applyCardCostAndText(card) {
   let newCard = { ...card };
   const texts = [];
   // @TODO This is an arbitrary order to apply costs. It will change
-  forges.forEach((forge) => {
+  forges.forEach((forge, forgeIndex) => {
     const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
-    newCard = forgeGenerator.applyCost(baseCost, forge, card);
+    newCard = forgeGenerator.applyCost(baseCost, forge, card, forgeIndex);
     baseCost += newCard.cost;
-    if (forgeGenerator.getText) texts.push(forgeGenerator.getText(forge, card));
+    if (forgeGenerator.getText) texts.push(forgeGenerator.getText(forge, newCard, forgeIndex));
   });
   const text = mergeTexts(texts);
   newCard.text = text ? `${text}.` : '';
