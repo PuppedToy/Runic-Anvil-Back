@@ -1,3 +1,4 @@
+const actions = require('./actions');
 const cardStats = require('./cardStats');
 const cardTypes = require('./cardTypes');
 const conditions = require('./conditions');
@@ -14,6 +15,7 @@ const unitTypes = require('./unitTypes');
 const zones = require('./zones');
 
 module.exports = {
+  actions,
   cardStats,
   cardTypes,
   conditions,

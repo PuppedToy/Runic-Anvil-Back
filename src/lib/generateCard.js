@@ -11,17 +11,22 @@ function exponential(min, range, probability = 0.5) {
   return result;
 }
 
+function createForgeComparator(forgeKey) {
+  return (a, b) => {
+    const triggerComparison = a[forgeKey].key.localeCompare(b.trigger.key);
+    if (triggerComparison !== 0) return triggerComparison;
+    return a.effect.key.localeCompare(b.effect.key);
+  }
+}
+
 function generateHash(card) {
   const {
-    rarityLevel, attack, hp, unitType, passiveEffects = [], triggers = [],
+    rarityLevel, attack, hp, unitType, passiveEffects = [], triggers = [], actions = [],
   } = card;
   const sortedPassiveEffects = JSON.stringify(passiveEffects.sort());
-  const sortedTriggers = JSON.stringify(triggers.sort((t1, t2) => {
-    const triggerComparison = t1.trigger.key.localeCompare(t2.trigger.key);
-    if (triggerComparison !== 0) return triggerComparison;
-    return t1.effect.key.localeCompare(t2.effect.key);
-  }));
-  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${sortedPassiveEffects}|${sortedTriggers}`;
+  const sortedTriggers = JSON.stringify(triggers.sort(createForgeComparator('trigger')));
+  const sortedActions = JSON.stringify(actions.sort(createForgeComparator('action')));
+  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}`;
   return { hashContent, hash: md5(hashContent) };
 }
 
