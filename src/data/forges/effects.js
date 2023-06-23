@@ -446,19 +446,19 @@ const effects = {
         basePriceMod = -1;
       }
 
-      if (statusEffect.key === 'exhaust') {
+      if (statusEffect.statusKey === 'exhaust') {
         basePrice = -30;
       }
-      if (statusEffect.key === 'root') {
+      if (statusEffect.statusKey === 'rooted') {
         basePrice = -40;
       }
-      if (statusEffect.key === 'stun') {
+      if (statusEffect.statusKey === 'stunned') {
         basePrice = -50;
       }
-      if (statusEffect.key === 'decay') {
+      if (statusEffect.statusKey === 'decay') {
         basePrice = -50;
       }
-      if (statusEffect.key === 'silence') {
+      if (statusEffect.statusKey === 'silenced') {
         if (value === 0) {
           return -100 * basePriceMod;
         }
@@ -466,10 +466,10 @@ const effects = {
           basePrice = -50;
         }
       }
-      if (statusEffect.key === 'regrow') {
+      if (statusEffect.statusKey === 'regrowth') {
         basePrice = 50;
       }
-      if (statusEffect.key === 'daze') {
+      if (statusEffect.statusKey === 'daze') {
         basePrice = -10;
       }
 
