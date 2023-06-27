@@ -127,7 +127,7 @@ const cardSelectors = {
     },
     hasStatusEffect: {
         key: 'hasStatusEffect',
-        text: '$target units with $selector.statusEffect.statusKey',
+        text: '$target units with $selector.statusEffect.statusEffect.statusKey',
         selector: {
             statusEffect: {
                 $filteredSample: {
