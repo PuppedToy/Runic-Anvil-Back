@@ -11,22 +11,23 @@ function exponential(min, range, probability = 0.5) {
   return result;
 }
 
-function createForgeComparator(forgeKey) {
+function createForgeComparator(forgeKey, forgeSubkey) {
   return (a, b) => {
-    const triggerComparison = a[forgeKey].key.localeCompare(b.trigger.key);
+    const triggerComparison = a[forgeKey].key.localeCompare(b[forgeKey].key);
     if (triggerComparison !== 0) return triggerComparison;
-    return a.effect.key.localeCompare(b.effect.key);
+    return a[forgeSubkey].key.localeCompare(b[forgeSubkey].key);
   }
 }
 
 function generateHash(card) {
   const {
-    rarityLevel, attack, hp, unitType, passiveEffects = [], triggers = [], actions = [],
+    rarityLevel, attack, hp, unitType, passiveEffects = [], triggers = [], actions = [], conditionalEffects = [],
   } = card;
   const sortedPassiveEffects = JSON.stringify(passiveEffects.sort());
-  const sortedTriggers = JSON.stringify(triggers.sort(createForgeComparator('trigger')));
-  const sortedActions = JSON.stringify(actions.sort(createForgeComparator('action')));
-  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}`;
+  const sortedTriggers = JSON.stringify(triggers.sort(createForgeComparator('trigger', 'effect')));
+  const sortedActions = JSON.stringify(actions.sort(createForgeComparator('action', 'effect')));
+  const sortedConditionalEffects = JSON.stringify(conditionalEffects.sort(createForgeComparator('selector', 'ongoingEffect')));
+  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}|${sortedConditionalEffects}`;
   return { hashContent, hash: md5(hashContent) };
 }
 

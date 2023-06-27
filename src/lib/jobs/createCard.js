@@ -3,7 +3,7 @@ const db = require('../../db');
 
 const MAX_ITERATIONS = 50000;
 
-async function createCard() {
+async function createCard(options = {}) {
   let newCard;
   let foundCard;
   let counter = 0;
@@ -17,6 +17,9 @@ async function createCard() {
     }
     counter += 1;
   } while (foundCard);
+  if (options.image) {
+    newCard.image = image;
+  }
   const createdCard = await db.cards.create(newCard);
   return createdCard;
 }

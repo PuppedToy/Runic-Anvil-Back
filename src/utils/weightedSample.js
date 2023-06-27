@@ -60,11 +60,21 @@ function weightedSample(collection, filters, options = {}) {
   let maxWeight = collectionData.reduce((total, item) => total + getItemWeight(item), 0);
   const randomMark = Math.random() * maxWeight;
 
-  const result = collectionData.find((item) => {
+  let foundItem = collectionData.find((item) => {
     const itemWeight = getItemWeight(item);
     maxWeight -= itemWeight;
     return randomMark > maxWeight;
   });
+
+  const result = typeof foundItem === 'object' ? { ...foundItem } : foundItem;
+
+  if (options.keyReplace) {
+    if (!result.key) {
+      console.log(`Warning: the item has no key property: ${JSON.stringify(result, null, 2)}`);
+    }
+    result[options.keyReplace] = result.key;
+    delete result.key;
+  }
 
   if (options.noKey) {
     delete result.key;

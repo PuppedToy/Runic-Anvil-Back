@@ -1,7 +1,9 @@
 const weightedSample = require('../../utils/weightedSample');
 const { randomInt } = require('../../utils/random');
 const {
+  cardSelectors,
   unitTypes,
+  ongoingEffects,
   passiveEffects,
   triggers,
   effects,
@@ -59,7 +61,6 @@ function cleanDefinitionObject(definitionObject) {
 
 const processTextRegex = /\$([^.$ )\]}:]*?\.?)+?[^.$ )\]}:]+?(?=\s|$|:|\)|\]|\})/;
 function processText(text, textContext = {}) {
-  console.log(text, JSON.stringify(textContext, null, 2));
   if (!text) return '';
 
   let resultText = text;
@@ -103,7 +104,9 @@ function processText(text, textContext = {}) {
     lastResult = resultText;
   }
 
-  return resultText;
+  const lowerCaseResultText = resultText.toLowerCase();
+  const firstCapitalLetterResultText = lowerCaseResultText[0].toUpperCase() + lowerCaseResultText.slice(1);
+  return firstCapitalLetterResultText;
 }
 
 const processOperations = {
@@ -115,24 +118,26 @@ const processOperations = {
     return randomInt(range.min, range.max);
   },
   sample: (sample) => weightedSample(sample, undefined, { noKey: true }),
+  sampleWithKeyReplacement: ({ list, keyReplace }) => weightedSample(list, undefined, { keyReplace, noKey: !keyReplace }),
+  filteredSample: ({ list, filters, keyReplace }) => weightedSample(list, filters, { keyReplace, noKey: !keyReplace }),
   exponential: (exponential) => {
     if (!Object.hasOwnProperty.call(exponential, 'min')) {
       throw new Error('Range must have min and max');
     }
     const { min } = exponential;
-    const max = exponential.max || 99999; // This is for safety purposes against infinite loops
+    const max = Math.abs(exponential.max) || 99999; // This is for safety purposes against infinite loops
     const step = exponential.step || 1;
     const probability = exponential.probability || 0.5;
 
     let result = min;
-    while (Math.random() < probability && result < max) {
+    while (Math.random() < probability && Math.abs(result) < max) {
       result += step;
     }
     return result;
   },
 };
 
-function processDefaultForge(defaultForge) {
+function processForge(defaultForge) {
   if (!Array.isArray(defaultForge) && typeof defaultForge === 'object') {
     let resultDefaultForge = { ...defaultForge };
     Object.entries(resultDefaultForge).forEach(([key, value]) => {
@@ -140,7 +145,7 @@ function processDefaultForge(defaultForge) {
       if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
         resultDefaultForge[key] = processOperations[keyWithoutDollar](value);
       }
-      resultDefaultForge[key] = processDefaultForge(resultDefaultForge[key]);
+      resultDefaultForge[key] = processForge(resultDefaultForge[key]);
     });
     const keys = Object.keys(resultDefaultForge);
     if (keys.length === 1 && keys[0][0] === '$') {
@@ -178,7 +183,7 @@ function generateEffect() {
     price,
   } = effect;
 
-  const processedDefaultForge = processDefaultForge(defaultForge);
+  const processedDefaultForge = processForge(defaultForge);
   const textContext = { ...(processedDefaultForge.textContext || {}), ...generalTextContext };
 
   const forge = {
@@ -192,6 +197,66 @@ function generateEffect() {
   };
 
   return forge;
+}
+
+
+function generateSelector(level) {
+  const selector = weightedSample(cardSelectors, [forgeLevelFilter(level)]);
+
+  const {
+    key,
+    text,
+    selector: selectorDefinition,
+    textContext: generalTextContext = {},
+  } = selector;
+
+  const processedSelector = processForge(selectorDefinition);
+  const textContext = { ...(processedSelector.textContext || {}), ...generalTextContext };
+
+  const forge = {
+    key,
+    text,
+    selector: processedSelector,
+    textContext,
+  };
+  return forge;
+}
+
+function generateOngoingEffect(level) {
+  const ongoingEffect = weightedSample(ongoingEffects, [forgeLevelFilter(level)]);
+
+  const {
+    key,
+    text,
+    effect,
+    textContext: generalTextContext = {},
+  } = ongoingEffect;
+
+  const processedEffect = processForge(effect);
+  const textContext = { ...(processedEffect.textContext || {}), ...generalTextContext };
+
+  const forge = {
+    key,
+    text,
+    effect: processedEffect,
+    textContext,
+  };
+  return forge;
+}
+
+function generateTarget(reversed = false) {
+  const positiveTarget = 'ally';
+  const negativeTarget = 'enemy';
+  const neutralTarget = 'all';
+  
+  const random = Math.random();
+  if (random < 0.05) {
+    return neutralTarget;
+  }
+  else if (random < 0.15) {
+    return reversed ? positiveTarget : negativeTarget;
+  }
+  return reversed ? negativeTarget : positiveTarget;
 }
 
 function getCardBaseCost(card) {
@@ -379,6 +444,83 @@ const forgeGenerators = [
       return processText(`${foundAction.text}: ${foundEffect.text}`, textContext);
     },
   },
+  {
+    type: 'addConditionalEffect',
+    weight: 1,
+    generate: (level) => {
+      const selector = generateSelector(level);
+      const ongoingEffect = generateOngoingEffect(level);
+      const reverseEffect = Math.random() < 0.2;
+      if (reverseEffect) {
+        ongoingEffect.value *= -1;
+      }
+      const target = generateTarget(reverseEffect);
+
+      return {
+        selector,
+        ongoingEffect,
+        target,
+        textContext: {
+          ...(selector.textContext || {}),
+          ...(ongoingEffect.textContext || {}),
+        },
+      };
+    },
+    apply: (forge, card) => {
+      const newCard = { ...card };
+      if (!newCard.conditionalEffects) newCard.conditionalEffects = [];
+      newCard.conditionalEffects.push({
+        selector: cleanDefinitionObject(forge.selector),
+        ongoingEffect: cleanDefinitionObject(forge.ongoingEffect),
+        target: forge.target,
+      });
+      return newCard;
+    },
+    applyCost: (baseCost, forge, card) => {
+      const newCard = { ...card };
+      const foundOngoingEffect = ongoingEffects[forge.ongoingEffect.key];
+      let passiveEffectCostModificator = ({ cost }) => cost;
+      if (foundOngoingEffect.key === 'givePassiveEffect') {
+        const foundPassiveEffect = passiveEffects[forge.ongoingEffect.effect.passiveEffect.ongoingPassiveEffectKey];
+        passiveEffectCostModificator = foundPassiveEffect.costModificator;
+      }
+      const extraPrice = foundOngoingEffect.price ? foundOngoingEffect.price({ ...forge.ongoingEffect.effect, passiveEffectCostModificator }) : 0;
+      const foundSelector = cardSelectors[forge.selector.key];
+      let extraPriceModded = parseInt(
+        foundSelector.costModificator
+          ? foundSelector.costModificator({ ...forge.selector.selector, cost: extraPrice }) : extraPrice,
+        10,
+      );
+      if (forge.target === 'any') {
+        extraPriceModded *= 0.1;
+      }
+      else if (forge.target === 'enemy') {
+        extraPriceModded *= -1;
+      }
+      if (extraPriceModded < 0) {
+        extraPriceModded *= 0.5;
+      }
+      newCard.cost = baseCost + extraPriceModded;
+      return newCard;
+    },
+    getText: (forge) => {
+      const foundSelector = cardSelectors[forge.selector.key];
+      const foundOngoingEffect = ongoingEffects[forge.ongoingEffect.key];
+      const textContext = {
+        target: forge.target,
+        ...(forge.selector),
+        ...(forge.ongoingEffect),
+        ...(forge.selector.textContext || {}),
+        ...(forge.ongoingEffect.textContext || {}),
+        ...(foundSelector.textContext || {}),
+        ...(foundOngoingEffect.textContext || {}),
+      };
+      if (foundOngoingEffect.key === 'statChange' && textContext.effect.value >= 0) {
+        textContext.effect.value = `+${textContext.effect.value}`;
+      }
+      return processText(`${foundSelector.text} ${foundOngoingEffect.text}`, textContext);
+    },
+  }
 ];
 
 function getCost(card) {

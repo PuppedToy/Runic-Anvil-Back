@@ -48,3 +48,5 @@ if (command == 'cache-costs') {
       process.exit(1);
     });
 }
+
+// @TODO a cli tool to regenerate all hashes and remove duplicated cards
