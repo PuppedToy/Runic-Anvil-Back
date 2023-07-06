@@ -43,39 +43,117 @@ const DEFAULT_MODS = [
 const effects = {
   deploy: {
     key: 'deploy',
-    name: 'Deploy',
-    description: 'Deploy a card to the target place',
-    text: 'deploy $card',
-    default: {
-      from: {
-        kingdom: 'owner',
-        place: 'hand',
-        text: 'the owner\'s hand',
-      },
-      target: 'random',
-      value: {
-        // $range: {
-        //   min: 50,
-        //   max: 149,
-        // },
-        $exponential: {
-          min: 100,
-          max: 10000,
-          step: 50,
-          probability: 0.85,
-        },
-      },
-      textContext: {
-        card: 'a $target $value cost card from $from',
+    from: {
+      kingdom: 'owner',
+      place: 'hand',
+    },
+    to: {
+      kingdom: 'owner',
+      place: 'barracks',
+    },
+    // @TODO target level 1 selector
+    target: 'random',
+    value: {
+      $range: {
+        min: 100,
+        max: 200,
+        step: 25,
       },
     },
     mods: [
-      'ANOTHER_KINGDOM', // or upgrade
-      'ANOTHER_PLACE', // or upgrade
-      'UPGRADE_VALUE',
-      'UPGRADE_TARGET_CARD',
-      'ADD_SELECTOR', // or improve
+      // 'UPGRADE_VALUE',
+      {
+        id: 'value',
+        modLevel: 1,
+        value: {
+          $range: {
+            min: 250,
+            max: 500,
+            step: 50,
+          },
+        },
+      },
+      {
+        id: 'value',
+        modLevel: 2,
+        value: {
+          $range: {
+            min: 550,
+            max: 900,
+            step: 50,
+          },
+        },
+      },
+      {
+        id: 'value',
+        modLevel: 3,
+        value: {
+          $exponential: {
+            min: 1000,
+            max: 10000,
+            step: 100,
+            probability: 0.75,
+          },
+        },
+      },
+      // 'ANOTHER_PLACE', // or upgrade
+      {
+        id: 'fromPlace',
+        modLevel: 1,
+        from: {
+          place: 'deck',
+        },
+      },
+      {
+        id: 'toPlace',
+        modLevel: 1,
+        to: {
+          place: {
+            $sample: [
+              'rangedZone',
+              'meleeZone',
+            ],
+          },
+        },
+      },
+      {
+        id: 'toPlace',
+        modLevel: 2,
+        to: {
+          place: {
+            $sample: [
+              'warZone',
+              'siegeZone',
+            ],
+          },
+        },
+      },
+      // 'ANOTHER_KINGDOM', // or upgrade
+      {
+        id: 'toKingdom',
+        modLevel: 1,
+        to: {
+          kingdom: 'randomAlly', // @TODO This could use a selector
+        },
+      },
+      {
+        id: 'fromKingdom',
+        modLevel: 1,
+        forgeLevel: 3,
+        from: {
+          kingdom: 'randomEnemy', // @TODO This could use a selector
+        },
+      },
+      // 'UPGRADE_TARGET_CARD',
+      // 'ADD_SELECTOR', // or improve
+      {
+        id: 'target',
+        modLevel: 1,
+        // @TODO selector
+        target: 'level2Selector',
+      },
     ],
+    level: 1,
     price: ({ value }) => value * 0.5,
   },
   draw: {

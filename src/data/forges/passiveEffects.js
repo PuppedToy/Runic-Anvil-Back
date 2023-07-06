@@ -5,7 +5,6 @@ const passiveEffects = {
   ranged: {
     key: 'ranged',
     name: 'Ranged',
-    description: 'When defending, if the ranged unit is covered by the frontmost wall, they won\'t receive combat damage. If the ranged unit is not covered by a wall, they won\'t do any combat damage. These rules only apply when the attacker is melee.\nWhen at war, ranged units attack after melee units and before siege units.\nWhen attacking, ranged units can only be blocked if every melee attacker has been blocked by another unit.',
     costModificator: ({ cost, attack, hp }) => cost
       + (attack * constants.CARD_PRICE_PER_ATTACK_POINT)
       - (hp * constants.CARD_PRICE_PER_HP_POINT) / 2,
@@ -13,7 +12,6 @@ const passiveEffects = {
   siege: {
     key: 'siege',
     name: 'Siege',
-    description: 'Siege units deal half of their damage to any non-wall or non-building card and double damage to any wall or building card. In the war phase, siege units attack after ranged layer -at siege layer- and when sieging, they can\'t be blocked unless any other taunt, berserker, melee and ranged unit have been blocked.',
     costModificator: ({ cost }) => Math.max(0, cost - 100),
   },
   // building: {
@@ -24,7 +22,6 @@ const passiveEffects = {
   taunting: {
     key: 'taunting',
     name: 'Taunting',
-    description: 'This unit must strike in taunt layer at war, it must be blocked first and must block first, before any other non-taunt unit is assigned a blocker.',
     costModificator: ({ cost }) => cost + 40,
   },
   // wall: {
@@ -35,7 +32,6 @@ const passiveEffects = {
   challenger: {
     key: 'challenger',
     name: 'Challenger',
-    description: 'When sieging, this unit chooses who blocks it, if eligible.',
     costModificator: ({ cost }) => cost + 100,
   },
   // civic: {
@@ -63,19 +59,16 @@ const passiveEffects = {
   berserker: {
     key: 'berserker',
     name: 'Berserker',
-    description: 'This unit will go to war every turn and will attack before any unit, including taunts. At the move phase, if the unit is not at the melee zone, it will move itself to the melee zone. A berserker unit is not affected by any retire effect.',
     costModificator: ({ cost }) => Math.max(0, cost - 60),
   },
   fearful: {
     key: 'fearful',
     name: 'Fearful',
-    description: 'This unit will attack always the last, even after the ranged and siege units. When defending, this unit can\'t block.',
     costModificator: ({ cost }) => Math.max(0, cost - 40),
   },
   fearsome: {
     key: 'fearsome',
     name: 'Fearsome',
-    description: 'At war, this unit\'s opponent will go last in their rotation and every enemy unit will shift their opponents.',
     costModificator: ({ cost }) => cost + 60,
   },
   // versatile: {
@@ -98,13 +91,11 @@ const passiveEffects = {
   vampiric: {
     key: 'vampiric',
     name: 'Vampiric',
-    description: 'After dealing damage and surviving, this unit heals the amount dealt.',
     costModificator: ({ cost, attack, hp }) => cost + attack * 20 + hp * 20,
   },
   deadly: {
     key: 'deadly',
     name: 'Deadly',
-    description: 'This unit destroys any unit that receives combat damage from it.',
     costModificator: ({ cost, attack }) => cost + (attack > 0 ? 300 : 100) - (attack * constants.CARD_PRICE_PER_ATTACK_POINT) / 2,
   },
   // barrier: {
@@ -120,14 +111,12 @@ const passiveEffects = {
   swift: {
     key: 'swift',
     name: 'Swift',
-    description: 'In combat, the unit will strike first and, if the opponent is destroyed, it won\'t receive combat damage.',
     costModificator: ({ cost, attack }) => cost + attack * constants.CARD_PRICE_PER_ATTACK_POINT,
     // forgeLevel: 2,
   },
   slow: {
     key: 'slow',
     name: 'Slow',
-    description: 'This unit can only move to a zone if it is adjacent. In combat, the unit will strike last and, if it is destroyed, it won\'t do any combat damage.',
     costModificator: ({ cost, attack, hp }) => cost - attack * Math.floor(constants.CARD_PRICE_PER_ATTACK_POINT / 2) - hp * Math.floor(constants.CARD_PRICE_PER_HP_POINT / 2),
     // forgeLevel: 2,
   },

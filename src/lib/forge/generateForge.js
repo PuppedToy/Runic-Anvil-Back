@@ -115,7 +115,7 @@ const processOperations = {
       throw new Error('Range must have min and max');
     }
 
-    return randomInt(range.min, range.max);
+    return randomInt(range.min, range.max, range.step);
   },
   sample: (sample) => weightedSample(sample, undefined, { noKey: true }),
   sampleWithKeyReplacement: ({ list, keyReplace }) => weightedSample(list, undefined, { keyReplace, noKey: !keyReplace }),
