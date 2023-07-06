@@ -61,4 +61,4 @@ function generateUnit(level = 1) {
 
 const generateCard = generateUnit;
 
-module.exports = { generateCard };
+module.exports = { generateHash, generateCard };

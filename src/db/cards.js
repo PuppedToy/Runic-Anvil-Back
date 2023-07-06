@@ -12,7 +12,8 @@ try {
 
 const { getDatabase } = require('../utils/getDatabase');
 const { constants } = require('../data/enums');
-const { getCost } = require('../lib/forge/generateForge');
+const { getCost, canBeCommander } = require('../lib/forge/generateForge');
+const { generateHash } = require('../lib/generateCard');
 
 const { DB_VERSION, CARD_VERSION, COST_CACHE_VERSION } = constants;
 const DATABASE_NAME = 'cards';
@@ -104,11 +105,31 @@ async function search(query = {}) {
   if (query.maxRarity) {
     $and.push({ rarityLevel: { $lte: query.maxRarity } });
   }
-
+  
   if (query.triggerEffect) {
     $and.push({ triggers: { $exists: true } });
   } else if (query.triggerEffect === false) {
     $and.push({ triggers: { $exists: false } });
+  }
+
+  if (query.canBeCommander) {
+    $and.push({ canBeCommander: true });
+  } else if (query.canBeCommander === false) {
+    $and.push({ canBeCommander: false });
+  }
+
+  if (query.recommendedAsCommander) {
+    $and.push({ recommendedAsCommander: true });
+  } else if (query.recommendedAsCommander === false) {
+    $and.push({ recommendedAsCommander: false });
+  }
+  
+  if (query.voidWaveCard) {
+    $and.push({
+      triggers: { $exists: false },
+      actions: { $exists: false },
+      conditionalEffects: { $exists: false },
+    });
   }
 
   if (query.cardVersion) {
@@ -294,7 +315,7 @@ async function cacheCosts() {
     );
 
     processedCards++;
-    console.log(`Processed ${processedCards} of ${totalCards} cards.`);
+    console.log(`[Cache Costs] Processed ${processedCards} of ${totalCards} cards.`);
   }
 }
 
@@ -315,7 +336,65 @@ async function removeImageless() {
     await db.deleteOne({ _id: card._id });
 
     processedCards++;
-    console.log(`Deleted ${processedCards} of ${totalCards} imageless cards.`);
+    console.log(`[Remove Imageless] Deleted ${processedCards} of ${totalCards} imageless cards.`);
+  }
+}
+
+async function regenerateHashes() {
+  const db = await getDatabase(DATABASE_NAME);
+  const allCards = await db.find();
+
+  let processedCards = 0;
+  const totalCards = await allCards.count();
+
+  while (await allCards.hasNext()) {
+    const card = await allCards.next();
+    const hash = generateHash(card);
+
+    const anotherCardWithTheSameHash = await db.findOne({ hash });
+
+    if (anotherCardWithTheSameHash && anotherCardWithTheSameHash._id.toString() !== card._id.toString()) {
+      console.log(`[Regenerate Hashes] Found a duplicated card: ${JSON.stringify(card)}. Deleting it. It's duplicated with card ${JSON.stringify(anotherCardWithTheSameHash)}`);
+      await db.deleteOne({ _id: card._id });
+    } else {
+      await db.updateOne(
+        { _id: card._id },
+        {
+          $set: {
+            hash,
+          },
+        }
+      );
+    }
+
+    processedCards++;
+    console.log(`[Regenerate Hashes] Processed ${processedCards} of ${totalCards} cards.`);
+  }
+}
+
+async function checkCommanders() {
+  const db = await getDatabase(DATABASE_NAME);
+  const allCards = await db.find();
+
+  let processedCards = 0;
+  const totalCards = await allCards.count();
+
+  while (await allCards.hasNext()) {
+    const card = await allCards.next();
+    const { allowed, recommended } = canBeCommander(card);
+
+    await db.updateOne(
+      { _id: card._id },
+      {
+        $set: {
+          canBeCommander: allowed,
+          recommendedAsCommander: recommended,
+        },
+      }
+    );
+
+    processedCards++;
+    console.log(`[Check Commanders] Processed ${processedCards} of ${totalCards} cards.`);
   }
 }
 
@@ -363,4 +442,6 @@ module.exports = {
   bulkUpdate,
   cacheCosts,
   removeImageless,
+  regenerateHashes,
+  checkCommanders,
 };

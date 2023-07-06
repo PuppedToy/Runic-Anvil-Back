@@ -40,6 +40,14 @@ function removeImageless() {
   return db.cards.removeImageless()
 }
 
+function regenerateHashes() {
+  return db.cards.regenerateHashes()  
+}
+
+function checkCommanders() {
+  return db.cards.checkCommanders()
+}
+
 module.exports = {
   generateFullCard,
   generateCards,
@@ -49,4 +57,6 @@ module.exports = {
   addImageToAnyCard,
   cacheCosts,
   removeImageless,
+  regenerateHashes,
+  checkCommanders,
 };

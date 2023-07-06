@@ -288,6 +288,7 @@ const forgeGenerators = [
       newCard.cost = baseCost;
       return newCard;
     },
+    isCommanderForbidden: () => false,
   },
   {
     type: 'addPassiveEffect',
@@ -315,6 +316,7 @@ const forgeGenerators = [
       const foundPassiveEffect = passiveEffects[forge.key];
       return foundPassiveEffect.name;
     },
+    isCommanderForbidden: () => false,
   },
   // Basic: Trigger: effect
   {
@@ -367,6 +369,10 @@ const forgeGenerators = [
         ...(foundTrigger.textContext || {}),
       };
       return processText(`${foundTrigger.name}: ${foundEffect.text}`, textContext);
+    },
+    isCommanderForbidden: (forge) => {
+      const foundTrigger = triggers[forge.trigger.key];
+      return foundTrigger.isCommanderForbidden ? foundTrigger.isCommanderForbidden() : false;
     },
   },
   {
@@ -443,6 +449,7 @@ const forgeGenerators = [
       };
       return processText(`${foundAction.text}: ${foundEffect.text}`, textContext);
     },
+    isCommanderForbidden: () => false,
   },
   {
     type: 'addConditionalEffect',
@@ -520,6 +527,7 @@ const forgeGenerators = [
       }
       return processText(`${foundSelector.text} ${foundOngoingEffect.text}`, textContext);
     },
+    isCommanderForbidden: () => false,
   }
 ];
 
@@ -535,6 +543,30 @@ function getCost(card) {
     baseCost += newCard.cost;
   });
   return newCard.cost;
+}
+
+function canBeCommander(card) {
+  const forges = card.forges || [];
+  const isCommanderForbidden = forges.some((forge) => {
+    const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
+    if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
+    return forgeGenerator.isCommanderForbidden(forge);
+  });
+  const interestingForgeTypes = [
+    'addEffectOnTrigger',
+    'addEffectOnAction',
+    'addConditionalEffect',
+  ]
+  const hasForgesOfInterestingCommanderTypes = forges.some((forge) => interestingForgeTypes.includes(forge.type));
+  const baseCost = getCardBaseCost(card);
+  const cardCost = getCost(card);
+  const allowed = !isCommanderForbidden && (cardCost - baseCost) <= constants.COMMANDER_DEFAULT_VALUE;
+  // @TODO Should check each forge value to see if it's recommended
+  const recommended = allowed && hasForgesOfInterestingCommanderTypes && (cardCost - baseCost) >= constants.RECOMMENDED_COMMANDER_LOWER_THRESHOLD;
+  return {
+    allowed,
+    recommended,
+  };
 }
 
 function generateForge(level) {
@@ -555,7 +587,7 @@ function applyForge(forge, card) {
   return newCard;
 }
 
-function applyCardCostAndText(card) {
+function applyCardCalculatedFields(card) {
   let baseCost = getCardBaseCost(card);
   const forges = card.forges || [];
   let newCard = { ...card };
@@ -570,6 +602,9 @@ function applyCardCostAndText(card) {
   });
   const text = mergeTexts(texts);
   newCard.text = text ? `${text}.` : '';
+  const { allowed, recommended } = canBeCommander(card);
+  newCard.canBeCommander = allowed;
+  newCard.recommendedAsCommander = recommended;
   delete newCard.forges;
   return newCard;
 }
@@ -584,7 +619,8 @@ module.exports = {
   generateForge,
   applyForge,
   getCost,
-  applyCardCostAndText,
+  canBeCommander,
+  applyCardCalculatedFields,
 
   forgeGenerators,
 };

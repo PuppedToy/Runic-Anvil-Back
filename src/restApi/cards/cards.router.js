@@ -32,6 +32,9 @@ const searchValidator = {
     minRarity: Joi.number().integer().min(0),
     maxRarity: Joi.number().integer().min(0),
     triggerEffect: Joi.boolean(),
+    canBeCommander: Joi.boolean(),
+    recommendedAsCommander: Joi.boolean(),
+    voidWaveCard: Joi.boolean(),
     cardVersion: Joi.string().regex(/^(\^|~)?(latest|([0-9]+?\.){2}[0-9]+)$/),
   }),
 };
