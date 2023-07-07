@@ -21,13 +21,13 @@ function createForgeComparator(forgeKey, forgeSubkey) {
 
 function generateHash(card) {
   const {
-    rarityLevel, attack, hp, unitType, passiveEffects = [], triggers = [], actions = [], conditionalEffects = [],
+    rarityLevel, attack, hp, unitType, element, passiveEffects = [], triggers = [], actions = [], conditionalEffects = [],
   } = card;
   const sortedPassiveEffects = JSON.stringify(passiveEffects.sort());
   const sortedTriggers = JSON.stringify(triggers.sort(createForgeComparator('trigger', 'effect')));
   const sortedActions = JSON.stringify(actions.sort(createForgeComparator('action', 'effect')));
   const sortedConditionalEffects = JSON.stringify(conditionalEffects.sort(createForgeComparator('selector', 'ongoingEffect')));
-  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}|${sortedConditionalEffects}`;
+  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${element}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}|${sortedConditionalEffects}`;
   return { hashContent, hash: md5(hashContent) };
 }
 

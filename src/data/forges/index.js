@@ -4,6 +4,7 @@ const cardStats = require('./cardStats');
 const cardTypes = require('./cardTypes');
 const conditions = require('./conditions');
 const effects = require('./effects');
+const elements = require('./elements');
 const eligibleTargetsCards = require('./eligibleTargetsCards');
 const eligibleTargetsKingdoms = require('./eligibleTargetsKingdoms');
 const forgeTypes = require('./forgeTypes');
@@ -23,6 +24,7 @@ module.exports = {
   cardTypes,
   conditions,
   effects,
+  elements,
   eligibleTargetsCards,
   eligibleTargetsKingdoms,
   forgeTypes,

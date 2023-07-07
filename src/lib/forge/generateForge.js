@@ -8,6 +8,7 @@ const {
   triggers,
   effects,
   actions,
+  elements,
 } = require('../../data/forges');
 const { constants } = require('../../data/enums');
 
@@ -286,6 +287,29 @@ const forgeGenerators = [
     applyCost: (baseCost, _, card) => {
       const newCard = { ...card };
       newCard.cost = baseCost;
+      return newCard;
+    },
+    isCommanderForbidden: () => false,
+  },
+  {
+    type: 'addElement',
+    weight: 1,
+    generate: (level) => {
+      const sample = weightedSample(elements.basic, [forgeLevelFilter(level)]);
+      return {
+        ...sample,
+      };
+    },
+    apply: (forge, card) => {
+      const newCard = { ...card };
+      newCard.element = forge.key;
+      return newCard;
+    },
+    applyCost: (baseCost, _, card) => {
+      const newCard = { ...card };
+      const foundPassiveEffect = passiveEffects[forge.key];
+      newCard.cost = baseCost;
+      newCard.cost = foundPassiveEffect.costModificator ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
       return newCard;
     },
     isCommanderForbidden: () => false,
