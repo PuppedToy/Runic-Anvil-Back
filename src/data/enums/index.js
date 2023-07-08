@@ -8,4 +8,20 @@ module.exports = {
     COMMANDER_DEFAULT_VALUE: 100,
     RECOMMENDED_COMMANDER_LOWER_THRESHOLD: 80,
   },
+  kingdoms: {
+    OWNER: 'owner',
+  },
+  places: {
+    HAND: 'hand',
+    DECK: 'deck',
+    BARRACKS: 'barracks',
+    RANGED_ZONE: 'rangedZone',
+    MELEE_ZONE: 'meleeZone',
+    WAR_ZONE: 'warZone',
+    SIEGE_ZONE: 'siegeZone',
+  },
+  targets: {
+    CHOSEN: 'chosen',
+    RANDOM: 'random',
+  },
 };

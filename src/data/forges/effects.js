@@ -31,13 +31,17 @@
 // @TODO Note, for balance and fun purposes I will add a ridiculous amount of range for effects
 // In the future, tweak them for match their rarity
 
-const { constants } = require('../enums');
+const { constants, places, kingdoms, targets } = require('../enums');
 const statusEffects = require('./statusEffects');
+
+/** PIECES */
+
+/****/
 
 // Here I will define every mod and I will try to reuse them
 /** MODS */
 
-const valueLevel1Mod = {
+const deployValueLevel1Mod = {
   id: 'value',
   modLevel: 1,
   value: {
@@ -49,7 +53,7 @@ const valueLevel1Mod = {
   },
 };
 
-const valueLevel2Mod = {
+const deployValueLevel2Mod = {
   id: 'value',
   modLevel: 2,
   value: {
@@ -61,7 +65,7 @@ const valueLevel2Mod = {
   },
 };
 
-const valueLevel3Mod = {
+const deployValueLevel3Mod = {
   id: 'value',
   modLevel: 3,
   value: {
@@ -74,10 +78,87 @@ const valueLevel3Mod = {
   },
 };
 
-const valueMods = [
-  valueLevel1Mod,
-  valueLevel2Mod,
-  valueLevel3Mod,
+const deployValueMods = [
+  deployValueLevel1Mod,
+  deployValueLevel2Mod,
+  deployValueLevel3Mod,
+];
+
+const drawValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: 2
+};
+
+const drawValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $range: {
+      min: 3,
+      max: 4,
+    },
+  },
+};
+
+const drawValueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  value: {
+    $exponential: {
+      min: 5,
+      max: 10,
+      step: 1,
+      probability: 0.75,
+    },
+  },
+};
+
+const drawValueMods = [
+  drawValueLevel1Mod,
+  drawValueLevel2Mod,
+  drawValueLevel3Mod,
+];
+
+const dealDamageValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: {
+    $range: {
+      min: 3,
+      max: 4,
+    },
+  },
+};
+
+const dealDamageValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $range: {
+      min: 5,
+      max: 7,
+    },
+  },
+};
+
+const dealDamageValueLevel3Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $exponential: {
+      min: 8,
+      max: 100,
+      step: 1,
+      probability: 0.75,
+    },
+  },
+};
+
+const dealDamageValueMods = [
+  dealDamageValueLevel1Mod,
+  dealDamageValueLevel2Mod,
+  dealDamageValueLevel3Mod,
 ];
 
 const fromDeckMod = {
@@ -114,6 +195,11 @@ const toWarOrSiegeMod = {
   },
 };
 
+const deployToPlaceMods = [
+  toRangedOrMeleeMod,
+  toWarOrSiegeMod,
+];
+
 const toKingdomAllyMod = {
   id: 'toKingdom',
   modLevel: 1,
@@ -135,6 +221,12 @@ const fromKingdomEnemyMod = {
 
 // @TODO const targetMod
 
+const improveTargetMod = {
+  id: 'improveTarget',
+  modLevel: 1,
+  // @TODO
+};
+
 const addSelectorMod = {
   id: 'addSelector',
   modLevel: 1,
@@ -149,17 +241,18 @@ const addSelectorMod = {
 const effects = {
   deploy: {
     key: 'deploy',
+    forgeLevel: 1,
     from: {
-      kingdom: 'owner',
-      place: 'hand',
+      kingdom: kingdoms.OWNER,
+      place: places.HAND,
     },
     to: {
-      kingdom: 'owner',
-      place: 'barracks',
+      kingdom: kingdoms.OWNER,
+      place: places.BARRACKS,
     },
     // @TODO target is NOT selector, remember. This can be chosen, random or ALL. And I gotta think this through, even if I did before
     // Because random is not great for this kind of situations. I should consider random for rarest cards.
-    target: 'random', // random -> chosen
+    target: targets.CHOSEN,
     // Target has a null selector by concept. Trigger might have another. I can add complex selectors, but they are selectors nonetheless.
     // @TODO new idea: selectors is an object and each will have a key. Then upgrade a random selector will actually be possible
     // because available selectors will be within it.
@@ -174,75 +267,46 @@ const effects = {
       },
     },
     mods: [
-      // 'UPGRADE_VALUE',
-      ...valueMods,
-      // 'ANOTHER_PLACE', // or upgrade
+      ...deployValueMods,
       fromDeckMod,
-      toRangedOrMeleeMod,
-      toWarOrSiegeMod,
-      // 'ANOTHER_KINGDOM', // or upgrade
+      ...deployToPlaceMods,
       toKingdomAllyMod,
       fromKingdomEnemyMod,
-      // 'UPGRADE_TARGET_CARD',
-      // 'ADD_SELECTOR', // or improve
       addSelectorMod,
     ],
-    level: 1,
     price: ({ value }) => value * 0.5,
   },
   draw: {
     key: 'draw',
-    name: 'Draw',
-    description: 'Draw cards from the target place',
-    text: 'draw $amount card$plural from $from',
-    default: {
-      from: {
-        kingdom: 'owner',
-        place: 'deck',
-        text: 'the owner\'s deck',
-      },
-      // amount: 1,
-      amount: {
-        $exponential: {
-          min: 1,
-          max: 10,
-          probability: 0.2,
-        },
-      },
+    forgeLevel: 1,
+    from: {
+      kingdom: kingdoms.OWNER,
+      place: places.DECK,
     },
-    textContext: {
-      plural: (context) => (context.amount > 1 ? 's' : ''),
-    },
+    value: 1,
     mods: [
-      ...DEFAULT_MODS,
-      'IMPROVE_TARGET_KINGDOM',
-      'IMPROVE_CARD_SELECTOR',
-      'DISCARD',
-      'CHANGE_PLACE',
+      ...drawValueMods,
+      fromKingdomEnemyMod,
     ],
-    price: () => 20,
+    price: () => 50,
   },
   dealDamage: {
     key: 'dealDamage',
-    name: 'Deal damage',
-    description: 'Deal damage to the target card',
-    text: 'deal $value damage to $card',
-    default: {
-      card: {
-        target: 'randomEnemy',
-        text: 'a random enemy',
-      },
-      value: {
-        // $range: {
-        //   min: 1,
-        //   max: 2,
-        // },
-        $exponential: {
-          min: 1,
-          max: 10,
-        },
+    target: targets.CHOSEN,
+    selectors: {
+      base: null,
+    },
+    value: {
+      $range: {
+        min: 1,
+        max: 2,
       },
     },
+    mods: [
+      ...dealDamageValueMods,
+      improveTargetMod,
+      addSelectorMod,
+    ],
     price: ({ value }) => value * 50,
   },
   modifyInvestment: {
