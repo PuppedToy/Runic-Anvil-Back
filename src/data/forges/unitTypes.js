@@ -1,116 +1,173 @@
-// Although any passive effect is considered a tribe itself,
-// tribes are also filters for some triggers and effects of the game
-// These tribes may also have slight modificators to their
-// stats or forge weights. We'll see
-
 const unitTypes = {
-  // Default
   human: {
-    name: 'Human',
+    key: 'human',
   },
-
   bird: {
-    name: 'Bird',
+    key: 'bird',
     forgeLevel: 1,
   },
   insect: {
-    name: 'Insect',
+    key: 'insect',
     forgeLevel: 1,
   },
   ape: {
-    name: 'Ape',
+    key: 'ape',
     forgeLevel: 1,
   },
   beast: {
-    name: 'Beast',
+    key: 'beast',
     forgeLevel: 1,
   },
   reptile: {
-    name: 'Reptile',
+    key: 'reptile',
     forgeLevel: 1,
   },
   fish: {
-    name: 'Fish',
+    key: 'fish',
+    forgeLevel: 1,
+  },
+  dwarf: {
+    key: 'dwarf',
+    forgeLevel: 1,
+  },
+  elf: {
+    key: 'elf',
+    forgeLevel: 1,
+  },
+  orc: {
+    key: 'orc',
+    forgeLevel: 1,
+  },
+  goblin: {
+    key: 'goblin',
     forgeLevel: 1,
   },
   tree: {
-    name: 'Tree',
+    key: 'tree',
     forgeLevel: 2,
   },
-  fungus: {
-    name: 'Fungus',
-    forgeLevel: 2,
-  },
-  drone: {
-    name: 'Drone',
-    forgeLevel: 2,
-  },
-  dinosaur: {
-    name: 'Dinosaur',
-    forgeLevel: 2,
-  },
-  mutant: {
-    name: 'Mutant',
+  undead: {
+    key: 'undead',
     forgeLevel: 2,
   },
   elemental: {
-    name: 'Elemental',
-    forgeLevel: 3,
+    key: 'elemental',
+    forgeLevel: 2,
+  },
+  golem: {
+    key: 'golem',
+    forgeLevel: 2,
   },
   spirit: {
-    name: 'Spirit',
-    forgeLevel: 3,
+    key: 'spirit',
+    forgeLevel: 2,
+  },
+  dinosaur: {
+    key: 'dinosaur',
+    forgeLevel: 2,
+  },
+  giant: {
+    key: 'giant',
+    forgeLevel: 2,
+  },
+  fairy: {
+    key: 'fairy',
+    forgeLevel: 2,
+  },
+  harpy: {
+    key: 'harpy',
+    forgeLevel: 2,
+  },
+  merfolk: {
+    key: 'merfolk',
+    forgeLevel: 2,
+  },
+  centaur: {
+    key: 'centaur',
+    forgeLevel: 2,
+  },
+  minotaur: {
+    key: 'minotaur',
+    forgeLevel: 2,
   },
   ooze: {
-    name: 'Ooze',
+    key: 'ooze',
+    forgeLevel: 2,
+  },
+  wizard: {
+    key: 'wizard',
+    forgeLevel: 2,
+  },
+  dragonling: {
+    key: 'dragonling',
+    forgeLevel: 2,
+  },
+  robot: {
+    key: 'robot',
     forgeLevel: 3,
   },
-  undead: {
-    name: 'Undead',
+  djinn: {
+    key: 'djinn',
     forgeLevel: 3,
   },
   shade: {
-    name: 'Shade',
-    forgeLevel: 3,
-  },
-  golem: {
-    name: 'Golem',
-    forgeLevel: 3,
-  },
-  fairy: {
-    name: 'Fairy',
+    key: 'shade',
     forgeLevel: 3,
   },
   chimera: {
-    name: 'Chimera',
+    key: 'chimera',
     forgeLevel: 3,
   },
   kraken: {
-    name: 'Kraken',
-    forgeLevel: 4,
+    key: 'kraken',
+    forgeLevel: 3,
+  },
+  hydra: {
+    key: 'hydra',
+    forgeLevel: 3,
+  },
+  phoenix: {
+    key: 'phoenix',
+    forgeLevel: 3,
+  },
+  unicorn: {
+    key: 'unicorn',
+    forgeLevel: 3,
+  },
+  cyclops: {
+    key: 'cyclops',
+    forgeLevel: 3,
+  },
+  behemoth: {
+    key: 'behemoth',
+    forgeLevel: 3,
+  },
+  leviathan: {
+    key: 'leviathan',
+    forgeLevel: 3,
+  },
+  voidling: {
+    key: 'voidling',
+    forgeLevel: 3,
   },
   dragon: {
-    name: 'Dragon',
+    key: 'dragon',
     forgeLevel: 4,
   },
   angel: {
-    name: 'Angel',
+    key: 'angel',
     forgeLevel: 4,
   },
   demon: {
-    name: 'Demon',
-    forgeLevel: 4,
-  },
-  demigod: {
-    name: 'Demigod',
+    key: 'demon',
     forgeLevel: 4,
   },
   god: {
-    name: 'God',
+    key: 'god',
     forgeLevel: 5,
   },
-  primordial: {
-    name: 'Primordial',
+  walker: {
+    key: 'walker',
     forgeLevel: 5,
   },
 };

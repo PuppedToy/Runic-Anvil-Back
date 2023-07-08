@@ -2,6 +2,7 @@ const unitTypes = require('./unitTypes');
 const passiveEffects = require('./passiveEffects');
 const statusEffects = require('./statusEffects');
 const places = require('./places');
+const elements = require('./elements');
 
 const comparativeOperators = [
     {
@@ -29,18 +30,18 @@ function levelFilter (card, element) {
     return !element.forgeLevel || element.forgeLevel <= card.level;
 }
 
+function createMapper() {
+    
+}
+
 const cardSelectors = {
     allUnits: {
         key: 'allUnits',
-        text: '$target units',
-        selector: {
-        },
         costModificator: ({ cost }) => cost * 4,
     },
     hasStat: {
         key: 'hasStat',
-        text: '$target units with $selector.operator $selector.value $selector.stat',
-        selector: {
+        stat: {
             $sample: [
                 {
                     stat: 'attack',
@@ -97,61 +98,63 @@ const cardSelectors = {
     },
     hasTribe: {
         key: 'hasTribe',
-        text: '$target $selector.tribe.name units',
-        selector: {
-            tribe: {
-                $filteredSample: {
-                    list: unitTypes,
-                    keyReplace: 'tribeKey',
-                    filters: [levelFilter],
-                },
+        tribe: {
+            $filteredSample: {
+                list: unitTypes,
+                filters: [levelFilter],
             },
-            costModificator: ({ cost }) => cost * 2,
         },
+        costModificator: ({ cost }) => cost * 2,
     },
-    // @TODO hasElement
-    // @TODO hasRarity
+    hasElement: {
+        key: 'hasElement',
+        element: {
+            $filteredSample: {
+                list: [...Object.values(elements.basic), ...Object.values(elements.complex)],
+                filters: [levelFilter],
+            },
+        },
+        costModificator: ({ cost }) => cost * 2,
+    },
+    hasRarity: {
+        key: 'hasRarity',
+        level: {
+            $exponential: {
+                min: 1,
+                max: 5,
+                probability: 0.2,
+            },
+        },
+        costModificator: ({ cost }) => cost * 2,
+    },
     hasPassiveEffect: {
         key: 'hasPassiveEffect',
-        text: '$target $selector.passiveEffect.name units',
-        selector: {
-            passiveEffect: {
-                $filteredSample: {
-                    list: Object.values(passiveEffects),
-                    keyReplace: 'selectorPassiveEffectKey',
-                    filters: [levelFilter],
-                },
+        passiveEffect: {
+            $filteredSample: {
+                list: Object.values(passiveEffects),
+                filters: [levelFilter],
             },
         },
         costModificator: ({ cost }) => cost * 2,
     },
     hasStatusEffect: {
         key: 'hasStatusEffect',
-        text: '$target units with $selector.statusEffect.statusEffect.statusKey',
-        selector: {
-            statusEffect: {
-                $filteredSample: {
-                    list: Object.values(statusEffects),
-                    keyReplace: 'statusEffectKey',
-                    filters: [levelFilter],
-                },
+        statusEffect: {
+            $filteredSample: {
+                list: Object.values(statusEffects),
+                keyReplace: 'statusEffectKey',
+                filters: [levelFilter],
             },
         },
         costModificator: ({ cost }) => cost * 2,
     },
     isInPlace: {
         key: 'isInPlace',
-        text: '$target units in $selector.place',
-        selector: {
-            place: {
-                $sampleWithKeyReplacement: {
-                    list: places,
-                    keyReplace: 'placeKey',
-                },
-            },
+        place: {
+            $sample: places,
         },
         costModificator: ({ cost }) => cost * 2,
-    }
+    },
     // Ideas: is damaged, has a state changed, is a zombie, is a creation, is defending
 };
 

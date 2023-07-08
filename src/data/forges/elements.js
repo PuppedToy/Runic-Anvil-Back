@@ -269,6 +269,6 @@ const complex = {
 };
 
 module.exports = {
-    elements: basic,
-    combinations: complex,
+    basic,
+    complex,
 };

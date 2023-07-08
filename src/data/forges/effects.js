@@ -34,11 +34,117 @@
 const { constants } = require('../enums');
 const statusEffects = require('./statusEffects');
 
-const DEFAULT_MODS = [
-  'ADD_OR_IMPROVE_TARGET',
-  'ADD_OR_IMPROVE_SELECTOR',
-  'ADD_OR_IMPROVE_CONDITION',
+// Here I will define every mod and I will try to reuse them
+/** MODS */
+
+const valueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: {
+    $range: {
+      min: 250,
+      max: 500,
+      step: 50,
+    },
+  },
+};
+
+const valueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $range: {
+      min: 550,
+      max: 900,
+      step: 50,
+    },
+  },
+};
+
+const valueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  value: {
+    $exponential: {
+      min: 1000,
+      max: 10000,
+      step: 100,
+      probability: 0.75,
+    },
+  },
+};
+
+const valueMods = [
+  valueLevel1Mod,
+  valueLevel2Mod,
+  valueLevel3Mod,
 ];
+
+const fromDeckMod = {
+  id: 'fromPlace',
+  modLevel: 1,
+  from: {
+    place: 'deck',
+  },
+};
+
+const toRangedOrMeleeMod = {
+  id: 'toPlace',
+  modLevel: 1,
+  to: {
+    place: {
+      $sample: [
+        'rangedZone',
+        'meleeZone',
+      ],
+    },
+  },
+};
+
+const toWarOrSiegeMod = {
+  id: 'toPlace',
+  modLevel: 2,
+  to: {
+    place: {
+      $sample: [
+        'warZone',
+        'siegeZone',
+      ],
+    },
+  },
+};
+
+const toKingdomAllyMod = {
+  id: 'toKingdom',
+  modLevel: 1,
+  to: {
+    kingdom: 'ally',
+  },
+  selector: 'toKingdom',
+};
+
+const fromKingdomEnemyMod = {
+  id: 'fromKingdom',
+  modLevel: 1,
+  forgeLevel: 3,
+  from: {
+    kingdom: 'enemy',
+  },
+  selector: 'fromKingdom',
+};
+
+// @TODO const targetMod
+
+const addSelectorMod = {
+  id: 'addSelector',
+  modLevel: 1,
+  // @TODO selector
+  // selector: createNewSelector(), // This should have somehow the list of available selectors
+};
+
+/****/
+
+// So I have to identify which options may have a selector and store it somewhere. This might get tricky.
 
 const effects = {
   deploy: {
@@ -51,8 +157,15 @@ const effects = {
       kingdom: 'owner',
       place: 'barracks',
     },
-    // @TODO target level 1 selector
-    target: 'random',
+    // @TODO target is NOT selector, remember. This can be chosen, random or ALL. And I gotta think this through, even if I did before
+    // Because random is not great for this kind of situations. I should consider random for rarest cards.
+    target: 'random', // random -> chosen
+    // Target has a null selector by concept. Trigger might have another. I can add complex selectors, but they are selectors nonetheless.
+    // @TODO new idea: selectors is an object and each will have a key. Then upgrade a random selector will actually be possible
+    // because available selectors will be within it.
+    selectors: {
+      base: null,
+    },
     value: {
       $range: {
         min: 100,
@@ -62,96 +175,17 @@ const effects = {
     },
     mods: [
       // 'UPGRADE_VALUE',
-      {
-        id: 'value',
-        modLevel: 1,
-        value: {
-          $range: {
-            min: 250,
-            max: 500,
-            step: 50,
-          },
-        },
-      },
-      {
-        id: 'value',
-        modLevel: 2,
-        value: {
-          $range: {
-            min: 550,
-            max: 900,
-            step: 50,
-          },
-        },
-      },
-      {
-        id: 'value',
-        modLevel: 3,
-        value: {
-          $exponential: {
-            min: 1000,
-            max: 10000,
-            step: 100,
-            probability: 0.75,
-          },
-        },
-      },
+      ...valueMods,
       // 'ANOTHER_PLACE', // or upgrade
-      {
-        id: 'fromPlace',
-        modLevel: 1,
-        from: {
-          place: 'deck',
-        },
-      },
-      {
-        id: 'toPlace',
-        modLevel: 1,
-        to: {
-          place: {
-            $sample: [
-              'rangedZone',
-              'meleeZone',
-            ],
-          },
-        },
-      },
-      {
-        id: 'toPlace',
-        modLevel: 2,
-        to: {
-          place: {
-            $sample: [
-              'warZone',
-              'siegeZone',
-            ],
-          },
-        },
-      },
+      fromDeckMod,
+      toRangedOrMeleeMod,
+      toWarOrSiegeMod,
       // 'ANOTHER_KINGDOM', // or upgrade
-      {
-        id: 'toKingdom',
-        modLevel: 1,
-        to: {
-          kingdom: 'randomAlly', // @TODO This could use a selector
-        },
-      },
-      {
-        id: 'fromKingdom',
-        modLevel: 1,
-        forgeLevel: 3,
-        from: {
-          kingdom: 'randomEnemy', // @TODO This could use a selector
-        },
-      },
+      toKingdomAllyMod,
+      fromKingdomEnemyMod,
       // 'UPGRADE_TARGET_CARD',
       // 'ADD_SELECTOR', // or improve
-      {
-        id: 'target',
-        modLevel: 1,
-        // @TODO selector
-        target: 'level2Selector',
-      },
+      addSelectorMod,
     ],
     level: 1,
     price: ({ value }) => value * 0.5,
