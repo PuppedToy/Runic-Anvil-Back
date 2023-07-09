@@ -31,8 +31,9 @@
 // @TODO Note, for balance and fun purposes I will add a ridiculous amount of range for effects
 // In the future, tweak them for match their rarity
 
-const { constants, places, kingdoms, targets } = require('../enums');
+const { constants, places, kingdoms, targets, operations, stats } = require('../enums');
 const statusEffects = require('./statusEffects');
+const { randomInt } = require('../../utils/random');
 
 /** PIECES */
 
@@ -161,6 +162,173 @@ const dealDamageValueMods = [
   dealDamageValueLevel3Mod,
 ];
 
+const modifyInvestmentValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: {
+    $range: {
+      min: 75,
+      max: 200,
+      step: 25,
+    },
+  },
+};
+
+const modifyInvestmentValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $range: {
+      min: 250,
+      max: 500,
+      step: 50,
+    },
+  },
+};
+
+
+const modifyInvestmentValueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  value: {
+    $exponential: {
+      min: 600,
+      max: 10000,
+      step: 50,
+      probability: 0.75,
+    },
+  },
+};
+
+const modifyInvestmentValueMods = [
+  modifyInvestmentValueLevel1Mod,
+  modifyInvestmentValueLevel2Mod,
+  modifyInvestmentValueLevel3Mod,
+];
+
+const modifyCurrencyValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: {
+    $range: {
+      min: 200,
+      max: 400,
+      step: 25,
+    },
+  },
+};
+
+const modifyCurrencyValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $range: {
+      min: 450,
+      max: 900,
+      step: 50,
+    },
+  },
+};
+
+const modifyCurrencyValueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  value: {
+    $exponential: {
+      min: 1000,
+      max: 100000,
+      step: 100,
+      probability: 0.75,
+    },
+  },
+};
+
+const modifyCurrencyValueMods = [
+  modifyCurrencyValueLevel1Mod,
+  modifyCurrencyValueLevel2Mod,
+  modifyCurrencyValueLevel3Mod,
+];
+
+const generateStatMethod = (minIncrement, maxIncrement) => ({ [stats.ATTACK]: attack = 0, [stats.HP]: hp = 0 }) => {
+  const totalIncrement = randomInt(minIncrement, maxIncrement);
+  const random = Math.random();
+  let attackIncrement = 0;
+  let hpIncrement = 0;
+  if (random < 0.3) {
+    attackIncrement = totalIncrement;
+  }
+  else if (random < 0.6) {
+    hpIncrement = totalIncrement;
+  }
+  else {
+    attackIncrement = randomInt(1, totalIncrement - 1);
+    hpIncrement = totalIncrement - attackIncrement;
+  }
+  const result = {};
+  if (attackIncrement > 0) {
+    result[stats.ATTACK] = attack + (attack >= 0 ? attackIncrement : -attackIncrement);
+  }
+  if (hpIncrement > 0) {
+    result[stats.HP] = hp + (hp >= 0 ? hpIncrement : -hpIncrement);
+  }
+  return result;
+};
+
+const statValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  stats: {
+    $custom: {
+      method: generateStatMethod(3, 5),
+    },
+  },
+};
+
+const statValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  stats: {
+    $custom: {
+      method: generateStatMethod(6, 10),
+    },
+  },
+};
+
+const statValueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  stats: {
+    $custom: {
+      method: generateStatMethod(12, 30),
+    },
+  },
+};
+
+const reverseStatsMod = {
+  id: 'reverse',
+  stats: {
+    $custom: {
+      method: ({ [stats.ATTACK]: attack = 0, [stats.HP]: hp = 0 }) => {
+        const result = {};
+        if (attack > 0) {
+          result[stats.ATTACK] = -attack;
+        }
+        if (hp > 0) {
+          result[stats.HP] = -hp;
+        }
+        return result;
+      },
+    },
+  }
+};
+
+const statMods = [
+  statValueLevel1Mod,
+  statValueLevel2Mod,
+  statValueLevel3Mod,
+  reverseStatsMod,
+];
+
 const fromDeckMod = {
   id: 'fromPlace',
   modLevel: 1,
@@ -204,9 +372,64 @@ const toKingdomAllyMod = {
   id: 'toKingdom',
   modLevel: 1,
   to: {
-    kingdom: 'ally',
+    kingdom: kingdoms.ALLY,
   },
   selector: 'toKingdom',
+};
+
+const toKingdomEnemySubtractMod = {
+  id: 'toKingdom',
+  modLevel: 2,
+  to: {
+    kingdom: kingdoms.ENEMY,
+  },
+  operations: operations.SUBTRACT,
+  selector: 'toKingdom',
+};
+
+const toKingdomEnemyStealMod = {
+  id: 'toKingdom',
+  modLevel: 3,
+  to: {
+    kingdom: kingdoms.ENEMY,
+  },
+  operations: operations.STEAL,
+  selector: 'toKingdom',
+};
+
+const toKingdomGoldMods = [
+  toKingdomAllyMod,
+  toKingdomEnemySubtractMod,
+  toKingdomEnemyStealMod,
+];
+
+const reverseGoldMod = {
+  id: 'reverse',
+  forgeLevel: 4,
+  to: {
+    $custom: {
+      method: ({ to }) => {
+        if (to.kingdom === kingdoms.ALLY) {
+          return kingdoms.ENEMY;
+        }
+        else if (to.kingdom === kingdoms.ENEMY) {
+          return Math.random() > 0.5 ? kingdoms.ALLY : kingdoms.OWNER;
+        }
+      }
+    }
+  },
+  operation: {
+    $custom: {
+      method: ({ operation }) => {
+        if (operation === operations.ADD) {
+          return operations.SUBTRACT;
+        }
+        else if (operation === operations.SUBTRACT || operation === operations.STEAL) {
+          return operations.ADD;
+        }
+      }
+    },
+  },
 };
 
 const fromKingdomEnemyMod = {
@@ -214,7 +437,7 @@ const fromKingdomEnemyMod = {
   modLevel: 1,
   forgeLevel: 3,
   from: {
-    kingdom: 'enemy',
+    kingdom: kingdoms.ENEMY,
   },
   selector: 'fromKingdom',
 };
@@ -311,84 +534,78 @@ const effects = {
   },
   modifyInvestment: {
     key: 'modifyInvestment',
-    name: 'Modify investment',
-    description: 'Modify the investment of the target kingdom',
-    text: '$operation $value investment to $target',
-    default: {
-      target: {
-        kingdom: 'owner',
-        text: 'the owner',
-      },
-      operation: 'add',
-      value: {
-        // $range: {
-        //   min: 10,
-        //   max: 49,
-        // },
-        $exponential: {
-          min: 10,
-          max: 400,
-          step: 10,
-          probability: 0.9,
-        },
+    to: {
+      kingdom: kingdoms.OWNER,
+    },
+    operation: operations.ADD,
+    value: {
+      $range: {
+        min: 10,
+        max: 50,
+        step: 10,
       },
     },
+    mods: [
+      ...modifyInvestmentValueMods,
+      ...toKingdomGoldMods,
+      reverseGoldMod,
+    ],
     price: ({ value }) => value,
   },
   modifyCurrency: {
     key: 'modifyCurrency',
-    name: 'Modify currency',
-    description: 'Modify the currency of the target kingdom',
-    text: '$operation $value $currency to $target',
-    default: {
-      target: {
-        kingdom: 'owner',
-        text: 'the owner',
-      },
-      operation: 'add',
-      value: {
-        // $range: {
-        //   min: 10,
-        //   max: 49,
-        // },
-        $exponential: {
-          min: 20,
-          max: 1000,
-          step: 20,
-          probability: 0.9,
-        },
-      },
-      currency: 'gold',
+    to: {
+      kingdom: kingdoms.OWNER,
     },
+    operation: operations.ADD,
+    value: {
+      $range: {
+        min: 1,
+        max: 2,
+      },
+    },
+    mods: [
+      ...modifyCurrencyValueMods,
+      ...toKingdomGoldMods,
+      reverseGoldMod,
+    ],
     price: ({ value }) => value * 0.8,
   },
   modifyStat: {
     key: 'modifyStat',
-    name: 'Modify stat',
-    description: 'Modify the stat of the target card',
-    text: 'Give $value $stat to $card',
-    default: {
-      card: {
-        target: 'randomAlly',
-        text: 'a random ally',
-      },
-      value: {
-        // $range: {
-        //   min: 1,
-        //   max: 2,
-        // },
-        $exponential: {
-          min: 1,
-          max: 10,
-        },
-      },
-      stat: {
-        $sample: [
-          'attack',
-          'hp',
-        ],
-      },
+    target: targets.CHOSEN,
+    selectors: {
+      base: null,
     },
+    stats: {
+      $sample: [
+        {
+          [stats.ATTACK]: {
+            $range: {
+              min: 1,
+              max: 2,
+            },
+          },
+        },
+        {
+          [stats.HP]: {
+            $range: {
+              min: 1,
+              max: 2,
+            },
+          },
+        },
+        {
+          [stats.ATTACK]: 1,
+          [stats.HP]: 1,
+        },
+      ],
+    },
+    mods: [
+      ...statMods,
+      improveTargetMod,
+      addSelectorMod,
+    ],
     price: ({ value, stat }) => value * (stat === 'attack' ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
   },
   destroy: {

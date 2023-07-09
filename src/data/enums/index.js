@@ -10,6 +10,8 @@ module.exports = {
   },
   kingdoms: {
     OWNER: 'owner',
+    ALLY: 'ally',
+    ENEMY: 'enemy',
   },
   places: {
     HAND: 'hand',
@@ -23,5 +25,15 @@ module.exports = {
   targets: {
     CHOSEN: 'chosen',
     RANDOM: 'random',
+  },
+  operations: {
+    ADD: 'add',
+    SUBTRACT: 'subtract',
+    STEAL: 'steal',
+  },
+  stats: {
+    ATTACK: 'attack',
+    HP: 'hp',
+    ATTACK_AND_HP: 'attackAndHp',
   },
 };
