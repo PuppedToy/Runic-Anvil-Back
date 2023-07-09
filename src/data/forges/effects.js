@@ -31,7 +31,7 @@
 // @TODO Note, for balance and fun purposes I will add a ridiculous amount of range for effects
 // In the future, tweak them for match their rarity
 
-const { constants, places, kingdoms, targets, operations, stats } = require('../enums');
+const { constants, places, kingdoms, targets, operations, stats, creations } = require('../enums');
 const statusEffects = require('./statusEffects');
 const { randomInt } = require('../../utils/random');
 
@@ -347,6 +347,92 @@ const resurrectValueMods = [
   resurrectValueLevel2Mod,
 ];
 
+const summonValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: {
+    $range: {
+      min: 200,
+      max: 400,
+      step: 40,
+    },
+  },
+};
+
+const summonValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $range: {
+      min: 450,
+      max: 700,
+      step: 50,
+    },
+  },
+};
+
+const summonValueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  value: {
+    $exponential: {
+      min: 800,
+      max: 10000,
+      step: 100,
+      probability: 0.75,
+    },
+  },
+};
+
+const summonValueMods = [
+  summonValueLevel1Mod,
+  summonValueLevel2Mod,
+  summonValueLevel3Mod,
+];
+
+const createValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: {
+    $range: {
+      min: 350,
+      max: 500,
+      step: 50,
+    },
+  },
+};
+
+const createValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $range: {
+      min: 550,
+      max: 900,
+      step: 50,
+    },
+  },
+};
+
+const createValueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  value: {
+    $exponential: {
+      min: 1000,
+      max: 100000,
+      step: 100,
+      probability: 0.75,
+    },
+  },
+};
+
+const createValueMods = [
+  createValueLevel1Mod,
+  createValueLevel2Mod,
+  createValueLevel3Mod,
+];
+
 const discardValueLevel1Mod = {
   id: 'value',
   modLevel: 1,
@@ -442,14 +528,58 @@ const toPlaceDeckModForgeLevel3 = {
   },
 };
 
-const { BARRACKS, ...allPlacesButBarracks } = places;
+const { BARRACKS: _, ...allPlacesButBarracks } = places;
 const toPlaceAnyButBarracksMod = {
   id: 'toPlace',
   modLevel: 1,
+  forgeLevel: 3,
   to: {
     place: {
       $sample: [...allPlacesButBarracks],
     },
+  },
+};
+
+
+const toPlaceAnyIngameButBarracksMod = {
+  id: 'toPlace',
+  modLevel: 1,
+  forgeLevel: 3,
+  to: {
+    place: {
+      $sample: [
+        places.RANGED_ZONE,
+        places.MELEE_ZONE,
+        places.WAR_ZONE,
+        places.SIEGE_ZONE,
+      ],
+    },
+  },
+};
+
+const toPlaceHandMod = {
+  id: 'toPlace',
+  modLevel: 1,
+  to: {
+    place: places.HAND,
+  },
+};
+
+const toDeckMod = {
+  id: 'to',
+  modLevel: 1,
+  to: {
+    place: places.DECK,
+  },
+};
+
+const toOwnerOrAllyLevel2Mod = {
+  id: 'to',
+  modLevel: 2,
+  to: {
+    kingdom: {
+      $sample: [kingdoms.OWNER, kingdoms.ALLY],
+    }
   },
 };
 
@@ -459,28 +589,28 @@ const toKingdomAllyMod = {
   to: {
     kingdom: kingdoms.ALLY,
   },
-  selector: 'toKingdom',
+  kingdomSelector: 'toKingdom',
 };
 
-const toKingdomOwnerMod = {
-  id: 'toKingdom',
+const fromKingdomOwnerMod = {
+  id: 'fromKingdom',
   modLevel: 1,
   to: {
     kingdom: kingdoms.OWNER,
   },
-  selector: 'toKingdom',
+  kingdomSelector: 'fromKingdom',
 };
 
-const toKingdomAllyLevel2Mod = {
-  id: 'toKingdom',
+const fromKingdomAllyLevel2Mod = {
+  id: 'fromKingdom',
   modLevel: 2,
   to: {
     kingdom: kingdoms.ALLY,
   },
-  selector: 'toKingdom',
+  kingdomSelector: 'fromKingdom',
 };
 
-const toKingdomEnemeyLevel2Mod = {
+const toKingdomEnemyLevel2Mod = {
   id: 'toKingdom',
   modLevel: 2,
   to: {
@@ -495,7 +625,7 @@ const toKingdomAllyModForgeLevel3 = {
   to: {
     kingdom: kingdoms.ALLY,
   },
-  selector: 'toKingdom',
+  kingdomSelector: 'toKingdom',
 };
 
 const toKingdomEnemyLevel2ModForgeLevel4 = {
@@ -514,7 +644,7 @@ const toKingdomEnemySubtractMod = {
     kingdom: kingdoms.ENEMY,
   },
   operations: operations.SUBTRACT,
-  selector: 'toKingdom',
+  kingdomSelector: 'toKingdom',
 };
 
 const toKingdomEnemyStealMod = {
@@ -524,7 +654,7 @@ const toKingdomEnemyStealMod = {
     kingdom: kingdoms.ENEMY,
   },
   operations: operations.STEAL,
-  selector: 'toKingdom',
+  kingdomSelector: 'toKingdom',
 };
 
 const toKingdomGoldMods = [
@@ -568,7 +698,7 @@ const fromKingdomAllyMod = {
   from: {
     kingdom: kingdoms.ALLY,
   },
-  selector: 'fromKingdom',
+  kingdomSelector: 'fromKingdom',
 };
 
 const fromKingdomEnemyModForgeLevel3 = {
@@ -578,7 +708,7 @@ const fromKingdomEnemyModForgeLevel3 = {
   from: {
     kingdom: kingdoms.ENEMY,
   },
-  selector: 'fromKingdom',
+  kingdomSelector: 'fromKingdom',
 };
 
 const fromKingdomEnemyLevel2Mod = {
@@ -587,13 +717,7 @@ const fromKingdomEnemyLevel2Mod = {
   from: {
     kingdom: kingdoms.ENEMY,
   },
-  selector: 'fromKingdom',
-};
-
-const banishMod = {
-  id: 'banish',
-  modLevel: 1,
-  banish: true,
+  kingdomSelector: 'fromKingdom',
 };
 
 const banishModForgeLevel4 = {
@@ -601,6 +725,19 @@ const banishModForgeLevel4 = {
   modLevel: 1,
   forgeLevel: 4,
   banish: true,
+};
+
+const randomCreationMod = {
+  id: 'creation',
+  modLevel: 1,
+  creation: creations.RANDOM,
+  cardSelector: 'creation',
+};
+
+const discoverMod = {
+  id: 'creation',
+  modLevel: 2,
+  creation: creations.DISCOVER,
 };
 
 // @TODO const targetMod
@@ -634,8 +771,8 @@ const effects = {
       place: places.BARRACKS,
     },
     target: targets.CHOSEN,
-    selectors: {
-      base: null,
+    cardSelectors: {
+      deployedCard: null,
     },
     value: {
       $range: {
@@ -670,8 +807,8 @@ const effects = {
   dealDamage: {
     key: 'dealDamage',
     target: targets.CHOSEN,
-    selectors: {
-      base: null,
+    cardSelector: {
+      damagedCard: null,
     },
     value: {
       $range: {
@@ -728,8 +865,8 @@ const effects = {
   modifyStat: {
     key: 'modifyStat',
     target: targets.CHOSEN,
-    selectors: {
-      base: null,
+    cardSelectors: {
+      modifiedCard: null,
     },
     stats: {
       $sample: [
@@ -766,8 +903,8 @@ const effects = {
     key: 'destroy',
     forgeLevel: 2,
     banish: false,
-    selectors: {
-      base: null,
+    cardSelectors: {
+      destroyedCard: null,
     },
     target: targets.CHOSEN,
     mods: [
@@ -780,8 +917,8 @@ const effects = {
   move: {
     key: 'move',
     target: targets.CHOSEN,
-    selector: {
-      base: null,
+    cardSelectors: {
+      movedCard: null,
     },
     to: {
       kingdom: kingdoms.OWNER,
@@ -812,8 +949,8 @@ const effects = {
     key: 'recall',
     forgeLevel: 2,
     target: targets.CHOSEN,
-    selector: {
-      base: null,
+    cardSelectors: {
+      recalledCard: null,
     },
     to: {
       kingdom: kingdoms.OWNER,
@@ -831,8 +968,8 @@ const effects = {
   fight: {
     key: 'fight',
     target: targets.CHOSEN,
-    selector: {
-      base: null,
+    cardSelectors: {
+      foughtCard: null,
     },
     mods: [
       improveTargetMod,
@@ -844,8 +981,8 @@ const effects = {
   heal: {
     key: 'heal',
     target: targets.CHOSEN,
-    selectors: {
-      base: null,
+    cardSelectors: {
+      healedCard: null,
     },
     value: {
       $range: {
@@ -864,8 +1001,8 @@ const effects = {
     key: 'betray',
     forgeLevel: 4,
     target: targets.CHOSEN,
-    selector: {
-      base: null,
+    cardSelectors: {
+      betrayedCard: null,
     },
     to: {
       kingdom: kingdoms.OWNER,
@@ -880,8 +1017,8 @@ const effects = {
   resurrect: {
     key: 'resurrect',
     forgeLevel: 2,
-    selectors: {
-      base: null,
+    cardSelectors: {
+      resurrectedCard: null,
     },
     from: {
       kingdom: kingdoms.OWNER,
@@ -896,7 +1033,7 @@ const effects = {
       fromKingdomAllyMod,
       fromKingdomEnemyLevel2Mod,
       toKingdomAllyMod,
-      toKingdomEnemeyLevel2Mod,
+      toKingdomEnemyLevel2Mod,
       toPlaceAnyButBarracksMod,
       addSelectorMod,
     ],
@@ -905,121 +1042,108 @@ const effects = {
   discard: {
     key: 'discard',
     forgeLevel: 2,
-    banish: false,
-    selectors: {
-      base: null,
+    cardSelectors: {
+      discardedCard: null,
+    },
+    kingdomSelectors: {
+      fromKingdom: null,
+    },
+    from: {
+      kingdom: kingdoms.ENEMY,
+      place: places.HAND,
     },
     to: {
       kingdom: kingdoms.ENEMY,
+      place: places.NONE,
     },
     value: 1,
     mods: [
       ...discardValueMods,
-      toKingdomOwnerMod,
-      toKingdomAllyLevel2Mod,
-      banishMod,
+      fromKingdomOwnerMod,
+      fromKingdomAllyLevel2Mod,
+      toDeckMod,
+      toOwnerOrAllyLevel2Mod,
       addSelectorMod,
     ],
     price: () => 50,
   },
   summon: {
     key: 'summon',
-    name: 'Summon',
-    description: 'Summon a card to the target place',
-    text: 'summon $card in $place',
-    default: {
-      target: 'random',
-      value: {
-        // $range: {
-        //   min: 50,
-        //   max: 149,
-        // },
-        $exponential: {
-          min: 50,
-          max: 10000,
-          step: 10,
-          probability: 0.94,
-        },
-      },
-      place: {
-        place: 'cardLocation',
-        text: 'this card\'s location',
-      },
-      textContext: {
-        card: 'a $target $value cost card',
+    forgeLevel: 2,
+    creation: creations.SPECIFIC,
+    value: {
+      $range: {
+        min: 40,
+        max: 160,
+        step: 40,
       },
     },
+    to: {
+      kingdom: kingdoms.OWNER,
+      place: places.BARRACKS,
+    },
+    mods: [
+      ...summonValueMods,
+      randomCreationMod,
+      // mod to create enhanced versions of cards
+      toKingdomAllyMod,
+      toKingdomEnemyLevel2Mod,
+      toPlaceAnyIngameButBarracksMod,
+      addSelectorMod,
+    ],
     price: ({ value }) => value,
   },
   create: {
     key: 'create',
-    name: 'Create',
-    description: 'Create a card and shuffle it into the deck',
-    text: 'create $card',
-    default: {
-      target: 'random',
-      value: {
-        // $range: {
-        //   min: 50,
-        //   max: 149,
-        // },
-        $exponential: {
-          min: 50,
-          max: 10000,
-          step: 10,
-          probability: 0.94,
-        },
-      },
-      textContext: {
-        card: 'a $target $value cost card',
+    creation: creations.SPECIFIC,
+    to: {
+      kingdom: kingdoms.OWNER,
+      place: places.DECK,
+    },
+    value: {
+      $range: {
+        min: 80,
+        max: 300,
+        step: 40,
       },
     },
+    mods: [
+      ...createValueMods,
+      randomCreationMod,
+      discoverMod,
+      // mod to create enhanced versions of cards
+      toKingdomAllyMod,
+      toKingdomEnemyLevel2Mod,
+      toPlaceHandMod,
+      addSelectorMod,
+    ],
     price: ({ value }) => value * 0.1,
   },
   addStatusEffect: {
     key: 'addStatusEffect',
-    name: 'Add status effect',
-    description: 'Add a status effect to the target card',
-    text: '$statusEffect.text',
-    default: {
-      $sample: statusEffects,
+    cardSelectors: {
+      statusedCard: null,
     },
-    price: ({ statusEffect, card, value = 1 }) => {
-      let basePrice = 0;
-      let basePriceMod = 1;
-
-      if (card.target === 'randomEnemy') {
-        basePriceMod = -1;
+    statusEffect: {
+      $mappedSample: {
+        list: statusEffects,
+        method: ({ key }) => key,
+      },
+    },
+    value: 1,
+    duration: 1, // @TODO If regrowth or decay, -1
+    mods: [
+      // @TODO value and duration mods
+      improveTargetMod,
+      addSelectorMod,
+    ],
+    price: ({ statusEffect, value = 1 }) => {
+      let result = 50;
+      if (statusEffect === 'stun') {
+        result = 100;
       }
 
-      if (statusEffect.statusKey === 'exhaust') {
-        basePrice = -30;
-      }
-      if (statusEffect.statusKey === 'rooted') {
-        basePrice = -40;
-      }
-      if (statusEffect.statusKey === 'stunned') {
-        basePrice = -50;
-      }
-      if (statusEffect.statusKey === 'decay') {
-        basePrice = -50;
-      }
-      if (statusEffect.statusKey === 'silenced') {
-        if (value === 0) {
-          return -100 * basePriceMod;
-        }
-        else {
-          basePrice = -50;
-        }
-      }
-      if (statusEffect.statusKey === 'regrowth') {
-        basePrice = 50;
-      }
-      if (statusEffect.statusKey === 'daze') {
-        basePrice = -10;
-      }
-
-      return basePrice * basePriceMod * value;
+      return result * value;
     },
   },
 };

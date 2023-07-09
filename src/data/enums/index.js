@@ -14,6 +14,7 @@ module.exports = {
     ENEMY: 'enemy',
   },
   places: {
+    NONE: 'none',
     HAND: 'hand',
     DECK: 'deck',
     BARRACKS: 'barracks',
@@ -35,4 +36,9 @@ module.exports = {
     ATTACK: 'attack',
     HP: 'hp',
   },
+  creations: {
+    SPECIFIC: 'specific',
+    RANDOM: 'random',
+    DISCOVER: 'discover',
+  }
 };

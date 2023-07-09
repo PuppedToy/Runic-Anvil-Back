@@ -111,6 +111,7 @@ function processText(text, textContext = {}) {
 }
 
 const processOperations = {
+  custom: ({ method }, previousCard) => method(previousCard),
   range: (range) => {
     if (!Object.hasOwnProperty.call(range, 'min') || !Object.hasOwnProperty.call(range, 'max')) {
       throw new Error('Range must have min and max');
@@ -119,7 +120,10 @@ const processOperations = {
     return randomInt(range.min, range.max, range.step);
   },
   sample: (sample) => weightedSample(sample, undefined, { noKey: true }),
-  sampleWithKeyReplacement: ({ list, keyReplace }) => weightedSample(list, undefined, { keyReplace, noKey: !keyReplace }),
+  mappedSample: ({ list, method }) => {
+    const result = weightedSample(list, undefined, { noKey: true });
+    return method(result);
+  },
   filteredSample: ({ list, filters, keyReplace }) => weightedSample(list, filters, { keyReplace, noKey: !keyReplace }),
   exponential: (exponential) => {
     if (!Object.hasOwnProperty.call(exponential, 'min')) {
@@ -144,7 +148,8 @@ function processForge(defaultForge) {
     Object.entries(resultDefaultForge).forEach(([key, value]) => {
       const keyWithoutDollar = key.replace('$', '');
       if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
-        resultDefaultForge[key] = processOperations[keyWithoutDollar](value);
+        const previousCard = null; // @TODO
+        resultDefaultForge[key] = processOperations[keyWithoutDollar](value, previousCard);
       }
       resultDefaultForge[key] = processForge(resultDefaultForge[key]);
     });
