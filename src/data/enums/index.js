@@ -34,6 +34,5 @@ module.exports = {
   stats: {
     ATTACK: 'attack',
     HP: 'hp',
-    ATTACK_AND_HP: 'attackAndHp',
   },
 };

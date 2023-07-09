@@ -329,6 +329,48 @@ const statMods = [
   reverseStatsMod,
 ];
 
+const resurrectValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  forgeLevel: 4,
+  value: 2,
+};
+
+const resurrectValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: 3,
+};
+
+const resurrectValueMods = [
+  resurrectValueLevel1Mod,
+  resurrectValueLevel2Mod,
+];
+
+const discardValueLevel1Mod = {
+  id: 'value',
+  modLevel: 1,
+  value: 2,
+};
+
+const discardValueLevel2Mod = {
+  id: 'value',
+  modLevel: 2,
+  value: {
+    $exponential: {
+      min: 3,
+      max: 10,
+      step: 1,
+      probability: 0.25,
+    },
+  },
+};
+
+const discardValueMods = [
+  discardValueLevel1Mod,
+  discardValueLevel2Mod,
+];
+
 const fromDeckMod = {
   id: 'fromPlace',
   modLevel: 1,
@@ -368,6 +410,49 @@ const deployToPlaceMods = [
   toWarOrSiegeMod,
 ];
 
+const toWarOrBarracksMod = {
+  id: 'toPlace',
+  modLevel: 1,
+  to: {
+    place: {
+      $sample: [places.WAR_ZONE, places.BARRACKS],
+    },
+  },
+};
+
+const toSiegeMod = {
+  id: 'toPlace',
+  modLevel: 2,
+  to: {
+    place: places.SIEGE_ZONE,
+  },
+};
+
+const moveToPlaceMods = [
+  toWarOrBarracksMod,
+  toSiegeMod,
+];
+
+const toPlaceDeckModForgeLevel3 = {
+  id: 'toPlace',
+  modLevel: 1,
+  forgeLevel: 3,
+  to: {
+    place: places.DECK,
+  },
+};
+
+const { BARRACKS, ...allPlacesButBarracks } = places;
+const toPlaceAnyButBarracksMod = {
+  id: 'toPlace',
+  modLevel: 1,
+  to: {
+    place: {
+      $sample: [...allPlacesButBarracks],
+    },
+  },
+};
+
 const toKingdomAllyMod = {
   id: 'toKingdom',
   modLevel: 1,
@@ -375,6 +460,51 @@ const toKingdomAllyMod = {
     kingdom: kingdoms.ALLY,
   },
   selector: 'toKingdom',
+};
+
+const toKingdomOwnerMod = {
+  id: 'toKingdom',
+  modLevel: 1,
+  to: {
+    kingdom: kingdoms.OWNER,
+  },
+  selector: 'toKingdom',
+};
+
+const toKingdomAllyLevel2Mod = {
+  id: 'toKingdom',
+  modLevel: 2,
+  to: {
+    kingdom: kingdoms.ALLY,
+  },
+  selector: 'toKingdom',
+};
+
+const toKingdomEnemeyLevel2Mod = {
+  id: 'toKingdom',
+  modLevel: 2,
+  to: {
+    kingdom: kingdoms.ENEMY,
+  },
+};
+
+const toKingdomAllyModForgeLevel3 = {
+  id: 'toKingdom',
+  modLevel: 1,
+  forgeLevel: 3,
+  to: {
+    kingdom: kingdoms.ALLY,
+  },
+  selector: 'toKingdom',
+};
+
+const toKingdomEnemyLevel2ModForgeLevel4 = {
+  id: 'toKingdom',
+  modLevel: 2,
+  forgeLevel: 4,
+  to: {
+    kingdom: kingdoms.ENEMY,
+  },
 };
 
 const toKingdomEnemySubtractMod = {
@@ -432,7 +562,16 @@ const reverseGoldMod = {
   },
 };
 
-const fromKingdomEnemyMod = {
+const fromKingdomAllyMod = {
+  id: 'fromKingdom',
+  modLevel: 1,
+  from: {
+    kingdom: kingdoms.ALLY,
+  },
+  selector: 'fromKingdom',
+};
+
+const fromKingdomEnemyModForgeLevel3 = {
   id: 'fromKingdom',
   modLevel: 1,
   forgeLevel: 3,
@@ -440,6 +579,28 @@ const fromKingdomEnemyMod = {
     kingdom: kingdoms.ENEMY,
   },
   selector: 'fromKingdom',
+};
+
+const fromKingdomEnemyLevel2Mod = {
+  id: 'fromKingdom',
+  modLevel: 2,
+  from: {
+    kingdom: kingdoms.ENEMY,
+  },
+  selector: 'fromKingdom',
+};
+
+const banishMod = {
+  id: 'banish',
+  modLevel: 1,
+  banish: true,
+};
+
+const banishModForgeLevel4 = {
+  id: 'banish',
+  modLevel: 1,
+  forgeLevel: 4,
+  banish: true,
 };
 
 // @TODO const targetMod
@@ -464,7 +625,6 @@ const addSelectorMod = {
 const effects = {
   deploy: {
     key: 'deploy',
-    forgeLevel: 1,
     from: {
       kingdom: kingdoms.OWNER,
       place: places.HAND,
@@ -473,12 +633,7 @@ const effects = {
       kingdom: kingdoms.OWNER,
       place: places.BARRACKS,
     },
-    // @TODO target is NOT selector, remember. This can be chosen, random or ALL. And I gotta think this through, even if I did before
-    // Because random is not great for this kind of situations. I should consider random for rarest cards.
     target: targets.CHOSEN,
-    // Target has a null selector by concept. Trigger might have another. I can add complex selectors, but they are selectors nonetheless.
-    // @TODO new idea: selectors is an object and each will have a key. Then upgrade a random selector will actually be possible
-    // because available selectors will be within it.
     selectors: {
       base: null,
     },
@@ -494,14 +649,13 @@ const effects = {
       fromDeckMod,
       ...deployToPlaceMods,
       toKingdomAllyMod,
-      fromKingdomEnemyMod,
+      fromKingdomEnemyModForgeLevel3,
       addSelectorMod,
     ],
     price: ({ value }) => value * 0.5,
   },
   draw: {
     key: 'draw',
-    forgeLevel: 1,
     from: {
       kingdom: kingdoms.OWNER,
       place: places.DECK,
@@ -509,7 +663,7 @@ const effects = {
     value: 1,
     mods: [
       ...drawValueMods,
-      fromKingdomEnemyMod,
+      fromKingdomEnemyModForgeLevel3,
     ],
     price: () => 50,
   },
@@ -606,168 +760,167 @@ const effects = {
       improveTargetMod,
       addSelectorMod,
     ],
-    price: ({ value, stat }) => value * (stat === 'attack' ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
+    price: ({ value, stat }) => value * (stat === stats.ATTACK ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
   },
   destroy: {
     key: 'destroy',
-    name: 'Destroy',
-    description: 'Destroy the target card',
-    text: 'destroy $card',
-    default: {
-      card: {
-        target: 'randomEnemy',
-        text: 'a random enemy',
-      },
+    forgeLevel: 2,
+    banish: false,
+    selectors: {
+      base: null,
     },
+    target: targets.CHOSEN,
+    mods: [
+      banishModForgeLevel4,
+      improveTargetMod,
+      addSelectorMod,
+    ],
     price: () => 400,
   },
   move: {
     key: 'move',
-    name: 'Move',
-    description: 'Move the target card to the target place',
-    text: 'move $card to $place',
-    default: {
-      card: {
-        $sample: [
-          {
-            target: 'randomAlly',
-            text: 'a random ally',
-          },
-          {
-            target: 'randomEnemy',
-            text: 'a random enemy',
-          },
-        ],
-      },
+    target: targets.CHOSEN,
+    selector: {
+      base: null,
+    },
+    to: {
+      kingdom: kingdoms.OWNER,
       place: {
-        $sample: [
-          {
-            place: 'barracks',
-            text: 'the barracks',
-          },
-          {
-            place: 'rangedZone',
-            text: 'the ranged zone',
-          },
-          {
-            place: 'meleeZone',
-            text: 'the melee zone',
-          },
-          {
-            place: 'warZone',
-            text: 'the war zone',
-          },
-        ],
+        $sample: [places.RANGED_ZONE, places.MELEE_ZONE],
       },
     },
-    price: ({ place, card }) => {
-      let basePrice = 0;
-      let basePriceMod = 1;
+    mods: [
+      ...moveToPlaceMods,
+      toKingdomAllyModForgeLevel3,
+      improveTargetMod,
+      addSelectorMod,
+    ],
+    price: ({ place }) => {
+      let result = 25;
 
-      if (card.target === 'randomEnemy') {
-        basePriceMod = -1;
+      if (place === places.BARRACKS || place === places.WAR_ZONE) {
+        result = 50;
       }
-
-      if (place.place === 'barracks') {
-        basePrice = -50;
-      }
-      else if (place.place === 'rangedZone') {
-        basePrice = -20;
-      }
-      else if (place.place === 'warZone') {
-        basePrice = 25;
+      else if (place === places.SIEGE_ZONE) {
+        result = 100;
       }
 
-      return basePrice * basePriceMod;
+      return result;
     },
   },
   recall: {
     key: 'recall',
-    name: 'Recall',
-    description: 'Recall the target card',
-    text: 'recall $card',
-    default: {
-      card: {
-        target: 'randomEnemy',
-        text: 'a random enemy',
-      },
+    forgeLevel: 2,
+    target: targets.CHOSEN,
+    selector: {
+      base: null,
     },
-    price: () => 100,
+    to: {
+      kingdom: kingdoms.OWNER,
+      place: places.HAND,
+    },
+    mods: [
+      toKingdomAllyModForgeLevel3,
+      toKingdomEnemyLevel2ModForgeLevel4,
+      toPlaceDeckModForgeLevel3,
+      improveTargetMod,
+      addSelectorMod,
+    ],
+    price: () => 200,
   },
   fight: {
     key: 'fight',
-    name: 'Fight',
-    description: 'Fight the target card',
-    text: 'fight $card',
-    default: {
-      card: {
-        target: 'randomEnemy',
-        text: 'a random enemy',
-      },
+    target: targets.CHOSEN,
+    selector: {
+      base: null,
     },
-    price: () => 0,
+    mods: [
+      improveTargetMod,
+      addSelectorMod,
+    ],
+    price: () => 50,
+    isCommanderForbidden: () => true,
   },
   heal: {
     key: 'heal',
-    name: 'Heal',
-    description: 'Heal to the target card',
-    text: 'heal $value hp of $card',
-    default: {
-      card: {
-        target: 'randomInjuredAlly',
-        text: 'a random injured ally',
-      },
-      value: {
-        // $range: {
-        //   min: 1,
-        //   max: 2,
-        // },
-        $exponential: {
-          min: 1,
-          max: 10,
-        },
+    target: targets.CHOSEN,
+    selectors: {
+      base: null,
+    },
+    value: {
+      $range: {
+        min: 1,
+        max: 2,
       },
     },
-    price: ({ value }) => value * 40,
+    mods: [
+      ...dealDamageValueMods,
+      improveTargetMod,
+      addSelectorMod,
+    ],
+    price: ({ value }) => value * 50,
   },
   betray: {
     key: 'betray',
-    name: 'Betray',
-    description: 'Betray the target card',
-    text: '$card betrays',
-    default: {
-      card: {
-        target: 'randomEnemy',
-        text: 'a random enemy',
-      },
+    forgeLevel: 4,
+    target: targets.CHOSEN,
+    selector: {
+      base: null,
     },
+    to: {
+      kingdom: kingdoms.OWNER,
+    },
+    mods: [
+      toKingdomAllyMod,
+      improveTargetMod,
+      addSelectorMod,
+    ],
     price: () => 600,
   },
   resurrect: {
     key: 'resurrect',
-    name: 'Resurrect',
-    description: 'Resurrect the target card',
-    text: 'resurrect $card',
-    default: {
-      card: {
-        target: 'randomAlly',
-        text: 'a random ally',
-      },
+    forgeLevel: 2,
+    selectors: {
+      base: null,
     },
+    from: {
+      kingdom: kingdoms.OWNER,
+    },
+    to: {
+      kingdom: kingdoms.OWNER,
+      place: places.BARRACKS,
+    },
+    value: 1,
+    mods: [
+      ...resurrectValueMods,
+      fromKingdomAllyMod,
+      fromKingdomEnemyLevel2Mod,
+      toKingdomAllyMod,
+      toKingdomEnemeyLevel2Mod,
+      toPlaceAnyButBarracksMod,
+      addSelectorMod,
+    ],
     price: () => 300,
   },
   discard: {
     key: 'discard',
-    name: 'Discard',
-    description: 'Discard the target card',
-    text: 'discard $card',
-    default: {
-      card: {
-        target: 'randomAlly',
-        text: 'a random ally',
-      },
+    forgeLevel: 2,
+    banish: false,
+    selectors: {
+      base: null,
     },
-    price: () => -30,
+    to: {
+      kingdom: kingdoms.ENEMY,
+    },
+    value: 1,
+    mods: [
+      ...discardValueMods,
+      toKingdomOwnerMod,
+      toKingdomAllyLevel2Mod,
+      banishMod,
+      addSelectorMod,
+    ],
+    price: () => 50,
   },
   summon: {
     key: 'summon',
