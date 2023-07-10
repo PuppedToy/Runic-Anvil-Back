@@ -8,7 +8,6 @@ const conditions = {
         },
       },
       description: 'is in the target place',
-      text: 'is in $place',
     },
   },
   kingdoms: {

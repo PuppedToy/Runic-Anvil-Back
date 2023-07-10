@@ -8,7 +8,6 @@ function levelFilter (card, element) {
 const ongoingEffects = {
     statChange: {
         key: 'statChange',
-        text: 'have $effect.value $effect.stat',
         effect: {
             $sample: [
                 {
@@ -62,7 +61,6 @@ const ongoingEffects = {
     },
     givePassiveEffect: {
         key: 'givePassiveEffect',
-        text: 'have $effect.passiveEffect.name',
         effect: {
             passiveEffect: {
                 $filteredSample: {

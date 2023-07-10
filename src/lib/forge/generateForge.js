@@ -28,86 +28,13 @@ function generateAction(level) {
   return weightedSample(actions, [forgeLevelFilter(level)]);
 }
 
-// const TARGET_TYPE_CARD = 'TARGET_TYPE_CARD';
-// const TARGET_TYPE_KINGDOM = 'TARGET_TYPE_KINGDOM';
-// function generateEligibleTargets(level, targetTypes) {
-//   let eligibleTargets = {};
-
-//   if (targetTypes.includes(TARGET_TYPE_CARD)) {
-//     eligibleTargets = { ...eligibleTargets, ...eligibleTargetsCards };
-//   }
-//   if (targetTypes.includes(TARGET_TYPE_KINGDOM)) {
-//     eligibleTargets = { ...eligibleTargets, ...eligibleTargetsKingdoms };
-//   }
-
-//   const eligibleTarget = weightedSample(eligibleTargets, [forgeLevelFilter(level)]);
-
-//   return eligibleTarget;
-// }
-
-function mergeTexts(textList) {
-  return textList.map(
-    (text) => (text[text.length - 1] === '.' ? text.slice(0, -1) : text),
-  ).join('.\n');
-}
-
 function cleanDefinitionObject(definitionObject) {
-  const unwantedProperties = ['name', 'description', 'textContext', 'text', 'weight'];
+  const unwantedProperties = ['weight'];
   const result = { ...definitionObject };
   unwantedProperties.forEach((property) => {
     delete result[property];
   });
   return result;
-}
-
-const processTextRegex = /\$([^.$ )\]}:]*?\.?)+?[^.$ )\]}:]+?(?=\s|$|:|\)|\]|\})/;
-function processText(text, textContext = {}) {
-  if (!text) return '';
-
-  let resultText = text;
-  let lastResult = null;
-  while (resultText.includes('$')) {
-    const resultRegex = processTextRegex.exec(resultText);
-    if (!resultRegex) {
-      throw new Error(`Regex is expected to match on processText.
-  - Last result: ${lastResult}
-  - Received text: ${text}
-  - Current state: ${resultText}
-  - Other fields: ${JSON.stringify(textContext)}`);
-    }
-    const [match] = resultRegex;
-    const parts = match.replace('$', '').split('.');
-    let resultField = textContext;
-    parts.forEach((part) => {
-      if (!Object.hasOwnProperty.call(resultField, part)) {
-        throw new Error(`Field ${part} not found on ${JSON.stringify(resultField, null, 2)}`);
-      }
-      if (typeof resultField[part] === 'function') {
-        resultField = resultField[part](textContext);
-      } else {
-        resultField = resultField[part];
-      }
-    });
-    if (typeof resultField === 'object') {
-      if (Object.hasOwnProperty.call(resultField, 'text')) {
-        resultField = resultField.text;
-      } else {
-        throw new Error(`Text field not found on ${JSON.stringify(resultField)}`);
-      }
-    }
-    resultText = resultText.replace(match, resultField);
-    if (lastResult === resultText) {
-      throw new Error(`Text is not expected to be the same after processing.
-  - Received text: ${text}.
-  - Current state: ${resultText}
-  - Other fields: ${JSON.stringify(textContext)}`);
-    }
-    lastResult = resultText;
-  }
-
-  const lowerCaseResultText = resultText.toLowerCase();
-  const firstCapitalLetterResultText = lowerCaseResultText[0].toUpperCase() + lowerCaseResultText.slice(1);
-  return firstCapitalLetterResultText;
 }
 
 const processOperations = {
@@ -142,88 +69,52 @@ const processOperations = {
   },
 };
 
-function processForge(defaultForge) {
-  if (!Array.isArray(defaultForge) && typeof defaultForge === 'object') {
-    let resultDefaultForge = { ...defaultForge };
-    Object.entries(resultDefaultForge).forEach(([key, value]) => {
+function processForge(forge) {
+  if (!Array.isArray(forge) && typeof forge === 'object') {
+    let resultForge = { ...forge };
+    Object.entries(resultForge).forEach(([key, value]) => {
       const keyWithoutDollar = key.replace('$', '');
       if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
         const previousCard = null; // @TODO
-        resultDefaultForge[key] = processOperations[keyWithoutDollar](value, previousCard);
+        resultForge[key] = processOperations[keyWithoutDollar](value, previousCard);
       }
-      resultDefaultForge[key] = processForge(resultDefaultForge[key]);
+      resultForge[key] = processForge(resultForge[key]);
     });
-    const keys = Object.keys(resultDefaultForge);
+    const keys = Object.keys(resultForge);
     if (keys.length === 1 && keys[0][0] === '$') {
-      return resultDefaultForge[keys[0]];
+      return resultForge[keys[0]];
     }
-    return resultDefaultForge;
+    return resultForge;
   }
-  return defaultForge;
+  return forge;
 }
 
-// Effects
-// @TODO targets
-// @TODO conditions
-// @TODO for each effect enumerate the type of targets it might have
-// @TODO text placeholders for both effects and targets
-// In the case of basic effects it will be <$effect $target>
-// For instance, Deploy a random card from your hand is Deploy $target
-function generateEffect() {
-  // Now all the previous work isn't useful.
-  // We start small here. We don't need level. We are generating
-  // a new level 1 deploy effect. We will create an improveEffect method
-
-  // For now, we should focus on each effect to be generated on their default
-  // state. We will tackle improvements later
-
-  const effect = weightedSample(effects, [forgeLevelFilter(1)]);
-
-  const {
-    key,
-    name,
-    description,
-    text,
-    default: defaultForge,
-    textContext: generalTextContext = {},
-    price,
-  } = effect;
-
-  const processedDefaultForge = processForge(defaultForge);
-  const textContext = { ...(processedDefaultForge.textContext || {}), ...generalTextContext };
+function generateEffect(level) {
+  const effect = weightedSample(effects, [forgeLevelFilter(level)]);
+  const { mods, ...defaultForge } = effect;
+  const processedForge = processForge(defaultForge);
 
   const forge = {
-    key,
-    name,
-    description,
-    ...processedDefaultForge,
-    textContext,
-    text,
-    price,
+    ...defaultForge,
+    processedForge,
   };
 
   return forge;
 }
-
 
 function generateSelector(level) {
   const selector = weightedSample(cardSelectors, [forgeLevelFilter(level)]);
 
   const {
     key,
-    text,
     selector: selectorDefinition,
-    textContext: generalTextContext = {},
   } = selector;
 
   const processedSelector = processForge(selectorDefinition);
-  const textContext = { ...(processedSelector.textContext || {}), ...generalTextContext };
 
   const forge = {
     key,
-    text,
     selector: processedSelector,
-    textContext,
   };
   return forge;
 }
@@ -233,19 +124,14 @@ function generateOngoingEffect(level) {
 
   const {
     key,
-    text,
     effect,
-    textContext: generalTextContext = {},
   } = ongoingEffect;
 
   const processedEffect = processForge(effect);
-  const textContext = { ...(processedEffect.textContext || {}), ...generalTextContext };
 
   const forge = {
     key,
-    text,
     effect: processedEffect,
-    textContext,
   };
   return forge;
 }
@@ -407,10 +293,6 @@ const forgeGenerators = [
       newCard.cost = foundPassiveEffect.costModificator ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
       return newCard;
     },
-    getText: (forge) => {
-      const foundPassiveEffect = passiveEffects[forge.key];
-      return foundPassiveEffect.name;
-    },
     isCommanderForbidden: () => false,
   },
   // Basic: Trigger: effect
@@ -424,10 +306,6 @@ const forgeGenerators = [
       return {
         trigger,
         effect,
-        textContext: {
-          ...(trigger.textContext || {}),
-          ...(effect.textContext || {}),
-        },
       };
     },
     update: (forge, card) => {
@@ -444,13 +322,15 @@ const forgeGenerators = [
       }
 
       const chosenMod = weightedSample(availableMods);
+      const processedMod = processForge(chosenMod);
       const newForge = {
         ...forge,
-        mods: [...forgeMods, chosenMod],
+        ...processedMod,
+        mods: [...forgeMods, processedMod],
       };
       return {
         forge: newForge,
-        mod: chosenMod,
+        mod: processedMod,
       };
     },
     apply: (forge, card) => {
@@ -475,19 +355,6 @@ const forgeGenerators = [
       newCard.cost = baseCost + extraPriceModded;
       return newCard;
     },
-    getText: (forge) => {
-      const foundEffect = effects[forge.effect.key];
-      const foundTrigger = triggers[forge.trigger.key];
-      const textContext = {
-        ...(forge.effect),
-        ...(forge.trigger),
-        ...(forge.effect.textContext || {}),
-        ...(forge.trigger.textContext || {}),
-        ...(foundEffect.textContext || {}),
-        ...(foundTrigger.textContext || {}),
-      };
-      return processText(`${foundTrigger.name}: ${foundEffect.text}`, textContext);
-    },
     isCommanderForbidden: (forge) => {
       const foundTrigger = triggers[forge.trigger.key];
       return foundTrigger.isCommanderForbidden ? foundTrigger.isCommanderForbidden() : false;
@@ -503,10 +370,6 @@ const forgeGenerators = [
       return {
         action,
         effect,
-        textContext: {
-          ...(action.textContext || {}),
-          ...(effect.textContext || {}),
-        },
       };
     },
     update (forge, card) {
@@ -523,13 +386,15 @@ const forgeGenerators = [
       }
 
       const chosenMod = weightedSample(availableMods);
+      const processedMod = processForge(chosenMod);
       const newForge = {
         ...forge,
-        mods: [...forgeMods, chosenMod],
+        ...processedMod,
+        mods: [...forgeMods, processedMod],
       };
       return {
         forge: newForge,
-        mod: chosenMod,
+        mod: processedMod,
       };
     },
     apply (forge, card) {
@@ -575,21 +440,6 @@ const forgeGenerators = [
       cardAction.cost = actionPrice;
       return newCard;
     },
-    getText (forge, card, forgeIndex) {
-      const foundEffect = effects[forge.effect.key];
-      const foundAction = actions[forge.action.key];
-      const foundForge = card.forges[forgeIndex];
-      const textContext = {
-        ...(forge.effect),
-        ...(forge.action),
-        ...(forge.effect.textContext || {}),
-        ...(forge.action.textContext || {}),
-        ...(foundEffect.textContext || {}),
-        ...(foundAction.textContext || {}),
-        actionCost: foundForge.cost,
-      };
-      return processText(`${foundAction.text}: ${foundEffect.text}`, textContext);
-    },
     isCommanderForbidden: () => false,
   },
   {
@@ -608,10 +458,6 @@ const forgeGenerators = [
         selector,
         ongoingEffect,
         target,
-        textContext: {
-          ...(selector.textContext || {}),
-          ...(ongoingEffect.textContext || {}),
-        },
       };
     },
     update: () => {
@@ -654,23 +500,6 @@ const forgeGenerators = [
       }
       newCard.cost = baseCost + extraPriceModded;
       return newCard;
-    },
-    getText: (forge) => {
-      const foundSelector = cardSelectors[forge.selector.key];
-      const foundOngoingEffect = ongoingEffects[forge.ongoingEffect.key];
-      const textContext = {
-        target: forge.target,
-        ...(forge.selector),
-        ...(forge.ongoingEffect),
-        ...(forge.selector.textContext || {}),
-        ...(forge.ongoingEffect.textContext || {}),
-        ...(foundSelector.textContext || {}),
-        ...(foundOngoingEffect.textContext || {}),
-      };
-      if (foundOngoingEffect.key === 'statChange' && textContext.effect.value >= 0) {
-        textContext.effect.value = `+${textContext.effect.value}`;
-      }
-      return processText(`${foundSelector.text} ${foundOngoingEffect.text}`, textContext);
     },
     isCommanderForbidden: () => false,
   }
@@ -736,17 +565,13 @@ function applyCardCalculatedFields(card) {
   let baseCost = getCardBaseCost(card);
   const forges = card.forges || [];
   let newCard = { ...card };
-  const texts = [];
-  // @TODO This is an arbitrary order to apply costs. It will change
+  // @TODO This is an arbitrary order to apply costs. It may change
   forges.forEach((forge, forgeIndex) => {
     const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
     newCard = forgeGenerator.applyCost(baseCost, forge, card, forgeIndex);
     baseCost += newCard.cost;
-    if (forgeGenerator.getText) texts.push(forgeGenerator.getText(forge, newCard, forgeIndex));
   });
-  const text = mergeTexts(texts);
-  newCard.text = text ? `${text}.` : '';
   const { allowed, recommended } = canBeCommander(card);
   newCard.canBeCommander = allowed;
   newCard.recommendedAsCommander = recommended;
@@ -758,8 +583,6 @@ module.exports = {
   forgeLevelFilter,
   generateTrigger,
   cleanDefinitionObject,
-  mergeTexts,
-  processText,
   generateEffect,
   generateForge,
   applyForge,

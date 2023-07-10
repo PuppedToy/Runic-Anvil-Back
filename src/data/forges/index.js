@@ -37,25 +37,3 @@ module.exports = {
   unitTypes,
   zones,
 };
-
-/* eslint-disable max-len */
-// General @TODO and WARNING:
-// We need to ensure any effect that might chain only applies a max number of times (maybe 1, 2 or 5)
-// Example:
-// Unit 1: Whenever a friendly unit activates a triggereable effect, trigger a triggereable effect of a friendly unit
-// Unit 2: Quick action: earn 4$
-
-// Note that the amount of chosen targets may vary and will never be more than the eligible targets count
-// unless specified by the card text
-
-// Extras for both kingdoms and cards
-// EXTRA A: All that meet 1 of many of the above conditions
-// EXTRA B: All that meet many of the above conditions
-// EXTRA C: All that does NOT meet the conditions
-
-// Compounded effect ideas
-// 1. Grant a passive effect to (eligible) cards
-// 2. Remove a passive effect from (eligible) cards
-// 3. Apply an effect to (eligible) cards
-
-// EXTRA A: Any of the above may be done if a condition is met (we have to define condition yet). Eligible cards follow conditions actually, but there may be other conditions

@@ -1,7 +1,7 @@
 const md5 = require('md5');
 const { randomInt } = require('../utils/random');
 const { generateForge, applyForge } = require('./forge/generateForge');
-const { generateName } = require('./generateCardTexts');
+const { generateName } = require('./generateCardName');
 
 function exponential(min, range, probability = 0.5) {
   let result = min;

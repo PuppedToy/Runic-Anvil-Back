@@ -4,14 +4,12 @@ const { constants } = require('../enums');
 const passiveEffects = {
   ranged: {
     key: 'ranged',
-    name: 'Ranged',
     costModificator: ({ cost, attack, hp }) => cost
       + (attack * constants.CARD_PRICE_PER_ATTACK_POINT)
       - (hp * constants.CARD_PRICE_PER_HP_POINT) / 2,
   },
   siege: {
     key: 'siege',
-    name: 'Siege',
     costModificator: ({ cost }) => Math.max(0, cost - 100),
   },
   // building: {
@@ -21,7 +19,6 @@ const passiveEffects = {
   // },
   taunting: {
     key: 'taunting',
-    name: 'Taunting',
     costModificator: ({ cost }) => cost + 40,
   },
   // wall: {
@@ -31,7 +28,6 @@ const passiveEffects = {
   // },
   challenger: {
     key: 'challenger',
-    name: 'Challenger',
     costModificator: ({ cost }) => cost + 100,
   },
   // civic: {
@@ -58,17 +54,14 @@ const passiveEffects = {
   // },
   berserker: {
     key: 'berserker',
-    name: 'Berserker',
     costModificator: ({ cost }) => Math.max(0, cost - 60),
   },
   fearful: {
     key: 'fearful',
-    name: 'Fearful',
     costModificator: ({ cost }) => Math.max(0, cost - 40),
   },
   fearsome: {
     key: 'fearsome',
-    name: 'Fearsome',
     costModificator: ({ cost }) => cost + 60,
   },
   // versatile: {
@@ -90,12 +83,10 @@ const passiveEffects = {
   // },
   vampiric: {
     key: 'vampiric',
-    name: 'Vampiric',
     costModificator: ({ cost, attack, hp }) => cost + attack * 20 + hp * 20,
   },
   deadly: {
     key: 'deadly',
-    name: 'Deadly',
     costModificator: ({ cost, attack }) => cost + (attack > 0 ? 300 : 100) - (attack * constants.CARD_PRICE_PER_ATTACK_POINT) / 2,
   },
   // barrier: {
@@ -110,13 +101,11 @@ const passiveEffects = {
   // },
   swift: {
     key: 'swift',
-    name: 'Swift',
     costModificator: ({ cost, attack }) => cost + attack * constants.CARD_PRICE_PER_ATTACK_POINT,
     // forgeLevel: 2,
   },
   slow: {
     key: 'slow',
-    name: 'Slow',
     costModificator: ({ cost, attack, hp }) => cost - attack * Math.floor(constants.CARD_PRICE_PER_ATTACK_POINT / 2) - hp * Math.floor(constants.CARD_PRICE_PER_HP_POINT / 2),
     // forgeLevel: 2,
   },

@@ -7,12 +7,10 @@ const elements = require('./elements');
 const comparativeOperators = [
     {
         key: 'moreThan',
-        text: 'more than',
         weight: 2,
     },
     {
         key: 'lessThan',
-        text: 'less than',
         weight: 2,
     },
 ];
@@ -21,7 +19,6 @@ const operators = [
     ...comparativeOperators,
     {
         key: 'equals',
-        text: '',
         weight: 1,
     },
 ];
