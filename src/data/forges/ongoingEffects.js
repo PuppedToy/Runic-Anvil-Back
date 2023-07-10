@@ -63,7 +63,7 @@ const ongoingEffects = {
         key: 'givePassiveEffect',
         effect: {
             passiveEffect: {
-                $filteredSample: {
+                $richSample: {
                     list: Object.values(passiveEffects),
                     filters: [levelFilter],
                     keyReplace: 'ongoingPassiveEffectKey'

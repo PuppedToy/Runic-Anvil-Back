@@ -1,8 +1,9 @@
 const unitTypes = require('./unitTypes');
 const passiveEffects = require('./passiveEffects');
 const statusEffects = require('./statusEffects');
-const places = require('./places');
 const elements = require('./elements');
+const { stats, places } = require('../enums');
+const { forgeLevelFilter } = require('../../lib/forge/generateForge');
 
 const comparativeOperators = [
     {
@@ -23,25 +24,17 @@ const operators = [
     },
 ];
 
-function levelFilter (card, element) {
-    return !element.forgeLevel || element.forgeLevel <= card.level;
-}
-
 const cardSelectors = {
-    allUnits: {
-        key: 'allUnits',
-        costModificator: ({ cost }) => cost * 1,
-    },
     hasStat: {
         key: 'hasStat',
         stat: {
             $sample: [
                 {
-                    stat: 'attack',
+                    stat: stats.ATTACK,
                     operator: {
-                        $sampleWithKeyReplacement: {
+                        $richSample: {
                             list: operators,
-                            keyReplace: 'operatorKey',
+                            map: ({ key }) => key,
                         },
                     },
                     value: {
@@ -53,11 +46,11 @@ const cardSelectors = {
                     },
                 },
                 {
-                    stat: 'hp',
+                    stat: stats.HP,
                     operator: {
-                        $sampleWithKeyReplacement: {
+                        $richSample: {
                             list: operators,
-                            keyReplace: 'operatorKey',
+                            map: ({ key }) => key,
                         },
                     },
                     value: {
@@ -71,9 +64,9 @@ const cardSelectors = {
                 {
                     stat: 'cost',
                     operator: {
-                        $sampleWithKeyReplacement: {
+                        $richSample: {
                             list: comparativeOperators,
-                            keyReplace: 'operatorKey',
+                            map: ({ key }) => key,
                         },
                     },
                     value: {
@@ -92,9 +85,10 @@ const cardSelectors = {
     hasTribe: {
         key: 'hasTribe',
         tribe: {
-            $filteredSample: {
-                list: unitTypes,
-                filters: [levelFilter],
+            $richSample: {
+                list: Object.values(unitTypes),
+                filters: [forgeLevelFilter],
+                map: ({ key }) => key,
             },
         },
         costModificator: ({ cost }) => cost * 0.5,
@@ -102,9 +96,10 @@ const cardSelectors = {
     hasElement: {
         key: 'hasElement',
         element: {
-            $filteredSample: {
-                list: [...Object.values(elements.basic), ...Object.values(elements.complex)],
-                filters: [levelFilter],
+            $richSample: {
+                list: [...Object.values(elements.basic)],
+                filters: [forgeLevelFilter],
+                map: ({ key }) => key,
             },
         },
         costModificator: ({ cost }) => cost * 0.5,
@@ -123,9 +118,10 @@ const cardSelectors = {
     hasPassiveEffect: {
         key: 'hasPassiveEffect',
         passiveEffect: {
-            $filteredSample: {
+            $richSample: {
                 list: Object.values(passiveEffects),
-                filters: [levelFilter],
+                filters: [forgeLevelFilter],
+                map: ({ key }) => key,
             },
         },
         costModificator: ({ cost }) => cost * 0.5,
@@ -133,10 +129,10 @@ const cardSelectors = {
     hasStatusEffect: {
         key: 'hasStatusEffect',
         statusEffect: {
-            $filteredSample: {
+            $richSample: {
                 list: Object.values(statusEffects),
-                keyReplace: 'statusEffectKey',
-                filters: [levelFilter],
+                filters: [forgeLevelFilter],
+                map: ({ key }) => key,
             },
         },
         costModificator: ({ cost }) => cost * 0.5,
@@ -144,7 +140,13 @@ const cardSelectors = {
     isInPlace: {
         key: 'isInPlace',
         place: {
-            $sample: places,
+            $sample: [
+                places.BARRACKS,
+                places.RANGED_ZONE,
+                places.MELEE_ZONE,
+                places.WAR_ZONE,
+                places.SIEGE_ZONE,
+            ],
         },
         costModificator: ({ cost }) => cost * 0.5,
     },

@@ -528,7 +528,7 @@ const toPlaceDeckModForgeLevel3 = {
   },
 };
 
-const { BARRACKS: _, ...allPlacesButBarracks } = places;
+const { BARRACKS: _BARRACKS, NONE: _NONE, ...allPlacesButBarracks } = places;
 const toPlaceAnyButBarracksMod = {
   id: 'toPlace',
   modLevel: 1,
@@ -1125,9 +1125,9 @@ const effects = {
       statusedCard: null,
     },
     statusEffect: {
-      $mappedSample: {
+      $richSample: {
         list: statusEffects,
-        method: ({ key }) => key,
+        map: ({ key }) => key,
       },
     },
     value: 1,

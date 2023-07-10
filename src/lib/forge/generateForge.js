@@ -46,12 +46,14 @@ const processOperations = {
 
     return randomInt(range.min, range.max, range.step);
   },
-  sample: (sample) => weightedSample(sample, undefined, { noKey: true }),
-  mappedSample: ({ list, method }) => {
-    const result = weightedSample(list, undefined, { noKey: true });
-    return method(result);
+  sample: (sample) => weightedSample(sample),
+  richSample: ({ list, map, filters }) => {
+    const result = weightedSample(list, filters);
+    if (map) {
+      return map(result);
+    }
+    return result;
   },
-  filteredSample: ({ list, filters, keyReplace }) => weightedSample(list, filters, { keyReplace, noKey: !keyReplace }),
   exponential: (exponential) => {
     if (!Object.hasOwnProperty.call(exponential, 'min')) {
       throw new Error('Range must have min and max');
@@ -204,7 +206,7 @@ const forgeGenerators = [
         ...sample,
       };
     },
-    update: () => null,
+    upgrade: () => null,
     apply: (forge, card) => {
       const newCard = { ...card };
       newCard.unitType = forge.key;
@@ -226,7 +228,7 @@ const forgeGenerators = [
         ...sample,
       };
     },
-    update: (forge, card) => {
+    upgrade: (forge, card) => {
       const basicElementValues = Object.values(elements.basic);
       const basicElement = basicElementValues.find((currentBasicElement) => currentBasicElement.key === card.element);
       if (!card.element) {
@@ -279,7 +281,10 @@ const forgeGenerators = [
         ...sample,
       };
     },
-    update: () => null,
+    upgrade: () => {
+      // @TODO some passive effects are upgrades. Like splash or huge. Make passive effect tree
+      return null;
+    },
     apply: (forge, card) => {
       const newCard = { ...card };
       newCard.passiveEffects = newCard.passiveEffects || [];
@@ -308,7 +313,7 @@ const forgeGenerators = [
         effect,
       };
     },
-    update: (forge, card) => {
+    upgrade: (forge, card) => {
       if (card.level <= 0) {
         throw new Error(`Card ${card.name} doesn't have a level`);
       }
@@ -372,7 +377,7 @@ const forgeGenerators = [
         effect,
       };
     },
-    update (forge, card) {
+    upgrade (forge, card) {
       if (card.level <= 0) {
         throw new Error(`Card ${card.name} doesn't have a level`);
       }
@@ -460,7 +465,7 @@ const forgeGenerators = [
         target,
       };
     },
-    update: () => {
+    upgrade: () => {
       // @TODO
       return null;
     },
