@@ -34,6 +34,8 @@
 const { constants, places, kingdoms, targets, operations, stats, creations } = require('../enums');
 const statusEffects = require('./statusEffects');
 const { randomInt } = require('../../utils/random');
+const weightedSample = require('../../utils/weightedSample');
+const { cardSelectors } = require('.');
 
 /** PIECES */
 
@@ -740,24 +742,51 @@ const discoverMod = {
   creation: creations.DISCOVER,
 };
 
-// @TODO const targetMod
-
-const improveTargetMod = {
+const improveTargetLevel1Mod = {
   id: 'improveTarget',
   modLevel: 1,
-  // @TODO
+  target: targets.RANDOM,
 };
 
-const addSelectorMod = {
+const improveTargetLevel2Mod = {
+  id: 'improveTarget',
+  modLevel: 2,
+  target: targets.ALL,
+};
+
+const improveTargetMods = [
+  improveTargetLevel1Mod,
+  improveTargetLevel2Mod,
+];
+
+const addOrUpdateCardSelectorMod = {
   id: 'addSelector',
   modLevel: 1,
-  // @TODO selector
-  // selector: createNewSelector(), // This should have somehow the list of available selectors
+  cardSelector: {
+    $custom: {
+      method: ({ cardSelector }) => {
+        const availableSelectors = Object.keys(cardSelector);
+        if (availableSelectors.length === 0) {
+          return null;
+        }
+        const chosenSelector = weightedSample(availableSelectors);
+        if (chosenSelector === null) {
+          return {
+            [chosenSelector]: {
+              $sample: cardSelectors,
+            }
+          }
+        }
+        else {
+          // @TODO Update
+          return null;
+        }
+      },
+    }
+  }
 };
 
-/****/
-
-// So I have to identify which options may have a selector and store it somewhere. This might get tricky.
+// @TODO kingdomSelector
 
 const effects = {
   deploy: {
@@ -787,7 +816,7 @@ const effects = {
       ...deployToPlaceMods,
       toKingdomAllyMod,
       fromKingdomEnemyModForgeLevel3,
-      addSelectorMod,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ value }) => value * 0.5,
   },
@@ -818,8 +847,8 @@ const effects = {
     },
     mods: [
       ...dealDamageValueMods,
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ value }) => value * 50,
   },
@@ -894,8 +923,8 @@ const effects = {
     },
     mods: [
       ...statMods,
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ value, stat }) => value * (stat === stats.ATTACK ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
   },
@@ -909,8 +938,8 @@ const effects = {
     target: targets.CHOSEN,
     mods: [
       banishModForgeLevel4,
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: () => 400,
   },
@@ -929,8 +958,8 @@ const effects = {
     mods: [
       ...moveToPlaceMods,
       toKingdomAllyModForgeLevel3,
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ place }) => {
       let result = 25;
@@ -960,8 +989,8 @@ const effects = {
       toKingdomAllyModForgeLevel3,
       toKingdomEnemyLevel2ModForgeLevel4,
       toPlaceDeckModForgeLevel3,
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: () => 200,
   },
@@ -972,8 +1001,8 @@ const effects = {
       foughtCard: null,
     },
     mods: [
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: () => 50,
     isCommanderForbidden: () => true,
@@ -992,8 +1021,8 @@ const effects = {
     },
     mods: [
       ...dealDamageValueMods,
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ value }) => value * 50,
   },
@@ -1009,8 +1038,8 @@ const effects = {
     },
     mods: [
       toKingdomAllyMod,
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: () => 600,
   },
@@ -1035,7 +1064,7 @@ const effects = {
       toKingdomAllyMod,
       toKingdomEnemyLevel2Mod,
       toPlaceAnyButBarracksMod,
-      addSelectorMod,
+      addOrUpdateCardSelectorMod,
     ],
     price: () => 300,
   },
@@ -1063,7 +1092,7 @@ const effects = {
       fromKingdomAllyLevel2Mod,
       toDeckMod,
       toOwnerOrAllyLevel2Mod,
-      addSelectorMod,
+      addOrUpdateCardSelectorMod,
     ],
     price: () => 50,
   },
@@ -1089,7 +1118,7 @@ const effects = {
       toKingdomAllyMod,
       toKingdomEnemyLevel2Mod,
       toPlaceAnyIngameButBarracksMod,
-      addSelectorMod,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ value }) => value,
   },
@@ -1115,7 +1144,7 @@ const effects = {
       toKingdomAllyMod,
       toKingdomEnemyLevel2Mod,
       toPlaceHandMod,
-      addSelectorMod,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ value }) => value * 0.1,
   },
@@ -1134,8 +1163,8 @@ const effects = {
     duration: 1, // @TODO If regrowth or decay, -1
     mods: [
       // @TODO value and duration mods
-      improveTargetMod,
-      addSelectorMod,
+      ...improveTargetMods,
+      addOrUpdateCardSelectorMod,
     ],
     price: ({ statusEffect, value = 1 }) => {
       let result = 50;

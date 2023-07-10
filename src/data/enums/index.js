@@ -26,6 +26,7 @@ module.exports = {
   targets: {
     CHOSEN: 'chosen',
     RANDOM: 'random',
+    ALL: 'all',
   },
   operations: {
     ADD: 'add',
