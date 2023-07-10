@@ -206,8 +206,8 @@ const complex = {
         key: 'biotech',
         elements: [basic.nature.key, basic.tech.key],
     },
-    void: {
-        key: 'void',
+    eclipse: {
+        key: 'eclipse',
         elements: [basic.light.key, basic.shadow.key],
     },
     photocatalysis: {
@@ -268,7 +268,14 @@ const complex = {
     },
 };
 
+const forbidden = {
+    void: {
+        key: 'void',
+    }
+};
+
 module.exports = {
     basic,
     complex,
+    forbidden,
 };

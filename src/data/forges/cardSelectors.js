@@ -30,14 +30,10 @@ function levelFilter (card, element) {
     return !element.forgeLevel || element.forgeLevel <= card.level;
 }
 
-function createMapper() {
-    
-}
-
 const cardSelectors = {
     allUnits: {
         key: 'allUnits',
-        costModificator: ({ cost }) => cost * 4,
+        costModificator: ({ cost }) => cost * 1,
     },
     hasStat: {
         key: 'hasStat',
@@ -94,7 +90,7 @@ const cardSelectors = {
                 },
             ],
         },
-        costModificator: ({ operator, cost }) => operator.key === 'equals' ? cost * 0.5 : cost * 2,
+        costModificator: ({ operator, cost }) => operator.key === 'equals' ? cost * 0.5 : cost * 0.5,
     },
     hasTribe: {
         key: 'hasTribe',
@@ -104,7 +100,7 @@ const cardSelectors = {
                 filters: [levelFilter],
             },
         },
-        costModificator: ({ cost }) => cost * 2,
+        costModificator: ({ cost }) => cost * 0.5,
     },
     hasElement: {
         key: 'hasElement',
@@ -114,7 +110,7 @@ const cardSelectors = {
                 filters: [levelFilter],
             },
         },
-        costModificator: ({ cost }) => cost * 2,
+        costModificator: ({ cost }) => cost * 0.5,
     },
     hasRarity: {
         key: 'hasRarity',
@@ -125,7 +121,7 @@ const cardSelectors = {
                 probability: 0.2,
             },
         },
-        costModificator: ({ cost }) => cost * 2,
+        costModificator: ({ cost }) => cost * 0.5,
     },
     hasPassiveEffect: {
         key: 'hasPassiveEffect',
@@ -135,7 +131,7 @@ const cardSelectors = {
                 filters: [levelFilter],
             },
         },
-        costModificator: ({ cost }) => cost * 2,
+        costModificator: ({ cost }) => cost * 0.5,
     },
     hasStatusEffect: {
         key: 'hasStatusEffect',
@@ -146,14 +142,14 @@ const cardSelectors = {
                 filters: [levelFilter],
             },
         },
-        costModificator: ({ cost }) => cost * 2,
+        costModificator: ({ cost }) => cost * 0.5,
     },
     isInPlace: {
         key: 'isInPlace',
         place: {
             $sample: places,
         },
-        costModificator: ({ cost }) => cost * 2,
+        costModificator: ({ cost }) => cost * 0.5,
     },
     // Ideas: is damaged, has a state changed, is a zombie, is a creation, is defending
 };

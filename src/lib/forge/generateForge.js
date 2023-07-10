@@ -274,6 +274,40 @@ function getCardBaseCost(card) {
   );
 }
 
+function getTriggerAvailableMods(forge, card) {
+  // @TODO
+  return [];
+}
+
+function getActionAvailableMods(forge, card) {
+  // @TODO
+  return [];
+}
+
+function getEffectAvailableMods(forge, card) {
+  const foundEffect = effects[forge.effect.key];
+  const forgeMods = forge.mods || [];
+  const effectMods = foundEffect.mods || [];
+  const forgeLevel = card.level;
+  // First we add any mod that is level 1, is from the correct forgeLevel and is not already in the forge
+  const availableMods = effectMods.filter(
+    (mod) => (!mod.modLevel || mod.modLevel === 1)
+      && ((mod.forgeLevel || 0) <= forgeLevel)
+      && forgeMods.every((forgeMod) => forgeMod.key !== mod.key),
+  );
+  forgeMods.forEach((mod) => {
+    const modLevel = mod.modLevel ? mod.modLevel + 1 : null;
+    const modKey = mod.key;
+    // Now we add any mod with current mod key and exactly current mod level, never forgetting the forge level restriction
+    effectMods.forEach((effectMod) => {
+      if (effectMod.key === modKey && effectMod.modLevel === modLevel && (effectMod.forgeLevel || 0) <= forgeLevel) {
+        availableMods.push(effectMod);
+      }
+    });
+  });
+  return availableMods;
+}
+
 const forgeGenerators = [
   {
     type: 'addUnitType',
@@ -284,6 +318,7 @@ const forgeGenerators = [
         ...sample,
       };
     },
+    update: () => null,
     apply: (forge, card) => {
       const newCard = { ...card };
       newCard.unitType = forge.key;
@@ -300,9 +335,39 @@ const forgeGenerators = [
     type: 'addElement',
     weight: 1,
     generate: (level) => {
-      const sample = weightedSample(elements.basic, [forgeLevelFilter(level)]);
+      const sample = weightedSample(Object.values(elements.basic), [forgeLevelFilter(level)]);
       return {
         ...sample,
+      };
+    },
+    update: (forge, card) => {
+      const basicElementValues = Object.values(elements.basic);
+      const basicElement = basicElementValues.find((currentBasicElement) => currentBasicElement.key === card.element);
+      if (!card.element) {
+        throw new Error(`Card ${card.name} doesn't have an element`);
+      }
+      if (basicElement === null && elements.complex.some((complexElement) => complexElement.elements.includes(card.element))) {
+        const forbidden = weightedSample(Object.values(elements.forbidden), [forgeLevelFilter(card.level)]);
+        return {
+          ...forge,
+          ...forbidden,
+        }
+      }
+      const otherBasicElements = basicElementValues.filter((currentBasicElement) => currentBasicElement.key !== card.element);
+      const newBasicElement = weightedSample(otherBasicElements, [forgeLevelFilter(card.level)]);
+      const complexElement = Object.values(elements.complex).find(
+        (currentComplexElement) => currentComplexElement.elements.includes(card.element) && currentComplexElement.elements.includes(newBasicElement.key),
+      );
+      if (complexElement === null) {
+        throw new Error(`Element ${card.element} doesn't have a complex element with ${newBasicElement.key}`);
+      }
+      const newForge = {
+        ...forge,
+        ...complexElement,
+      };
+      return {
+        forge: newForge,
+        mod: complexElement,
       };
     },
     apply: (forge, card) => {
@@ -328,6 +393,7 @@ const forgeGenerators = [
         ...sample,
       };
     },
+    update: () => null,
     apply: (forge, card) => {
       const newCard = { ...card };
       newCard.passiveEffects = newCard.passiveEffects || [];
@@ -362,6 +428,29 @@ const forgeGenerators = [
           ...(trigger.textContext || {}),
           ...(effect.textContext || {}),
         },
+      };
+    },
+    update: (forge, card) => {
+      if (card.level <= 0) {
+        throw new Error(`Card ${card.name} doesn't have a level`);
+      }
+      const availableMods = [
+        ...getTriggerAvailableMods(forge, card),
+        ...getEffectAvailableMods(forge, card),
+      ];
+
+      if (!availableMods.length) {
+        return null;
+      }
+
+      const chosenMod = weightedSample(availableMods);
+      const newForge = {
+        ...forge,
+        mods: [...forgeMods, chosenMod],
+      };
+      return {
+        forge: newForge,
+        mod: chosenMod,
       };
     },
     apply: (forge, card) => {
@@ -418,6 +507,29 @@ const forgeGenerators = [
           ...(action.textContext || {}),
           ...(effect.textContext || {}),
         },
+      };
+    },
+    update (forge, card) {
+      if (card.level <= 0) {
+        throw new Error(`Card ${card.name} doesn't have a level`);
+      }
+      const availableMods = [
+        ...getActionAvailableMods(forge, card),
+        ...getEffectAvailableMods(forge, card),
+      ];
+
+      if (!availableMods.length) {
+        return null;
+      }
+
+      const chosenMod = weightedSample(availableMods);
+      const newForge = {
+        ...forge,
+        mods: [...forgeMods, chosenMod],
+      };
+      return {
+        forge: newForge,
+        mod: chosenMod,
       };
     },
     apply (forge, card) {
@@ -501,6 +613,10 @@ const forgeGenerators = [
           ...(ongoingEffect.textContext || {}),
         },
       };
+    },
+    update: () => {
+      // @TODO
+      return null;
     },
     apply: (forge, card) => {
       const newCard = { ...card };
