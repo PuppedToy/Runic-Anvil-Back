@@ -36,6 +36,7 @@ module.exports = {
   stats: {
     ATTACK: 'attack',
     HP: 'hp',
+    COST: 'cost',
   },
   creations: {
     SPECIFIC: 'specific',

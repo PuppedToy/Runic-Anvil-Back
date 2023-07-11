@@ -210,28 +210,46 @@ const { cardSelectors } = require('.');
     modifyCurrencyValueLevel3Mod,
   ];
   
-  const generateStatMethod = (minIncrement, maxIncrement) => ({ [stats.ATTACK]: attack = 0, [stats.HP]: hp = 0 }) => {
+  const generateStatMethod = (minIncrement, maxIncrement, withCost = false) => (card) => {
+    const multipliers = {
+      [stats.ATTACK]: 1 * (card.stats[stats.ATTACK] >= 0 ? 1 : -1),
+      [stats.HP]: 1 * (card.stats[stats.HP] >= 0 ? 1 : -1),
+      [stats.COST]: 40 * (card.stats[stats.COST] <= 0 ? -1 : 1),
+    };
     const totalIncrement = randomInt(minIncrement, maxIncrement);
-    const random = Math.random();
-    let attackIncrement = 0;
-    let hpIncrement = 0;
-    if (random < 0.3) {
-      attackIncrement = totalIncrement;
+    const result = {};
+
+    Object.entries(card.stats).forEach(([stat, value]) => {
+      result[stat] = value;
+    });
+    const availableStats = [stats.ATTACK, stats.HP];
+    if (withCost) {
+      availableStats.push(stats.COST);
     }
-    else if (random < 0.6) {
-      hpIncrement = totalIncrement;
+    const statsToInclude = availableStats.filter(stat => card.stats[stat] !== 0);
+    const availableStatsNotIncluded = availableStats.filter(stat => card.stats[stat] === 0);
+    if (Math.random() < 0.5) {
+      const statToInclude = weightedSample(availableStatsNotIncluded);
+      statsToInclude.push(statToInclude);
+    }
+
+    if (Math.random() < 0.5) {
+      const randomStat = weightedSample(statsToInclude);
+      result[randomStat] += totalIncrement * multipliers[randomStat];
     }
     else {
-      attackIncrement = randomInt(1, totalIncrement - 1);
-      hpIncrement = totalIncrement - attackIncrement;
+      while (totalIncrement > 0) {
+        const randomStat = weightedSample(statsToInclude);
+        result[randomStat] += multipliers[randomStat];
+        totalIncrement -= 1;
+      }
     }
-    const result = {};
-    if (attackIncrement > 0) {
-      result[stats.ATTACK] = attack + (attack >= 0 ? attackIncrement : -attackIncrement);
-    }
-    if (hpIncrement > 0) {
-      result[stats.HP] = hp + (hp >= 0 ? hpIncrement : -hpIncrement);
-    }
+    Object.entries(result).forEach(([stat, value]) => {
+      if (value === 0) {
+        delete result[stat];
+      }
+    });
+
     return result;
   };
   
@@ -269,14 +287,13 @@ const { cardSelectors } = require('.');
     id: 'reverse',
     stats: {
       $custom: {
-        method: ({ [stats.ATTACK]: attack = 0, [stats.HP]: hp = 0 }) => {
+        method: (card) => {
           const result = {};
-          if (attack > 0) {
-            result[stats.ATTACK] = -attack;
-          }
-          if (hp > 0) {
-            result[stats.HP] = -hp;
-          }
+          Object.entries(card.stats).forEach(([stat, value]) => {
+            if (stat > 0) {
+              result[stat] = -value;
+            }
+          })
           return result;
         },
       },
@@ -287,6 +304,44 @@ const { cardSelectors } = require('.');
     statValueLevel1Mod,
     statValueLevel2Mod,
     statValueLevel3Mod,
+    reverseStatsMod,
+  ];
+
+  
+  const ongoingStatValueLevel1Mod = {
+    id: 'value',
+    modLevel: 1,
+    stats: {
+      $custom: {
+        method: generateStatMethod(2, 3, true),
+      },
+    },
+  };
+
+  const ongoingStatValueLevel2Mod = {
+    id: 'value',
+    modLevel: 2,
+    stats: {
+      $custom: {
+        method: generateStatMethod(3, 5, true),
+      },
+    },
+  };
+
+  const ongoingStatValueLevel3Mod = {
+    id: 'value',
+    modLevel: 3,
+    stats: {
+      $custom: {
+        method: generateStatMethod(6, 12, true),
+      },
+    },
+  };
+
+  const ongoingStatMods = [
+    ongoingStatValueLevel1Mod,
+    ongoingStatValueLevel2Mod,
+    ongoingStatValueLevel3Mod,
     reverseStatsMod,
   ];
   
@@ -746,6 +801,11 @@ const { cardSelectors } = require('.');
   };
   
 module.exports = {
+    common: {
+      reverseStatsMod,
+      improveTargetMods,
+      addOrUpdateCardSelectorMod,
+    },
     effects: {
         deployValueLevel1Mod,
         deployValueLevel2Mod,
@@ -770,7 +830,6 @@ module.exports = {
         statValueLevel1Mod,
         statValueLevel2Mod,
         statValueLevel3Mod,
-        reverseStatsMod,
         statMods,
         resurrectValueLevel1Mod,
         resurrectValueLevel2Mod,
@@ -817,7 +876,11 @@ module.exports = {
         discoverMod,
         improveTargetLevel1Mod,
         improveTargetLevel2Mod,
-        improveTargetMods,
-        addOrUpdateCardSelectorMod,
+    },
+    ongoingEffects: {
+        ongoingStatValueLevel1Mod,
+        ongoingStatValueLevel2Mod,
+        ongoingStatValueLevel3Mod,
+        ongoingStatMods,
     },
 };

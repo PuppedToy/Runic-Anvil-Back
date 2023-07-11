@@ -1,5 +1,9 @@
 const { constants, stats } = require('../enums');
 const passiveEffects = require('./passiveEffects');
+const { common: commonMods, ongoingEffects: ongoingEffectMods } = require('./mods');
+
+const { addOrUpdateCardSelectorMod } = commonMods;
+const { ongoingStatMods } = ongoingEffectMods;
 
 function levelFilter (card, element) {
     return !element.forgeLevel || element.forgeLevel <= card.level;
@@ -14,27 +18,20 @@ const ongoingEffects = {
         stats: {
             $sample: [
                 {
-                    [stats.ATTACK]: {
-                        $range: {
-                            min: 1,
-                            max: 2,
-                        },
-                    },
+                    [stats.ATTACK]: 1
                 },
                 {
-                    [stats.HP]: {
-                        $range: {
-                            min: 1,
-                            max: 2,
-                        },
-                    },
+                    [stats.HP]: 1
                 },
                 {
-                    [stats.ATTACK]: 1,
-                    [stats.HP]: 1,
+                    [stats.COST]: -40
                 },
             ],
         },
+        mods: [
+            ...ongoingStatMods,
+            addOrUpdateCardSelectorMod,
+        ],
         price: ({ value, stat }) => {
             if (stat === 'cost') {
                 return value * -1;
@@ -50,15 +47,19 @@ const ongoingEffects = {
     },
     givePassiveEffect: {
         key: 'givePassiveEffect',
-        effect: {
-            passiveEffect: {
-                $richSample: {
-                    list: Object.values(passiveEffects),
-                    filters: [levelFilter],
-                    keyReplace: 'ongoingPassiveEffectKey'
-                },
+        cardSelectors: {
+            modifiedCard: null,
+        },
+        passiveEffect: {
+            $richSample: {
+                list: Object.values(passiveEffects),
+                filters: [levelFilter],
+                map: element => element.key,
             },
         },
+        mods: [
+            addOrUpdateCardSelectorMod,
+        ],
         price: ({ passiveEffectCostModificator }) => {
             const averageAttackUnit = 3;
             const averageHpUnit = 3;
