@@ -281,9 +281,21 @@ const forgeGenerators = [
         ...sample,
       };
     },
-    upgrade: () => {
-      // @TODO some passive effects are upgrades. Like splash or huge. Make passive effect tree
-      return null;
+    upgrade: (forge, card) => {
+      const upgradedPassiveEffects = Object.values(passiveEffects).filter(
+        (passiveEffect) => passiveEffect.forgeLevel <= card.level && card.passiveEffects.includes(passiveEffect.requirement),
+      );
+      if (!upgradedPassiveEffects.length) {
+        return null;
+      }
+      const chosenMod = weightedSample(upgradedPassiveEffects);
+      return {
+        forge: {
+          ...forge,
+          ...chosenMod,
+        },
+        mod: chosenMod,
+      };
     },
     apply: (forge, card) => {
       const newCard = { ...card };

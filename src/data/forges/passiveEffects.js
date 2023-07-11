@@ -21,15 +21,16 @@ const passiveEffects = {
     key: 'taunting',
     costModificator: ({ cost }) => cost + 40,
   },
+  challenger: {
+    key: 'challenger',
+    costModificator: ({ cost }) => cost + 100,
+    forgeLevel: 2,
+  },
   // wall: {
   //   name: 'Wall',
   //   description: 'Every wall is also considered a building. Walls will grant cover to any unit behind them and they are stacked. Every keep has by default two walls.',
   //   costModificator: ({ cost }) => cost,
   // },
-  challenger: {
-    key: 'challenger',
-    costModificator: ({ cost }) => cost + 100,
-  },
   // civic: {
   //   name: 'Civic',
   //   description: 'This unit can\'t go to war nor defend unless there are no walls left.',
@@ -59,10 +60,12 @@ const passiveEffects = {
   fearful: {
     key: 'fearful',
     costModificator: ({ cost }) => Math.max(0, cost - 40),
+    forgeLevel: 2,
   },
   fearsome: {
     key: 'fearsome',
     costModificator: ({ cost }) => cost + 60,
+    forgeLevel: 2,
   },
   // versatile: {
   //   name: 'Versatile',
@@ -84,10 +87,12 @@ const passiveEffects = {
   vampiric: {
     key: 'vampiric',
     costModificator: ({ cost, attack, hp }) => cost + attack * 20 + hp * 20,
+    forgeLevel: 2,
   },
   deadly: {
     key: 'deadly',
     costModificator: ({ cost, attack }) => cost + (attack > 0 ? 300 : 100) - (attack * constants.CARD_PRICE_PER_ATTACK_POINT) / 2,
+    forgeLevel: 3,
   },
   // barrier: {
   //   name: 'Barrier',
@@ -102,12 +107,12 @@ const passiveEffects = {
   swift: {
     key: 'swift',
     costModificator: ({ cost, attack }) => cost + attack * constants.CARD_PRICE_PER_ATTACK_POINT,
-    // forgeLevel: 2,
+    forgeLevel: 2,
   },
   slow: {
     key: 'slow',
     costModificator: ({ cost, attack, hp }) => cost - attack * Math.floor(constants.CARD_PRICE_PER_ATTACK_POINT / 2) - hp * Math.floor(constants.CARD_PRICE_PER_HP_POINT / 2),
-    // forgeLevel: 2,
+    forgeLevel: 2,
   },
   // haste: {
   //   name: 'Haste',
@@ -119,37 +124,37 @@ const passiveEffects = {
   //   description: 'At war, this unit will strike again in an extra round, after the war is resolved.',
   //   costModificator: ({ cost }) => cost + 25,
   // },
-  // big: {
-  //   name: 'Big',
-  //   description: 'At war, the unit will strike against two opponents at the same time.\nWhen sieging, the unit can only be blocked by two units, dealing damage to both of them.\nWhen defending, the unit can choose to block two units, dealing damage to both of them.',
-  //   costModificator: ({ cost }) => cost * 1.25,
-  //   costPriority: 2,
-  // },
-  // huge: {
-  //   name: 'Huge',
-  //   description: 'Same as big, but with 3 units.',
-  //   referTo: 'big',
-  //   costModificator: ({ cost }) => cost * 1.5,
-  //   costPriority: 2,
-  //   forgeLevel: 2,
-  // },
-  // titan: {
-  //   name: 'Titan',
-  //   description: 'Same as big, but with 4 units.',
-  //   referTo: 'big',
-  //   costModificator: ({ cost }) => cost * 2,
-  //   costPriority: 2,
-  //   forgeLevel: 3,
-  // },
+  big: {
+    key: 'big',
+    costModificator: ({ cost }) => cost * 1.25,
+    forgeLevel: 2,
+  },
+  huge: {
+    key: 'huge',
+    requirement: 'big',
+    costModificator: ({ cost }) => cost * 1.5,
+    forgeLevel: 3,
+  },
+  titan: {
+    key: 'titan',
+    requirement: 'huge',
+    costModificator: ({ cost }) => cost * 2,
+    forgeLevel: 4,
+  },
+  pierce: {
+    key: 'pierce',
+    costModificator: ({ cost, attack }) => cost + attack * (constants.CARD_PRICE_PER_ATTACK_POINT / 2),
+  },
+  splash: {
+    key: 'splash',
+    requirement: 'pierce',
+    costModificator: ({ cost, attack }) => cost + attack * constants.CARD_PRICE_PER_ATTACK_POINT,
+    forgeLevel: 3,
+  },
   // scout: {
   //   name: 'Scout',
   //   description: 'When defending, if the unit is covered by the frontmost wall, reveal any stealth units attacking.',
   //   costModificator: ({ cost }) => cost + 150,
-  // },
-  // pierce: {
-  //   name: 'Pierce',
-  //   description: 'At war, this unit spends its extra attack to damage the next enemy unit in the queue.\nAt siege, this unit spends its extra attack to damage the closest wall.',
-  //   costModificator: ({ cost, attack }) => cost + attack * 20,
   // },
   // spinner: {
   //   name: 'Spinner',
@@ -160,12 +165,6 @@ const passiveEffects = {
   //   name: 'Burst',
   //   description: 'At war, this unit damages to any unit adjacent in the queue to itself and its opponent.',
   //   costModificator: ({ cost }) => cost,
-  // },
-  // splash: {
-  //   name: 'Splash',
-  //   description: 'At war, this unit also damages to the enemy units adjacent in the queue to the opponent.',
-  //   costModificator: ({ cost, attack }) => cost + attack * 30,
-  //   forgeLevel: 2,
   // },
   // exhausted: {
   //   name: 'Exhausted',
