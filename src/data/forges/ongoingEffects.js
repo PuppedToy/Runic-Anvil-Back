@@ -1,4 +1,4 @@
-const { constants } = require('../enums');
+const { constants, stats } = require('../enums');
 const passiveEffects = require('./passiveEffects');
 
 function levelFilter (card, element) {
@@ -6,43 +6,32 @@ function levelFilter (card, element) {
 }
 
 const ongoingEffects = {
-    statChange: {
-        key: 'statChange',
-        effect: {
+    modifyStat: {
+        key: 'modifyStat',
+        cardSelectors: {
+            modifiedCard: null,
+        },
+        stats: {
             $sample: [
                 {
-                    stat: 'attack',
-                    value: {
-                        $exponential: {
+                    [stats.ATTACK]: {
+                        $range: {
                             min: 1,
-                            max: 30,
-                            probability: 0.75,
+                            max: 2,
                         },
                     },
-                    price: ({ value }) => value * constants.CARD_PRICE_PER_ATTACK_POINT,
                 },
                 {
-                    stat: 'hp',
-                    value: {
-                        $exponential: {
+                    [stats.HP]: {
+                        $range: {
                             min: 1,
-                            max: 30,
-                            probability: 0.75,
+                            max: 2,
                         },
                     },
-                    price: ({ value }) => value * constants.CARD_PRICE_PER_HP_POINT,
                 },
                 {
-                    stat: 'cost',
-                    value: {
-                        $exponential: {
-                            min: -25,
-                            max: -10000,
-                            step: -25,
-                            probability: 0.9,
-                        },
-                    },
-                    price: ({ value }) => value * -1,
+                    [stats.ATTACK]: 1,
+                    [stats.HP]: 1,
                 },
             ],
         },

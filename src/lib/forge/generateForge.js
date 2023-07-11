@@ -138,21 +138,6 @@ function generateOngoingEffect(level) {
   return forge;
 }
 
-function generateTarget(reversed = false) {
-  const positiveTarget = 'ally';
-  const negativeTarget = 'enemy';
-  const neutralTarget = 'all';
-  
-  const random = Math.random();
-  if (random < 0.05) {
-    return neutralTarget;
-  }
-  else if (random < 0.15) {
-    return reversed ? positiveTarget : negativeTarget;
-  }
-  return reversed ? negativeTarget : positiveTarget;
-}
-
 function getCardBaseCost(card) {
   return parseInt(
     (
@@ -460,21 +445,12 @@ const forgeGenerators = [
     isCommanderForbidden: () => false,
   },
   {
-    type: 'addConditionalEffect',
+    type: 'addOngoingEffects',
     weight: 1,
     generate: (level) => {
-      const selector = generateSelector(level);
-      const ongoingEffect = generateOngoingEffect(level);
-      const reverseEffect = Math.random() < 0.2;
-      if (reverseEffect) {
-        ongoingEffect.value *= -1;
-      }
-      const target = generateTarget(reverseEffect);
-
+      const sample = generateOngoingEffect(level);
       return {
-        selector,
-        ongoingEffect,
-        target,
+        ...sample,
       };
     },
     upgrade: () => {
@@ -546,7 +522,7 @@ function canBeCommander(card) {
   const interestingForgeTypes = [
     'addEffectOnTrigger',
     'addEffectOnAction',
-    'addConditionalEffect',
+    'addOngoingEffects',
   ]
   const hasForgesOfInterestingCommanderTypes = forges.some((forge) => interestingForgeTypes.includes(forge.type));
   const baseCost = getCardBaseCost(card);
