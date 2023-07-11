@@ -183,6 +183,33 @@ function getEffectAvailableMods(forge, card) {
 
 const forgeGenerators = [
   {
+    type: 'addStat',
+    weight: 1,
+    generate: (level) => {
+      const min = 4 + Math.floor(level * 1.5);
+      const max = 6 + Math.floor(level * 2);
+      const statAmount = randomInt(min, max);
+      const attack = randomInt(0, statAmount);
+      const hp = statAmount - attack;
+      return {
+        attack,
+        hp,
+      };
+    },
+    upgrade: () => null,
+    apply: (forge, card) => {
+      const newCard = { ...card };
+      newCard.attack += forge.attack;
+      newCard.hp += forge.hp;
+      return newCard;
+    },
+    applyCost: (_1, _2, card) => {
+      const newCard = { ...card };
+      return newCard;
+    },
+    isCommanderForbidden: () => false,
+  },
+  {
     type: 'addUnitType',
     weight: 1,
     generate: (level) => {
@@ -552,6 +579,24 @@ function applyForge(forge, card) {
   if (!newCard.rarityLevel) newCard.rarityLevel = 0;
   newCard.rarityLevel += 1;
   return newCard;
+}
+
+function upgradeRandomForge(card) {
+  const remainingForges = [...card.forges];
+  while (remainingForges.length) {
+    const chosenForge = weightedSample(remainingForges);
+    remainingForges.splice(remainingForges.indexOf(chosenForge), 1);
+    const forgeGenerator = forgeGenerators.find((generator) => generator.type === chosenForge.type);
+    if (!forgeGenerator) throw new Error(`Forge generator not found for type ${chosenForge.type}`);
+    const upgradeResult = forgeGenerator.upgrade(chosenForge, card);
+    if (!upgradeResult) {
+      continue;
+    }
+    const { forge, mod } = upgradeResult;
+    const newCard = forgeGenerator.applyMod(card, forge, mod); // @TODO
+    return newCard;
+  }
+  return null;
 }
 
 function applyCardCalculatedFields(card) {

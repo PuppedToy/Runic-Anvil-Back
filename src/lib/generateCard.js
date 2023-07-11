@@ -1,6 +1,6 @@
 const md5 = require('md5');
 const { randomInt } = require('../utils/random');
-const { generateForge, applyForge } = require('./forge/generateForge');
+const { generateForge, applyForge, upgradeRandomForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardName');
 
 function exponential(min, range, probability = 0.5) {
@@ -59,6 +59,25 @@ function generateUnit(level = 1) {
   return card;
 }
 
+function addForgeToCard(card) {
+  const forge = generateForge(card.level);
+  card.forges.push(forge);
+  return applyForge(forge, card);
+}
+
+function upgradeCard(card) {
+  const isNewForge = !card.forges.length || Math.random() < 0.7 - card.forges.length * 0.1;
+  if (isNewForge) {
+    return addForgeToCard(card);
+  }
+  else {
+    const newCard = upgradeRandomForge(card);
+    if (newCard === null) {
+      return addForgeToCard(card);
+    }
+  }
+}
+
 const generateCard = generateUnit;
 
-module.exports = { generateHash, generateCard };
+module.exports = { generateHash, generateCard, upgradeCard };
