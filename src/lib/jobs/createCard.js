@@ -9,25 +9,26 @@ async function createCard(options = {}) {
   let counter = 0;
   do {
     let level = options.level;
-    if (level === undefiend || level === null || level < 0 || level > 5) {
+    if (level === undefined || level === null || level < 0 || level > 5) {
       level = 1;
       const random = Math.random();
       if (random < 0.05) {
         level = 5;
       }
-      else if (random < 3) {
+      else if (random < 0.3) {
         level = 4;
       }
-      else if (random < 15) {
+      else if (random < 0.15) {
         level = 3;
       }
-      else if (random < 45) {
+      else if (random < 0.45) {
         level = 2;
       }
-      else if (random < 55) {
+      else if (random < 0.55) {
         level = 0;
       }
     }
+    console.log(`Creating level ${level} card`);
     newCard = generateCard(level);
     // eslint-disable-next-line no-await-in-loop
     foundCard = await db.cards.getByHash(newCard.hash);
@@ -38,7 +39,7 @@ async function createCard(options = {}) {
     counter += 1;
   } while (foundCard);
   if (options.image) {
-    newCard.image = image;
+    newCard.image = options.image;
   }
   const createdCard = await db.cards.create(newCard);
   return createdCard;

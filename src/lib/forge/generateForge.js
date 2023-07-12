@@ -88,13 +88,24 @@ function processForge(forge) {
 }
 
 function generateEffect(level) {
-  const effect = weightedSample(effects, [forgeLevelFilter(level)]);
+  const effect = weightedSample(Object.values(effects), [forgeLevelFilter(level)]);
   const { mods, ...defaultForge } = effect;
   const processedForge = processForge(defaultForge);
 
   const forge = {
-    ...defaultForge,
-    processedForge,
+    ...processedForge,
+  };
+
+  return forge;
+}
+
+function generateOngoingEffect(level) {
+  const ongoingEffect = weightedSample(Object.values(ongoingEffects), [forgeLevelFilter(level)]);
+  const { mods, ...defaultForge } = ongoingEffect;
+  const processedForge = processForge(defaultForge);
+
+  const forge = {
+    ...processedForge,
   };
 
   return forge;
@@ -203,7 +214,7 @@ const forgeGenerators = [
     type: 'addUnitType',
     weight: 1,
     generate (level) {
-      const sample = weightedSample(unitTypes, [forgeLevelFilter(level)]);
+      const sample = weightedSample(Object.values(unitTypes), [forgeLevelFilter(level)]);
       return {
         ...sample,
       };
@@ -235,23 +246,24 @@ const forgeGenerators = [
       };
     },
     upgrade (forge, card) {
+      console.log(`Upgrading element ${card.element}`);
       const basicElementValues = Object.values(elements.basic);
       const basicElement = basicElementValues.find((currentBasicElement) => currentBasicElement.key === card.element);
       if (!card.element) {
         throw new Error(`Card ${card.name} doesn't have an element`);
       }
       if (basicElement === null && elements.complex.some((complexElement) => complexElement.elements.includes(card.element))) {
-        const forbidden = weightedSample(Object.values(elements.forbidden), [forgeLevelFilter(card.level)]);
-        return {
-          ...forge,
-          ...forbidden,
-        }
+        console.log(`We already have a complex element!`);
+        // const forbidden = weightedSample(Object.values(elements.forbidden), [forgeLevelFilter(card.level)]);
+        return null;
       }
       const otherBasicElements = basicElementValues.filter((currentBasicElement) => currentBasicElement.key !== card.element);
       const newBasicElement = weightedSample(otherBasicElements, [forgeLevelFilter(card.level)]);
+      console.log(`Mixing with ${newBasicElement.key}`);
       const complexElement = Object.values(elements.complex).find(
         (currentComplexElement) => currentComplexElement.elements.includes(card.element) && currentComplexElement.elements.includes(newBasicElement.key),
       );
+      console.log(`Result element: ${complexElement.key}`);
       if (complexElement === null) {
         throw new Error(`Element ${card.element} doesn't have a complex element with ${newBasicElement.key}`);
       }
@@ -259,6 +271,7 @@ const forgeGenerators = [
         ...forge,
         ...complexElement,
       };
+      console.log(`Result forge: ${JSON.stringify(newForge, null, 2)}`);
       return {
         forge: newForge,
         mod: complexElement,
@@ -378,11 +391,11 @@ const forgeGenerators = [
       const newCard = { ...card };
       const foundTriggerIndex = newCard.triggers.findIndex(
         ({ trigger, effect }) => 
-          trigger.key === mod.trigger.key
-          && effect.key === mod.effect.key,
+          trigger.key === forge.trigger.key
+          && effect.key === forge.effect.key,
       );
       if (foundTriggerIndex === -1) {
-        throw new Error(`Trigger ${mod.trigger.key} not found`);
+        throw new Error(`Trigger ${forge.trigger.key} not found`);
       }
       newCard.triggers.splice(foundTriggerIndex, 1);
       return this.apply(forge, newCard);
@@ -462,11 +475,11 @@ const forgeGenerators = [
       const newCard = { ...card };
       const foundActionIndex = newCard.actions.findIndex(
         ({ action, effect }) =>
-          action.key === mod.action.key
-          && effect.key === mod.effect.key,
+          action.key === forge.action.key
+          && effect.key === forge.effect.key,
       );
       if (foundActionIndex === -1) {
-        throw new Error(`Trigger ${mod.trigger.key} not found`);
+        throw new Error(`Trigger ${forge.trigger.key} not found`);
       }
       newCard.actions.splice(foundActionIndex, 1);
       return this.apply(forge, newCard);
@@ -500,15 +513,17 @@ const forgeGenerators = [
     isCommanderForbidden: () => false,
   },
   {
-    type: 'addOngoingEffects',
+    type: 'addOngoingEffect',
     weight: 1,
-    generate: (level) => {
+    generate (level) {
       const sample = generateOngoingEffect(level);
       return {
-        ...sample,
+        ongoingEffect: {
+          ...sample,
+        },
       };
     },
-    upgrade: () => {
+    upgrade (forge, card) {
       if (card.level <= 0) {
         throw new Error(`Card ${card.name} doesn't have a level`);
       }
@@ -531,17 +546,26 @@ const forgeGenerators = [
         mod: processedMod,
       };
     },
-    apply: (forge, card) => {
+    apply (forge, card) {
       const newCard = { ...card };
-      if (!newCard.conditionalEffects) newCard.conditionalEffects = [];
-      newCard.conditionalEffects.push({
-        selector: cleanDefinitionObject(forge.selector),
-        ongoingEffect: cleanDefinitionObject(forge.ongoingEffect),
-        target: forge.target,
+      if (!newCard.ongoingEffects) newCard.ongoingEffects = [];
+      newCard.ongoingEffects.push({
+        ...cleanDefinitionObject(forge.ongoingEffect),
       });
       return newCard;
     },
-    applyCost: (baseCost, forge, card) => {
+    applyMod (mod, forge, card) {
+      const newCard = { ...card };
+      const foundOngoingEffect = newCard.ongoingEffects.findIndex(
+        ({ key }) => key === forge.ongoingEffect.key,
+      );
+      if (foundOngoingEffect === -1) {
+        throw new Error(`Trigger ${forge.ongoingEffect.key} not found`);
+      }
+      newCard.ongoingEffects.splice(foundOngoingEffect, 1);
+      return this.apply(forge, newCard);
+    },
+    applyCost (baseCost, forge, card) {
       const newCard = { ...card };
       const foundOngoingEffect = ongoingEffects[forge.ongoingEffect.key];
       let passiveEffectCostModificator = ({ cost }) => cost;
@@ -568,7 +592,9 @@ const forgeGenerators = [
       newCard.cost = baseCost + extraPriceModded;
       return newCard;
     },
-    isCommanderForbidden: () => false,
+    isCommanderForbidden () {
+      return false;
+    },
   }
 ];
 
@@ -624,12 +650,20 @@ function applyForge(forge, card) {
   if (!card) throw new Error('Card is required');
   const newCard = forgeGenerator.apply(forge, card);
   if (!newCard.rarityLevel) newCard.rarityLevel = 0;
+  if (!newCard.forges) {
+    newCard.forges = [];
+  }
   newCard.forges.push(forge);
   return newCard;
 }
 
 function applyMod(mod, forge, card) {
+  const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
+  if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
   let newCard;
+  if (!forge.mods) {
+    forge.mods = [];
+  }
   forge.mods.push(mod);
   if (forgeGenerator.applyMod) {
     newCard = forgeGenerator.applyMod(mod, forge, card);
@@ -642,9 +676,12 @@ function applyMod(mod, forge, card) {
 
 function upgradeRandomForge(card) {
   const remainingForges = [...card.forges];
+  console.log(`Remaining forges: ${JSON.stringify(remainingForges, null, 2)}`);
   while (remainingForges.length) {
-    const chosenForge = weightedSample(remainingForges);
-    remainingForges.splice(remainingForges.indexOf(chosenForge), 1);
+    const chosenForgeIndex = randomInt(0, remainingForges.length - 1);
+    const chosenForge = remainingForges[chosenForgeIndex];
+    console.log(`Evaluating forge ${JSON.stringify(chosenForge, null, 2)}`);
+    remainingForges.splice(chosenForgeIndex, 1);
     const forgeGenerator = forgeGenerators.find((generator) => generator.type === chosenForge.type);
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${chosenForge.type}`);
     const upgradeResult = forgeGenerator.upgrade(chosenForge, card);

@@ -24,29 +24,37 @@ function generateHash(card) {
 }
 
 function levelUpCard(card) {
-  const isNewForge = !card.forges.length || Math.random() < 0.7 - card.forges.length * 0.1;
+  const cardForges = card.forges || [];
+  const isNewForge = !cardForges.length || Math.random() < 0.7 - cardForges.length * 0.1;
   if (isNewForge) {
-    return addForgeToCard(card);
+    const newCard =  addForgeToCard(card);
+    console.log(`Added forge to card ${JSON.stringify(newCard, null, 2)}`);
+    return newCard;
   }
   else {
-    const newCard = upgradeRandomForge(card);
+    let newCard = upgradeRandomForge(card);
     if (newCard === null) {
-      return addForgeToCard(card);
+      newCard = addForgeToCard(card);
+      console.log(`Could not find a forge to upgrade. Added forge to card ${JSON.stringify(newCard, null, 2)}`);
     }
+    else {
+      console.log(`Upgraded forge on card ${JSON.stringify(newCard)}`);
+    }
+    return newCard;
   }
 }
 
 function upgradeCard(card) {
   const { level } = card;
   let upgradedCard = card;
-  upgradeCard = levelUpCard(upgradedCard);
+  upgradedCard = levelUpCard(upgradedCard);
   if (level <= 4) {
-    upgradeCard = levelUpCard(upgradedCard);
+    upgradedCard = levelUpCard(upgradedCard);
   }
   if (level === 4) {
-    upgradeCard = levelUpCard(upgradedCard);
-    upgradeCard = levelUpCard(upgradedCard);
-    upgradeCard = levelUpCard(upgradedCard);
+    upgradedCard = levelUpCard(upgradedCard);
+    upgradedCard = levelUpCard(upgradedCard);
+    upgradedCard = levelUpCard(upgradedCard);
   }
   const { hashContent, hash } = generateHash(card);
   card.hashContent = hashContent;
@@ -59,11 +67,14 @@ function generateUnit(level = 1) {
   if (level < 0) throw new Error('Level must be positive');
 
   let card = {
-    attack: randomInt(1, 3),
-    hp: randomInt(0, 3),
+    level: 1,
+    attack: randomInt(0, 3),
+    hp: randomInt(1, 3),
     type: 'unit',
     unitType: 'human',
   };
+
+  console.log(`Created base card ${JSON.stringify(card, null, 2)}`);
 
   for (let accumulator = 0; accumulator < level; accumulator += 1) {
     card = upgradeCard(card);

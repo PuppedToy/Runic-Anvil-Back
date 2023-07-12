@@ -3,7 +3,8 @@ const passiveEffects = require('./passiveEffects');
 const statusEffects = require('./statusEffects');
 const elements = require('./elements');
 const { stats, places } = require('../enums');
-const { forgeLevelFilter } = require('../../lib/forge/generateForge');
+
+const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 const comparativeOperators = [
     {

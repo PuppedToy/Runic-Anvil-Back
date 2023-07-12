@@ -1,7 +1,7 @@
 const { places, kingdoms, targets, operations, stats, creations } = require('../enums');
 const { randomInt } = require('../../utils/random');
 const weightedSample = require('../../utils/weightedSample');
-const { cardSelectors } = require('.');
+const { cardSelectors } = require('./cardSelectors');
 
   const deployValueLevel1Mod = {
     id: 'value',
@@ -293,7 +293,7 @@ const { cardSelectors } = require('.');
             if (stat > 0) {
               result[stat] = -value;
             }
-          })
+          });
           return result;
         },
       },
@@ -551,7 +551,7 @@ const { cardSelectors } = require('.');
     forgeLevel: 3,
     to: {
       place: {
-        $sample: [...allPlacesButBarracks],
+        $sample: [...Object.values(allPlacesButBarracks)],
       },
     },
   };

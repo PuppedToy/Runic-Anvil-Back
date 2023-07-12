@@ -6,7 +6,7 @@ function getItemWeight(item) {
   return item.weight;
 }
 
-function weightedSample(collection, filters, options = {}) {
+function weightedSample(collection, filters) {
   let collectionType = typeof collection;
   if (collection instanceof Array) collectionType = 'array';
 
@@ -67,18 +67,6 @@ function weightedSample(collection, filters, options = {}) {
   });
 
   const result = typeof foundItem === 'object' ? { ...foundItem } : foundItem;
-
-  if (options.keyReplace) {
-    if (!result.key) {
-      console.log(`Warning: the item has no key property: ${JSON.stringify(result, null, 2)}`);
-    }
-    result[options.keyReplace] = result.key;
-    delete result.key;
-  }
-
-  if (options.noKey) {
-    delete result.key;
-  }
 
   return result;
 }

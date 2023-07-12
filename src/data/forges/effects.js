@@ -33,7 +33,7 @@
 
 const { constants, places, kingdoms, targets, operations, stats, creations } = require('../enums');
 const statusEffects = require('./statusEffects');
-const { effects: effectMods, commom: commonMods } = require('./mods');
+const { effects: effectMods, common: commonMods } = require('./mods');
 const {
   improveTargetMods,
   addOrUpdateCardSelectorMod,
