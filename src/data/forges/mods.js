@@ -1,7 +1,6 @@
 const { places, kingdoms, targets, operations, stats, creations } = require('../enums');
 const { randomInt } = require('../../utils/random');
 const weightedSample = require('../../utils/weightedSample');
-const { cardSelectors } = require('./cardSelectors');
 
   const deployValueLevel1Mod = {
     id: 'value',
@@ -778,8 +777,8 @@ const { cardSelectors } = require('./cardSelectors');
     modLevel: 1,
     cardSelector: {
       $custom: {
-        method: ({ cardSelector }) => {
-          const availableSelectors = Object.keys(cardSelector);
+        method: ({ cardSelectors }) => {
+          const availableSelectors = Object.keys(cardSelectors);
           if (availableSelectors.length === 0) {
             return null;
           }

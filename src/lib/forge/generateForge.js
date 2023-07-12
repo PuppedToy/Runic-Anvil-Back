@@ -1,4 +1,5 @@
 const weightedSample = require('../../utils/weightedSample');
+const deepMerge = require('../../utils/deepMerge');
 const { randomInt, exponential } = require('../../utils/random');
 const {
   cardSelectors,
@@ -177,13 +178,36 @@ function getOngoingEffectAvailableMods(forge, card) {
   return availableMods;
 }
 
+function mergeMod(forge, mod) {
+  const modCopy = { ...mod };
+  delete modCopy.modLevel;
+  delete modCopy.id;
+  const { cardSelector, kingdomSelector } = modCopy;
+  delete modCopy.cardSelector;
+  delete modCopy.kingdomSelector;
+  const mergedForge = deepMerge(forge, modCopy);
+  if (cardSelector) {
+    mergedForge.cardSelectors = {
+      [cardSelector]: null,
+      ...mergedForge.cardSelectors,
+    };
+  }
+  if (kingdomSelector) {
+    mergedForge.kingdomSelectors = {
+      [kingdomSelector]: null,
+      ...mergedForge.kingdomSelectors,
+    };
+  }
+  return mergedForge;
+}
+
 const forgeGenerators = [
   {
     type: 'addStat',
     weight: 1,
     generate (card) {
-      const min = 4 + Math.floor(card.level * 1.5);
-      const max = 6 + Math.floor(card.level * 2);
+      const min = 2 + Math.round(card.level * 1.55);
+      const max = 4 + Math.round(card.level * 2);
       const statAmount = randomInt(min, max);
       const attack = randomInt(0, statAmount);
       const hp = statAmount - attack;
@@ -369,17 +393,9 @@ const forgeGenerators = [
       const chosenMod = weightedSample(availableMods);
       // @TODO for now we assume an effect mod. But in future, there will be others
       const processedEffectMod = processForge(chosenMod, card);
-      // @TODO remove modLevel from effect
-      // @TODO remove kingdomSelector / cardSelector mod property
-      // @TODO parse kingdomSelector / cardSelector into their proper objects
-      // @TODO deep merge objects. For example: { to: { place: 'warZone' } }
-      // should not overwrite { to: { kingdom: 'ally' } }
       const newForge = {
         ...forge,
-        effect: {
-          ...forge.effect,
-          ...processedEffectMod,
-        },
+        effect: mergeMod(forge.effect, processedEffectMod),
       };
       return {
         forge: newForge,
@@ -456,10 +472,7 @@ const forgeGenerators = [
       const processedEffectMod = processForge(chosenMod, card);
       const newForge = {
         ...forge,
-        effect: {
-          ...forge.effect,
-          ...processedEffectMod,
-        },
+        effect: mergeMod(forge.effect, processedEffectMod),
       };
       return {
         forge: newForge,
@@ -551,10 +564,7 @@ const forgeGenerators = [
       const processedEffectMod = processForge(chosenMod, card);
       const newForge = {
         ...forge,
-        ongoingEffect: {
-          ...forge.ongoingEffect,
-          ...processedEffectMod,
-        },
+        ongoingEffect: mergeMod(forge.ongoingEffect, processedEffectMod),
       };
       return {
         forge: newForge,

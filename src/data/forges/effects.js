@@ -166,8 +166,9 @@ const effects = {
     operation: operations.ADD,
     value: {
       $range: {
-        min: 1,
-        max: 2,
+        min: 50,
+        max: 175,
+        step: 25,
       },
     },
     mods: [
