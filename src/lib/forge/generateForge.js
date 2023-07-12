@@ -16,16 +16,16 @@ const { constants } = require('../../data/enums');
 const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 // Trigger
-function generateTrigger(level) {
+function generateTrigger(card) {
   // @TODO We've used basic triggers like: Destroyed
   // But what about "Destroyed on barracks", "Destroyed by an Insect", "Destroyed by Siege Unit",
   // "Destroyed by a spell" or "Destroyed by an ally". We can enum all possible triggers for
   // each keyword
-  return weightedSample(triggers, [forgeLevelFilter(level)]);
+  return weightedSample(triggers, [forgeLevelFilter(card.level)]);
 }
 
-function generateAction(level) {
-  return weightedSample(actions, [forgeLevelFilter(level)]);
+function generateAction(card) {
+  return weightedSample(actions, [forgeLevelFilter(card.level)]);
 }
 
 function cleanDefinitionObject(definitionObject) {
@@ -67,16 +67,15 @@ const processOperations = {
   },
 };
 
-function processForge(forge) {
+function processForge(forge, card) {
   if (!Array.isArray(forge) && typeof forge === 'object') {
     let resultForge = { ...forge };
     Object.entries(resultForge).forEach(([key, value]) => {
       const keyWithoutDollar = key.replace('$', '');
       if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
-        const previousCard = null; // @TODO
-        resultForge[key] = processOperations[keyWithoutDollar](value, previousCard);
+        resultForge[key] = processOperations[keyWithoutDollar](value, card);
       }
-      resultForge[key] = processForge(resultForge[key]);
+      resultForge[key] = processForge(resultForge[key], card);
     });
     const keys = Object.keys(resultForge);
     if (keys.length === 1 && keys[0][0] === '$') {
@@ -87,10 +86,10 @@ function processForge(forge) {
   return forge;
 }
 
-function generateEffect(level) {
-  const effect = weightedSample(Object.values(effects), [forgeLevelFilter(level)]);
+function generateEffect(card) {
+  const effect = weightedSample(Object.values(effects), [forgeLevelFilter(card.level)]);
   const { mods, ...defaultForge } = effect;
-  const processedForge = processForge(defaultForge);
+  const processedForge = processForge(defaultForge, card);
 
   const forge = {
     ...processedForge,
@@ -99,10 +98,10 @@ function generateEffect(level) {
   return forge;
 }
 
-function generateOngoingEffect(level) {
-  const ongoingEffect = weightedSample(Object.values(ongoingEffects), [forgeLevelFilter(level)]);
+function generateOngoingEffect(card) {
+  const ongoingEffect = weightedSample(Object.values(ongoingEffects), [forgeLevelFilter(card.level)]);
   const { mods, ...defaultForge } = ongoingEffect;
-  const processedForge = processForge(defaultForge);
+  const processedForge = processForge(defaultForge, card);
 
   const forge = {
     ...processedForge,
@@ -182,9 +181,9 @@ const forgeGenerators = [
   {
     type: 'addStat',
     weight: 1,
-    generate (level) {
-      const min = 4 + Math.floor(level * 1.5);
-      const max = 6 + Math.floor(level * 2);
+    generate (card) {
+      const min = 4 + Math.floor(card.level * 1.5);
+      const max = 6 + Math.floor(card.level * 2);
       const statAmount = randomInt(min, max);
       const attack = randomInt(0, statAmount);
       const hp = statAmount - attack;
@@ -213,8 +212,8 @@ const forgeGenerators = [
   {
     type: 'addUnitType',
     weight: 1,
-    generate (level) {
-      const sample = weightedSample(Object.values(unitTypes), [forgeLevelFilter(level)]);
+    generate (card) {
+      const sample = weightedSample(Object.values(unitTypes), [forgeLevelFilter(card.level)]);
       return {
         ...sample,
       };
@@ -239,8 +238,8 @@ const forgeGenerators = [
   {
     type: 'addElement',
     weight: 1,
-    generate (level) {
-      const sample = weightedSample(Object.values(elements.basic), [forgeLevelFilter(level)]);
+    generate (card) {
+      const sample = weightedSample(Object.values(elements.basic), [forgeLevelFilter(card.level)]);
       return {
         ...sample,
       };
@@ -296,8 +295,8 @@ const forgeGenerators = [
   {
     type: 'addPassiveEffect',
     weight: 1,
-    generate (level) {
-      const sample = weightedSample(passiveEffects, [forgeLevelFilter(level)]);
+    generate (card) {
+      const sample = weightedSample(passiveEffects, [forgeLevelFilter(card.level)]);
       return {
         ...sample,
       };
@@ -345,9 +344,9 @@ const forgeGenerators = [
   {
     type: 'addEffectOnTrigger',
     weight: 1,
-    generate (level) {
-      const trigger = generateTrigger(level);
-      const effect = generateEffect(level);
+    generate (card) {
+      const trigger = generateTrigger(card);
+      const effect = generateEffect(card);
 
       return {
         trigger,
@@ -368,14 +367,23 @@ const forgeGenerators = [
       }
 
       const chosenMod = weightedSample(availableMods);
-      const processedMod = processForge(chosenMod);
+      // @TODO for now we assume an effect mod. But in future, there will be others
+      const processedEffectMod = processForge(chosenMod, card);
+      // @TODO remove modLevel from effect
+      // @TODO remove kingdomSelector / cardSelector mod property
+      // @TODO parse kingdomSelector / cardSelector into their proper objects
+      // @TODO deep merge objects. For example: { to: { place: 'warZone' } }
+      // should not overwrite { to: { kingdom: 'ally' } }
       const newForge = {
         ...forge,
-        ...processedMod,
+        effect: {
+          ...forge.effect,
+          ...processedEffectMod,
+        },
       };
       return {
         forge: newForge,
-        mod: processedMod,
+        mod: processedEffectMod,
       };
     },
     apply (forge, card) {
@@ -421,9 +429,9 @@ const forgeGenerators = [
   {
     type: 'addEffectOnAction',
     weight: 1,
-    generate (level) {
-      const action = generateAction(level);
-      const effect = generateEffect(level);
+    generate (card) {
+      const action = generateAction(card);
+      const effect = generateEffect(card);
 
       return {
         action,
@@ -444,14 +452,18 @@ const forgeGenerators = [
       }
 
       const chosenMod = weightedSample(availableMods);
-      const processedMod = processForge(chosenMod);
+      // @TODO for now we assume an effect mod. But in future, there will be others
+      const processedEffectMod = processForge(chosenMod, card);
       const newForge = {
         ...forge,
-        ...processedMod,
+        effect: {
+          ...forge.effect,
+          ...processedEffectMod,
+        },
       };
       return {
         forge: newForge,
-        mod: processedMod,
+        mod: processedEffectMod,
       };
     },
     apply (forge, card) {
@@ -515,8 +527,8 @@ const forgeGenerators = [
   {
     type: 'addOngoingEffect',
     weight: 1,
-    generate (level) {
-      const sample = generateOngoingEffect(level);
+    generate (card) {
+      const sample = generateOngoingEffect(card);
       return {
         ongoingEffect: {
           ...sample,
@@ -536,14 +548,17 @@ const forgeGenerators = [
       }
 
       const chosenMod = weightedSample(availableMods);
-      const processedMod = processForge(chosenMod);
+      const processedEffectMod = processForge(chosenMod, card);
       const newForge = {
         ...forge,
-        ...processedMod,
+        ongoingEffect: {
+          ...forge.ongoingEffect,
+          ...processedEffectMod,
+        },
       };
       return {
         forge: newForge,
-        mod: processedMod,
+        mod: processedEffectMod,
       };
     },
     apply (forge, card) {
@@ -636,11 +651,11 @@ function canBeCommander(card) {
   };
 }
 
-function generateForge(level) {
+function generateForge(card) {
   const forgeGenerator = weightedSample(forgeGenerators);
   return {
     type: forgeGenerator.type,
-    ...forgeGenerator.generate(level),
+    ...forgeGenerator.generate(card),
   };
 }
 
@@ -649,7 +664,6 @@ function applyForge(forge, card) {
   if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
   if (!card) throw new Error('Card is required');
   const newCard = forgeGenerator.apply(forge, card);
-  if (!newCard.rarityLevel) newCard.rarityLevel = 0;
   if (!newCard.forges) {
     newCard.forges = [];
   }
@@ -657,7 +671,7 @@ function applyForge(forge, card) {
   return newCard;
 }
 
-function applyMod(mod, forge, card) {
+function applyMod(mod, forgeIndex, forge, card) {
   const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
   if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
   let newCard;
@@ -689,7 +703,7 @@ function upgradeRandomForge(card) {
       continue;
     }
     const { mod, forge: upgradedForge } = upgradeResult;
-    const newCard = applyMod(mod, upgradedForge, card);
+    const newCard = applyMod(mod, chosenForgeIndex, upgradedForge, card);
     return newCard;
   }
   return null;

@@ -13,13 +13,13 @@ function createForgeComparator(forgeKey, forgeSubkey) {
 
 function generateHash(card) {
   const {
-    rarityLevel, attack, hp, unitType, element, passiveEffects = [], triggers = [], actions = [], conditionalEffects = [],
+    level, attack, hp, unitType, element, passiveEffects = [], triggers = [], actions = [], conditionalEffects = [],
   } = card;
   const sortedPassiveEffects = JSON.stringify(passiveEffects.sort());
   const sortedTriggers = JSON.stringify(triggers.sort(createForgeComparator('trigger', 'effect')));
   const sortedActions = JSON.stringify(actions.sort(createForgeComparator('action', 'effect')));
   const sortedConditionalEffects = JSON.stringify(conditionalEffects.sort(createForgeComparator('selector', 'ongoingEffect')));
-  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${element}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}|${sortedConditionalEffects}`;
+  const hashContent = `${level}|${attack}|${hp}|${unitType}|${element}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}|${sortedConditionalEffects}`;
   return { hashContent, hash: md5(hashContent) };
 }
 
@@ -38,7 +38,7 @@ function levelUpCard(card) {
       console.log(`Could not find a forge to upgrade. Added forge to card ${JSON.stringify(newCard, null, 2)}`);
     }
     else {
-      console.log(`Upgraded forge on card ${JSON.stringify(newCard)}`);
+      console.log(`Upgraded forge on card ${JSON.stringify(newCard, null, 2)}`);
     }
     return newCard;
   }
@@ -86,7 +86,7 @@ function generateUnit(level = 1) {
 }
 
 function addForgeToCard(card) {
-  const forge = generateForge(card.level);
+  const forge = generateForge(card);
   return applyForge(forge, card);
 }
 
