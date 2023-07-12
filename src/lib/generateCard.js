@@ -3,14 +3,6 @@ const { randomInt } = require('../utils/random');
 const { generateForge, applyForge, upgradeRandomForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardName');
 
-function exponential(min, range, probability = 0.5) {
-  let result = min;
-  while (Math.random() < probability && result < range) {
-    result += 1;
-  }
-  return result;
-}
-
 function createForgeComparator(forgeKey, forgeSubkey) {
   return (a, b) => {
     const triggerComparison = a[forgeKey].key.localeCompare(b[forgeKey].key);
@@ -31,41 +23,7 @@ function generateHash(card) {
   return { hashContent, hash: md5(hashContent) };
 }
 
-function generateUnit(level = 1) {
-  if (level < 0) throw new Error('Level must be positive');
-
-  const minAttack = randomInt(0, 4);
-  const minHp = randomInt(1, 4);
-
-  let card = {
-    attack: exponential(minAttack, 50, 0.6),
-    hp: exponential(minHp, 50, 0.6),
-    type: 'unit',
-    unitType: 'human',
-  };
-
-  const forges = [];
-  for (let accumulator = 0; accumulator < level; accumulator += 1) {
-    const forge = generateForge(level);
-    forges.push(forge);
-    card = applyForge(forge, card);
-  }
-
-  card.forges = forges;
-  card.name = generateName(card);
-  const { hashContent, hash } = generateHash(card);
-  card.hashContent = hashContent;
-  card.hash = hash;
-  return card;
-}
-
-function addForgeToCard(card) {
-  const forge = generateForge(card.level);
-  card.forges.push(forge);
-  return applyForge(forge, card);
-}
-
-function upgradeCard(card) {
+function levelUpCard(card) {
   const isNewForge = !card.forges.length || Math.random() < 0.7 - card.forges.length * 0.1;
   if (isNewForge) {
     return addForgeToCard(card);
@@ -76,6 +34,49 @@ function upgradeCard(card) {
       return addForgeToCard(card);
     }
   }
+}
+
+function upgradeCard(card) {
+  const { level } = card;
+  let upgradedCard = card;
+  upgradeCard = levelUpCard(upgradedCard);
+  if (level <= 4) {
+    upgradeCard = levelUpCard(upgradedCard);
+  }
+  if (level === 4) {
+    upgradeCard = levelUpCard(upgradedCard);
+    upgradeCard = levelUpCard(upgradedCard);
+    upgradeCard = levelUpCard(upgradedCard);
+  }
+  const { hashContent, hash } = generateHash(card);
+  card.hashContent = hashContent;
+  card.hash = hash;
+  upgradedCard.level += 1;
+  return upgradedCard;
+}
+
+function generateUnit(level = 1) {
+  if (level < 0) throw new Error('Level must be positive');
+
+  let card = {
+    attack: randomInt(1, 3),
+    hp: randomInt(0, 3),
+    type: 'unit',
+    unitType: 'human',
+  };
+
+  for (let accumulator = 0; accumulator < level; accumulator += 1) {
+    card = upgradeCard(card);
+  }
+
+  // @TODO change every upgrade
+  card.name = generateName(card);
+  return card;
+}
+
+function addForgeToCard(card) {
+  const forge = generateForge(card.level);
+  return applyForge(forge, card);
 }
 
 const generateCard = generateUnit;

@@ -1,5 +1,5 @@
 const weightedSample = require('../../utils/weightedSample');
-const { randomInt } = require('../../utils/random');
+const { randomInt, exponential } = require('../../utils/random');
 const {
   cardSelectors,
   unitTypes,
@@ -39,14 +39,14 @@ function cleanDefinitionObject(definitionObject) {
 
 const processOperations = {
   custom: ({ method }, previousCard) => method(previousCard),
-  range: (range) => {
-    if (!Object.hasOwnProperty.call(range, 'min') || !Object.hasOwnProperty.call(range, 'max')) {
+  range: (rangeDefinition) => {
+    if (!Object.hasOwnProperty.call(rangeDefinition, 'min') || !Object.hasOwnProperty.call(rangeDefinition, 'max')) {
       throw new Error('Range must have min and max');
     }
 
-    return randomInt(range.min, range.max, range.step);
+    return randomInt(rangeDefinition.min, rangeDefinition.max, rangeDefinition.step);
   },
-  sample: (sample) => weightedSample(sample),
+  sample: (list) => weightedSample(list),
   richSample: ({ list, map, filters }) => {
     const result = weightedSample(list, filters);
     if (map) {
@@ -54,20 +54,16 @@ const processOperations = {
     }
     return result;
   },
-  exponential: (exponential) => {
-    if (!Object.hasOwnProperty.call(exponential, 'min')) {
+  exponential: (exponentialDefinition) => {
+    if (!Object.hasOwnProperty.call(exponentialDefinition, 'min')) {
       throw new Error('Range must have min and max');
     }
-    const { min } = exponential;
-    const max = Math.abs(exponential.max) || 99999; // This is for safety purposes against infinite loops
-    const step = exponential.step || 1;
-    const probability = exponential.probability || 0.5;
+    const { min } = exponentialDefinition;
+    const max = Math.abs(exponentialDefinition.max) || 99999; // This is for safety purposes against infinite loops
+    const step = exponentialDefinition.step || 1;
+    const probability = exponentialDefinition.probability || 0.5;
 
-    let result = min;
-    while (Math.random() < probability && Math.abs(result) < max) {
-      result += step;
-    }
-    return result;
+    return exponential(min, max, step, probability);
   },
 };
 
@@ -101,40 +97,6 @@ function generateEffect(level) {
     processedForge,
   };
 
-  return forge;
-}
-
-function generateSelector(level) {
-  const selector = weightedSample(cardSelectors, [forgeLevelFilter(level)]);
-
-  const {
-    key,
-    selector: selectorDefinition,
-  } = selector;
-
-  const processedSelector = processForge(selectorDefinition);
-
-  const forge = {
-    key,
-    selector: processedSelector,
-  };
-  return forge;
-}
-
-function generateOngoingEffect(level) {
-  const ongoingEffect = weightedSample(ongoingEffects, [forgeLevelFilter(level)]);
-
-  const {
-    key,
-    effect,
-  } = ongoingEffect;
-
-  const processedEffect = processForge(effect);
-
-  const forge = {
-    key,
-    effect: processedEffect,
-  };
   return forge;
 }
 
@@ -181,11 +143,35 @@ function getEffectAvailableMods(forge, card) {
   return availableMods;
 }
 
+function getOngoingEffectAvailableMods(forge, card) {
+  const foundOngoingEffect = ongoingEffects[forge.ongoingEffect.key];
+  const forgeMods = forge.mods || [];
+  const ongoingEffectMods = foundOngoingEffect.mods || [];
+  const forgeLevel = card.level;
+  // First we add any mod that is level 1, is from the correct forgeLevel and is not already in the forge
+  const availableMods = ongoingEffectMods.filter(
+    (mod) => (!mod.modLevel || mod.modLevel === 1)
+      && ((mod.forgeLevel || 0) <= forgeLevel)
+      && forgeMods.every((forgeMod) => forgeMod.key !== mod.key),
+  );
+  forgeMods.forEach((mod) => {
+    const modLevel = mod.modLevel ? mod.modLevel + 1 : null;
+    const modKey = mod.key;
+    // Now we add any mod with current mod key and exactly current mod level, never forgetting the forge level restriction
+    ongoingEffectMods.forEach((effectMod) => {
+      if (effectMod.key === modKey && effectMod.modLevel === modLevel && (effectMod.forgeLevel || 0) <= forgeLevel) {
+        availableMods.push(effectMod);
+      }
+    });
+  });
+  return availableMods;
+}
+
 const forgeGenerators = [
   {
     type: 'addStat',
     weight: 1,
-    generate: (level) => {
+    generate (level) {
       const min = 4 + Math.floor(level * 1.5);
       const max = 6 + Math.floor(level * 2);
       const statAmount = randomInt(min, max);
@@ -196,51 +182,59 @@ const forgeGenerators = [
         hp,
       };
     },
-    upgrade: () => null,
-    apply: (forge, card) => {
+    upgrade () {
+      null;
+    },
+    apply (forge, card) {
       const newCard = { ...card };
       newCard.attack += forge.attack;
       newCard.hp += forge.hp;
       return newCard;
     },
-    applyCost: (_1, _2, card) => {
+    applyCost (baseCost, forge, card) {
       const newCard = { ...card };
       return newCard;
     },
-    isCommanderForbidden: () => false,
+    isCommanderForbidden () {
+      false;
+    },
   },
   {
     type: 'addUnitType',
     weight: 1,
-    generate: (level) => {
+    generate (level) {
       const sample = weightedSample(unitTypes, [forgeLevelFilter(level)]);
       return {
         ...sample,
       };
     },
-    upgrade: () => null,
-    apply: (forge, card) => {
+    upgrade () {
+      return null;
+    },
+    apply (forge, card) {
       const newCard = { ...card };
       newCard.unitType = forge.key;
       return newCard;
     },
-    applyCost: (baseCost, _, card) => {
+    applyCost (baseCost, _, card) {
       const newCard = { ...card };
       newCard.cost = baseCost;
       return newCard;
     },
-    isCommanderForbidden: () => false,
+    isCommanderForbidden () {
+      return false;
+    },
   },
   {
     type: 'addElement',
     weight: 1,
-    generate: (level) => {
+    generate (level) {
       const sample = weightedSample(Object.values(elements.basic), [forgeLevelFilter(level)]);
       return {
         ...sample,
       };
     },
-    upgrade: (forge, card) => {
+    upgrade (forge, card) {
       const basicElementValues = Object.values(elements.basic);
       const basicElement = basicElementValues.find((currentBasicElement) => currentBasicElement.key === card.element);
       if (!card.element) {
@@ -270,30 +264,32 @@ const forgeGenerators = [
         mod: complexElement,
       };
     },
-    apply: (forge, card) => {
+    apply (forge, card) {
       const newCard = { ...card };
       newCard.element = forge.key;
       return newCard;
     },
-    applyCost: (baseCost, _, card) => {
+    applyCost (baseCost, _, card) {
       const newCard = { ...card };
       const foundPassiveEffect = passiveEffects[forge.key];
       newCard.cost = baseCost;
       newCard.cost = foundPassiveEffect.costModificator ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
       return newCard;
     },
-    isCommanderForbidden: () => false,
+    isCommanderForbidden () {
+      return false; 
+    },
   },
   {
     type: 'addPassiveEffect',
     weight: 1,
-    generate: (level) => {
+    generate (level) {
       const sample = weightedSample(passiveEffects, [forgeLevelFilter(level)]);
       return {
         ...sample,
       };
     },
-    upgrade: (forge, card) => {
+    upgrade (forge, card) {
       const upgradedPassiveEffects = Object.values(passiveEffects).filter(
         (passiveEffect) => passiveEffect.forgeLevel <= card.level && card.passiveEffects.includes(passiveEffect.requirement),
       );
@@ -309,26 +305,34 @@ const forgeGenerators = [
         mod: chosenMod,
       };
     },
-    apply: (forge, card) => {
+    apply (forge, card) {
       const newCard = { ...card };
       newCard.passiveEffects = newCard.passiveEffects || [];
       newCard.passiveEffects.push(forge.key);
       return newCard;
     },
-    applyCost: (baseCost, forge, card) => {
+    applyMod (mod, forge, card) {
+      const newCard = { ...card };
+      if (mod.requirement) {
+        newCard.passiveEffects = newCard.passiveEffects.filter((passiveEffect) => passiveEffect !== mod.requirement);
+      }
+      return this.apply(forge, newCard);
+    },
+    applyCost (baseCost, forge, card) {
       const newCard = { ...card };
       const foundPassiveEffect = passiveEffects[forge.key];
       newCard.cost = baseCost;
       newCard.cost = foundPassiveEffect.costModificator ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
       return newCard;
     },
-    isCommanderForbidden: () => false,
+    isCommanderForbidden () {
+      return false;
+    },
   },
-  // Basic: Trigger: effect
   {
     type: 'addEffectOnTrigger',
     weight: 1,
-    generate: (level) => {
+    generate (level) {
       const trigger = generateTrigger(level);
       const effect = generateEffect(level);
 
@@ -337,7 +341,7 @@ const forgeGenerators = [
         effect,
       };
     },
-    upgrade: (forge, card) => {
+    upgrade (forge, card) {
       if (card.level <= 0) {
         throw new Error(`Card ${card.name} doesn't have a level`);
       }
@@ -355,14 +359,13 @@ const forgeGenerators = [
       const newForge = {
         ...forge,
         ...processedMod,
-        mods: [...forgeMods, processedMod],
       };
       return {
         forge: newForge,
         mod: processedMod,
       };
     },
-    apply: (forge, card) => {
+    apply (forge, card) {
       const newCard = { ...card };
       if (!newCard.triggers) newCard.triggers = [];
       newCard.triggers.push({
@@ -371,7 +374,20 @@ const forgeGenerators = [
       });
       return newCard;
     },
-    applyCost: (baseCost, forge, card) => {
+    applyMod (mod, forge, card) {
+      const newCard = { ...card };
+      const foundTriggerIndex = newCard.triggers.findIndex(
+        ({ trigger, effect }) => 
+          trigger.key === mod.trigger.key
+          && effect.key === mod.effect.key,
+      );
+      if (foundTriggerIndex === -1) {
+        throw new Error(`Trigger ${mod.trigger.key} not found`);
+      }
+      newCard.triggers.splice(foundTriggerIndex, 1);
+      return this.apply(forge, newCard);
+    },
+    applyCost (baseCost, forge, card) {
       const newCard = { ...card };
       const foundEffect = effects[forge.effect.key];
       const extraPrice = foundEffect.price ? foundEffect.price(forge.effect) : 0;
@@ -384,7 +400,7 @@ const forgeGenerators = [
       newCard.cost = baseCost + extraPriceModded;
       return newCard;
     },
-    isCommanderForbidden: (forge) => {
+    isCommanderForbidden (forge) {
       const foundTrigger = triggers[forge.trigger.key];
       return foundTrigger.isCommanderForbidden ? foundTrigger.isCommanderForbidden() : false;
     },
@@ -419,7 +435,6 @@ const forgeGenerators = [
       const newForge = {
         ...forge,
         ...processedMod,
-        mods: [...forgeMods, processedMod],
       };
       return {
         forge: newForge,
@@ -442,6 +457,19 @@ const forgeGenerators = [
           && effect.key === forge.effect.key,
       );
       return foundAction;
+    },
+    applyMod (mod, forge, card) {
+      const newCard = { ...card };
+      const foundActionIndex = newCard.actions.findIndex(
+        ({ action, effect }) =>
+          action.key === mod.action.key
+          && effect.key === mod.effect.key,
+      );
+      if (foundActionIndex === -1) {
+        throw new Error(`Trigger ${mod.trigger.key} not found`);
+      }
+      newCard.actions.splice(foundActionIndex, 1);
+      return this.apply(forge, newCard);
     },
     applyCost (baseCost, forge, card, forgeIndex) {
       const newCard = { ...card };
@@ -481,8 +509,27 @@ const forgeGenerators = [
       };
     },
     upgrade: () => {
-      // @TODO
-      return null;
+      if (card.level <= 0) {
+        throw new Error(`Card ${card.name} doesn't have a level`);
+      }
+      const availableMods = [
+        ...getOngoingEffectAvailableMods(forge, card),
+      ];
+
+      if (!availableMods.length) {
+        return null;
+      }
+
+      const chosenMod = weightedSample(availableMods);
+      const processedMod = processForge(chosenMod);
+      const newForge = {
+        ...forge,
+        ...processedMod,
+      };
+      return {
+        forge: newForge,
+        mod: processedMod,
+      };
     },
     apply: (forge, card) => {
       const newCard = { ...card };
@@ -577,7 +624,19 @@ function applyForge(forge, card) {
   if (!card) throw new Error('Card is required');
   const newCard = forgeGenerator.apply(forge, card);
   if (!newCard.rarityLevel) newCard.rarityLevel = 0;
-  newCard.rarityLevel += 1;
+  newCard.forges.push(forge);
+  return newCard;
+}
+
+function applyMod(mod, forge, card) {
+  let newCard;
+  forge.mods.push(mod);
+  if (forgeGenerator.applyMod) {
+    newCard = forgeGenerator.applyMod(mod, forge, card);
+    newCard.forges[forgeIndex] = forge;
+  } else {
+    newCard = applyForge(forge, card);
+  }
   return newCard;
 }
 
@@ -592,8 +651,8 @@ function upgradeRandomForge(card) {
     if (!upgradeResult) {
       continue;
     }
-    const { forge, mod } = upgradeResult;
-    const newCard = forgeGenerator.applyMod(card, forge, mod); // @TODO
+    const { mod, forge: upgradedForge } = upgradeResult;
+    const newCard = applyMod(mod, upgradedForge, card);
     return newCard;
   }
   return null;
@@ -624,6 +683,7 @@ module.exports = {
   generateEffect,
   generateForge,
   applyForge,
+  upgradeRandomForge,
   getCost,
   canBeCommander,
   applyCardCalculatedFields,
