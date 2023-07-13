@@ -1,35 +1,11 @@
-// @TODO:
-// 1. Review every passive / effect / trigger to see if they apply to weapons or spells
-// 2. Create the forge tree for the effects.
-// 3. Assign a cost/modificator for each effect
-
-/*
- * Modify a stat of a card @TODO
- * Deploy @TODO
- * Summon / Cast @TODO
- * Destroy / Banish @TODO
- * Draw / Discard @TODO
- * Move @TODO
- * Deal damage @TODO
- * Retire / Recall @TODO
- * Duel @TODO
- * Give turn token / Advance / Delay turn @TODO
- * Modify investment @TODO
- * Modify currency (earn / collect / give / steal) @TODO
- * Modify zone size @TODO
+/* @TODO List
+ * Modify zone size
  * Mutate / Transform / Upgrade / Downgrade / Forge / Unforge / Drain @TODO
- * Create / Discover @TODO
- * Give status @TODO
- * Heal @TODO
- * Random effect @TODO
- * Reveal / Disarm @TODO
- * Confuse / Betray @TODO
- * Give energy / Exhaust @TODO
- * Grant state until condition @TODO
+ * Random effect
+ * Reveal / Disarm
+ * Give energy / Exhaust
+ * Grant state until condition
  */
-
-// @TODO Note, for balance and fun purposes I will add a ridiculous amount of range for effects
-// In the future, tweak them for match their rarity
 
 const { constants, places, kingdoms, targets, operations, stats, creations } = require('../enums');
 const statusEffects = require('./statusEffects');

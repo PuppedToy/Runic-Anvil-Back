@@ -209,24 +209,25 @@ const weightedSample = require('../../utils/weightedSample');
     modifyCurrencyValueLevel3Mod,
   ];
   
-  const generateStatMethod = (minIncrement, maxIncrement, withCost = false) => (card) => {
+  const generateStatMethod = (minIncrement, maxIncrement, withCost = false, keyTraveler) => (card, forge) => {
+    const statsObject = keyTraveler(forge);
     const multipliers = {
-      [stats.ATTACK]: 1 * (card.stats[stats.ATTACK] >= 0 ? 1 : -1),
-      [stats.HP]: 1 * (card.stats[stats.HP] >= 0 ? 1 : -1),
-      [stats.COST]: 40 * (card.stats[stats.COST] <= 0 ? -1 : 1),
+      [stats.ATTACK]: 1 * (statsObject[stats.ATTACK] >= 0 ? 1 : -1),
+      [stats.HP]: 1 * (statsObject[stats.HP] >= 0 ? 1 : -1),
+      [stats.COST]: 40 * (statsObject[stats.COST] <= 0 ? -1 : 1),
     };
     const totalIncrement = randomInt(minIncrement, maxIncrement);
     const result = {};
 
-    Object.entries(card.stats).forEach(([stat, value]) => {
+    Object.entries(statsObject).forEach(([stat, value]) => {
       result[stat] = value;
     });
     const availableStats = [stats.ATTACK, stats.HP];
     if (withCost) {
       availableStats.push(stats.COST);
     }
-    const statsToInclude = availableStats.filter(stat => card.stats[stat] !== 0);
-    const availableStatsNotIncluded = availableStats.filter(stat => card.stats[stat] === 0);
+    const statsToInclude = availableStats.filter(stat => statsObject[stat] !== 0);
+    const availableStatsNotIncluded = availableStats.filter(stat => statsObject[stat] === 0);
     if (Math.random() < 0.5) {
       const statToInclude = weightedSample(availableStatsNotIncluded);
       statsToInclude.push(statToInclude);
@@ -257,7 +258,7 @@ const weightedSample = require('../../utils/weightedSample');
     modLevel: 1,
     stats: {
       $custom: {
-        method: generateStatMethod(3, 5),
+        method: generateStatMethod(3, 5, false, (forge) => forge.effect.stats),
       },
     },
   };
@@ -267,7 +268,7 @@ const weightedSample = require('../../utils/weightedSample');
     modLevel: 2,
     stats: {
       $custom: {
-        method: generateStatMethod(6, 10),
+        method: generateStatMethod(6, 10, (forge) => forge.effect.stats),
       },
     },
   };
@@ -277,24 +278,36 @@ const weightedSample = require('../../utils/weightedSample');
     modLevel: 3,
     stats: {
       $custom: {
-        method: generateStatMethod(12, 30),
+        method: generateStatMethod(12, 30, (forge) => forge.effect.stats),
       },
     },
   };
+
+  const generateReverseMethod = (keyTraveler) => (card, forge) => {
+    const statsObject = keyTraveler(forge);
+    const result = {};
+    Object.entries(statsObject).forEach(([stat, value]) => {
+      if (stat > 0) {
+        result[stat] = -value;
+      }
+    });
+    return result;
+  };
   
-  const reverseStatsMod = {
+  const reverseStatsEffectMod = {
     id: 'reverse',
     stats: {
       $custom: {
-        method: (card) => {
-          const result = {};
-          Object.entries(card.stats).forEach(([stat, value]) => {
-            if (stat > 0) {
-              result[stat] = -value;
-            }
-          });
-          return result;
-        },
+        method: generateReverseMethod((forge) => forge.effect.stats)
+      },
+    }
+  };
+  
+  const reverseStatsOngoingEffectMod = {
+    id: 'reverse',
+    stats: {
+      $custom: {
+        method: generateReverseMethod((forge) => forge.ongoingEffects.stats)
       },
     }
   };
@@ -303,7 +316,7 @@ const weightedSample = require('../../utils/weightedSample');
     statValueLevel1Mod,
     statValueLevel2Mod,
     statValueLevel3Mod,
-    reverseStatsMod,
+    reverseStatsEffectMod,
   ];
 
   
@@ -312,7 +325,7 @@ const weightedSample = require('../../utils/weightedSample');
     modLevel: 1,
     stats: {
       $custom: {
-        method: generateStatMethod(2, 3, true),
+        method: generateStatMethod(2, 3, true, (forge) => forge.ongoingEffect.stats),
       },
     },
   };
@@ -322,7 +335,7 @@ const weightedSample = require('../../utils/weightedSample');
     modLevel: 2,
     stats: {
       $custom: {
-        method: generateStatMethod(3, 5, true),
+        method: generateStatMethod(3, 5, true, (forge) => forge.ongoingEffect.stats),
       },
     },
   };
@@ -332,7 +345,7 @@ const weightedSample = require('../../utils/weightedSample');
     modLevel: 3,
     stats: {
       $custom: {
-        method: generateStatMethod(6, 12, true),
+        method: generateStatMethod(6, 12, true, (forge) => forge.ongoingEffect.stats),
       },
     },
   };
@@ -341,7 +354,7 @@ const weightedSample = require('../../utils/weightedSample');
     ongoingStatValueLevel1Mod,
     ongoingStatValueLevel2Mod,
     ongoingStatValueLevel3Mod,
-    reverseStatsMod,
+    reverseStatsOngoingEffectMod,
   ];
   
   const resurrectValueLevel1Mod = {
@@ -777,7 +790,7 @@ const weightedSample = require('../../utils/weightedSample');
     modLevel: 1,
     cardSelector: {
       $custom: {
-        method: ({ cardSelectors }) => {
+        method: (card, { cardSelectors }) => {
           const availableSelectors = Object.keys(cardSelectors);
           if (availableSelectors.length === 0) {
             return null;
@@ -801,7 +814,6 @@ const weightedSample = require('../../utils/weightedSample');
   
 module.exports = {
     common: {
-      reverseStatsMod,
       improveTargetMods,
       addOrUpdateCardSelectorMod,
     },
@@ -829,6 +841,7 @@ module.exports = {
         statValueLevel1Mod,
         statValueLevel2Mod,
         statValueLevel3Mod,
+        reverseStatsEffectMod,
         statMods,
         resurrectValueLevel1Mod,
         resurrectValueLevel2Mod,
@@ -880,6 +893,7 @@ module.exports = {
         ongoingStatValueLevel1Mod,
         ongoingStatValueLevel2Mod,
         ongoingStatValueLevel3Mod,
+        reverseStatsOngoingEffectMod,
         ongoingStatMods,
     },
 };
