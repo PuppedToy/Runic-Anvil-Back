@@ -48,10 +48,10 @@ function upgradeCard(card) {
   const { level } = card;
   let upgradedCard = card;
   upgradedCard = levelUpCard(upgradedCard);
-  if (level <= 4) {
+  if (level <= 5) {
     upgradedCard = levelUpCard(upgradedCard);
   }
-  if (level === 4) {
+  if (level === 5) {
     upgradedCard = levelUpCard(upgradedCard);
     upgradedCard = levelUpCard(upgradedCard);
     upgradedCard = levelUpCard(upgradedCard);
@@ -76,7 +76,7 @@ function generateUnit(level = 1) {
 
   console.log(`Created base card ${JSON.stringify(card, null, 2)}`);
 
-  for (let accumulator = 0; accumulator < level; accumulator += 1) {
+  for (let accumulator = 1; accumulator < level; accumulator += 1) {
     card = upgradeCard(card);
   }
 

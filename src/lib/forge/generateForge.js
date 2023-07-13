@@ -237,6 +237,9 @@ const forgeGenerators = [
     type: 'addUnitType',
     weight: 1,
     generate (card) {
+      if (card.unitType) {
+        return null;
+      }
       const sample = weightedSample(Object.values(unitTypes), [forgeLevelFilter(card.level)]);
       return {
         ...sample,
@@ -273,15 +276,13 @@ const forgeGenerators = [
     },
     upgrade (forge, card) {
       console.log(`Upgrading element ${card.element}`);
+      if (elements.complex[card.element]) {
+        console.log(`Element ${card.element} is complex`);
+        return null;
+      }
       const basicElementValues = Object.values(elements.basic);
-      const basicElement = basicElementValues.find((currentBasicElement) => currentBasicElement.key === card.element);
       if (!card.element) {
         throw new Error(`Card ${card.name} doesn't have an element`);
-      }
-      if (basicElement === null && elements.complex.some((complexElement) => complexElement.key === card.element)) {
-        console.log(`We already have a complex element!`);
-        // const forbidden = weightedSample(Object.values(elements.forbidden), [forgeLevelFilter(card.level)]);
-        return null;
       }
       const otherBasicElements = basicElementValues.filter((currentBasicElement) => currentBasicElement.key !== card.element);
       const newBasicElement = weightedSample(otherBasicElements, [forgeLevelFilter(card.level)]);
@@ -723,10 +724,10 @@ function applyMod(mod, forgeIndex, forge, card) {
   forge.mods.push(mod);
   if (forgeGenerator.applyMod) {
     newCard = forgeGenerator.applyMod(mod, forge, card);
-    newCard.forges[forgeIndex] = forge;
   } else {
     newCard = forgeGenerator.apply(forge, card);
   }
+  newCard.forges[forgeIndex] = forge;
   return newCard;
 }
 

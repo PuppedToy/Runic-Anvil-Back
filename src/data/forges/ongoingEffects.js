@@ -1,9 +1,11 @@
 const { constants, stats } = require('../enums');
 const passiveEffects = require('./passiveEffects');
-const { common: commonMods, ongoingEffects: ongoingEffectMods } = require('./mods');
+const { ongoingEffects: ongoingEffectMods } = require('./mods');
 
-const { addOrUpdateCardSelectorMod } = commonMods;
-const { ongoingStatMods } = ongoingEffectMods;
+const {
+    addOrUpdateCardSelectorOngoingEffectMod,
+    ongoingStatMods,
+} = ongoingEffectMods;
 
 function levelFilter (card, element) {
     return !element.forgeLevel || element.forgeLevel <= card.level;
@@ -30,7 +32,7 @@ const ongoingEffects = {
         },
         mods: [
             ...ongoingStatMods,
-            addOrUpdateCardSelectorMod,
+            addOrUpdateCardSelectorOngoingEffectMod,
         ],
         price: ({ value, stat }) => {
             if (stat === 'cost') {
@@ -58,7 +60,7 @@ const ongoingEffects = {
             },
         },
         mods: [
-            addOrUpdateCardSelectorMod,
+            addOrUpdateCardSelectorOngoingEffectMod,
         ],
         price: ({ passiveEffectCostModificator }) => {
             const averageAttackUnit = 3;

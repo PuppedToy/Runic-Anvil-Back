@@ -9,12 +9,10 @@
 
 const { constants, places, kingdoms, targets, operations, stats, creations } = require('../enums');
 const statusEffects = require('./statusEffects');
-const { effects: effectMods, common: commonMods } = require('./mods');
+const { effects: effectMods } = require('./mods');
 const {
   improveTargetMods,
-  addOrUpdateCardSelectorMod,
-} = commonMods;
-const {
+  addOrUpdateCardSelectorEffectMod,
   deployValueMods,
   drawValueMods,
   dealDamageValueMods,
@@ -78,7 +76,7 @@ const effects = {
       ...deployToPlaceMods,
       toKingdomAllyMod,
       fromKingdomEnemyModForgeLevel3,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ value }) => value * 0.5,
   },
@@ -110,7 +108,7 @@ const effects = {
     mods: [
       ...dealDamageValueMods,
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ value }) => value * 50,
   },
@@ -187,7 +185,7 @@ const effects = {
     mods: [
       ...statMods,
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ value, stat }) => value * (stat === stats.ATTACK ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
   },
@@ -202,7 +200,7 @@ const effects = {
     mods: [
       banishModForgeLevel4,
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: () => 400,
   },
@@ -222,7 +220,7 @@ const effects = {
       ...moveToPlaceMods,
       toKingdomAllyModForgeLevel3,
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ place }) => {
       let result = 25;
@@ -253,7 +251,7 @@ const effects = {
       toKingdomEnemyLevel2ModForgeLevel4,
       toPlaceDeckModForgeLevel3,
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: () => 200,
   },
@@ -265,7 +263,7 @@ const effects = {
     },
     mods: [
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: () => 50,
     isCommanderForbidden: () => true,
@@ -285,7 +283,7 @@ const effects = {
     mods: [
       ...dealDamageValueMods,
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ value }) => value * 50,
   },
@@ -302,7 +300,7 @@ const effects = {
     mods: [
       toKingdomAllyMod,
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: () => 600,
   },
@@ -327,7 +325,7 @@ const effects = {
       toKingdomAllyMod,
       toKingdomEnemyLevel2Mod,
       toPlaceAnyButBarracksMod,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: () => 300,
   },
@@ -355,7 +353,7 @@ const effects = {
       fromKingdomAllyLevel2Mod,
       toDeckMod,
       toOwnerOrAllyLevel2Mod,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: () => 50,
   },
@@ -381,7 +379,7 @@ const effects = {
       toKingdomAllyMod,
       toKingdomEnemyLevel2Mod,
       toPlaceAnyIngameButBarracksMod,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ value }) => value,
   },
@@ -407,7 +405,7 @@ const effects = {
       toKingdomAllyMod,
       toKingdomEnemyLevel2Mod,
       toPlaceHandMod,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ value }) => value * 0.1,
   },
@@ -427,7 +425,7 @@ const effects = {
     mods: [
       // @TODO value and duration mods
       ...improveTargetMods,
-      addOrUpdateCardSelectorMod,
+      addOrUpdateCardSelectorEffectMod,
     ],
     price: ({ statusEffect, value = 1 }) => {
       let result = 50;
