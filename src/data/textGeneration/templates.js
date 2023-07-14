@@ -1,7 +1,7 @@
 const templates = [
   {
     type: 'unit',
-    forgeLevel: 0,
+    forgeLevel: 1,
     value: '$adjective $main',
   },
   {
