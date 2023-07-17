@@ -74,7 +74,7 @@ function generateUnit(level = 1) {
     attack: randomInt(0, 3),
     hp: randomInt(1, 3),
     type: 'unit',
-    unitType: 'human',
+    unitTypes: ['human'],
     region: region.key,
   };
 

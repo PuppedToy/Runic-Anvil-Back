@@ -237,12 +237,22 @@ const forgeGenerators = [
     type: 'addUnitType',
     weight: 1,
     generate (card) {
-      if (card.unitType) {
+      const isBaseHuman = card.unitTypes.length === 1 && card.unitTypes[0] !== 'human';
+      if (
+        card.unitTypes.length >= 3
+        || (card.unitTypes.length === 2 && Math.random() < 0.2)
+        || (card.unitTypes.length === 1 && !isBaseHuman && Math.random() < 0.5)
+      ) {
         return null;
       }
+      const removeHumanity = isBaseHuman && Math.random() < 0.9;
       const sample = weightedSample(Object.values(unitTypes), [forgeLevelFilter(card.level)]);
+      if (card.unitTypes.includes(sample.key)) {
+        return null;
+      }
       return {
         ...sample,
+        removeHumanity,
       };
     },
     upgrade () {
@@ -250,7 +260,10 @@ const forgeGenerators = [
     },
     apply (forge, card) {
       const newCard = { ...card };
-      newCard.unitType = forge.key;
+      const newUnitTypes = [...card.unitTypes, forge.key];
+      if (forge.removeHumanity) {
+        newUnitTypes.splice(newUnitTypes.indexOf('human'), 1);
+      }
       return newCard;
     },
     applyCost (baseCost, _, card) {
