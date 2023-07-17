@@ -7,10 +7,102 @@ const passiveEffects = {
     costModificator: ({ cost, attack, hp }) => cost
       + (attack * constants.CARD_PRICE_PER_ATTACK_POINT)
       - (hp * constants.CARD_PRICE_PER_HP_POINT) / 2,
+    unitTypes: [
+      {
+        key: 'insect',
+        chance: 1,
+      },
+      {
+        key: 'elf',
+        chance: 1,
+      },
+      {
+        key: 'centaur',
+        chance: 1,
+      },
+      {
+        key: 'wizard',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'beast',
+        chance: 0.1,
+      },
+      {
+        key: 'bird',
+        chance: 0.1,
+      },
+      {
+        key: 'undead',
+        chance: 0.1,
+      },
+      {
+        key: 'dinosaur',
+        chance: 0.1,
+      },
+      {
+        key: 'giant',
+        chance: 0.1,
+      },
+      {
+        key: 'minotaur',
+        chance: 0.1,
+      },
+      {
+        key: 'kraken',
+        chance: 0.1,
+      },
+      {
+        key: 'hydra',
+        chance: 0.1,
+      },
+      {
+        key: 'cyclops',
+        chance: 0.1,
+      },
+      {
+        key: 'leviathan',
+        chance: 0.1,
+      },
+    ],
   },
   siege: {
     key: 'siege',
     costModificator: ({ cost }) => Math.max(0, cost - 100),
+    unitTypes: [
+      {
+        key: 'wizard',
+        chance: 1,
+      },
+      {
+        key: 'giant',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'reptile',
+        chance: 0.1,
+      },
+      {
+        key: 'bird',
+        chance: 0.1,
+      },
+      {
+        key: 'undead',
+        chance: 0.1,
+      },
+      {
+        key: 'spirit',
+        chance: 0.1,
+      },
+    ],
   },
   // building: {
   //   name: 'Building',
@@ -20,11 +112,139 @@ const passiveEffects = {
   taunting: {
     key: 'taunting',
     costModificator: ({ cost }) => cost + 40,
+    elements: [
+      {
+        key: 'earth',
+        chance: 1,
+      },
+      {
+        key: 'nature',
+        chance: 0.5,
+      },
+      {
+        key: 'light',
+        chance: 0.5,
+      },
+      {
+        key: 'psychic',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'giant',
+        chance: 1,
+      },
+      {
+        key: 'dragon',
+        chance: 1,
+      },
+      {
+        key: 'tree',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'reptile',
+        chance: 0.1,
+      },
+      {
+        key: 'goblin',
+        chance: 0.1,
+      },
+      {
+        key: 'fairy',
+        chance: 0.1,
+      },
+      {
+        key: 'shade',
+        chance: 0.1,
+      },
+      {
+        key: 'harpy',
+        chance: 0.1,
+      },
+    ]
   },
   challenger: {
     key: 'challenger',
     costModificator: ({ cost }) => cost + 100,
     forgeLevel: 2,
+    elements: [
+      {
+        key: 'light',
+        chance: 1,
+      },
+      {
+        key: 'psychic',
+        chance: 1,
+      },
+      {
+        key: 'earth',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'ape',
+        chance: 1,
+      },
+      {
+        key: 'orc',
+        chance: 1,
+      },
+      {
+        key: 'angel',
+        chance: 1,
+      },
+      {
+        key: 'minotaur',
+        chance: 1,
+      },
+      {
+        key: 'dragon',
+        chance: 1,
+      },
+      {
+        key: 'god',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'bird',
+        chance: 0.1,
+      },
+      {
+        key: 'reptile',
+        chance: 0.1,
+      },
+      {
+        key: 'undead',
+        chance: 0.1,
+      },
+      {
+        key: 'giant',
+        chance: 0.1,
+      },
+      {
+        key: 'shade',
+        chance: 0.1,
+      },
+    ],
   },
   // wall: {
   //   name: 'Wall',
@@ -56,16 +276,260 @@ const passiveEffects = {
   berserker: {
     key: 'berserker',
     costModificator: ({ cost }) => Math.max(0, cost - 60),
+    elements: [
+      {
+        key: 'fire',
+        chance: 1,
+      },
+      {
+        key: 'earth',
+        chance: 0.5,
+      },
+      {
+        key: 'air',
+        chance: 0.5,
+      },
+      {
+        key: 'tech',
+        chance: 0.5,
+      },
+      {
+        key: 'nature',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'ape',
+        chance: 1,
+      },
+      {
+        key: 'insect',
+        chance: 1,
+      },
+      {
+        key: 'dinosaur',
+        chance: 1,
+      },
+      {
+        key: 'behemoth',
+        chance: 1,
+      },
+      {
+        key: 'orc',
+        chance: 1,
+      },
+      {
+        key: 'walker',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'reptile',
+        chance: 0.1,
+      },
+      {
+        key: 'tree',
+        chance: 0.1,
+      },
+      {
+        key: 'fairy',
+        chance: 0.1,
+      },
+      {
+        key: 'angel',
+        chance: 0.1,
+      },
+    ],
   },
   fearful: {
     key: 'fearful',
     costModificator: ({ cost }) => Math.max(0, cost - 40),
     forgeLevel: 2,
+    elements: [
+      {
+        key: 'water',
+        chance: 1,
+      },
+      {
+        key: 'nature',
+        chance: 0.5,
+      },
+      {
+        key: 'toxic',
+        chance: 0.5,
+      },
+      {
+        key: 'shadow',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      }
+    ],
+    unitTypes: [
+      {
+        key: 'insect',
+        chance: 1,
+      },
+      {
+        key: 'fish',
+        chance: 1,
+      },
+      {
+        key: 'spirit',
+        chance: 1,
+      },
+      {
+        key: 'fairy',
+        chance: 1,
+      },
+      {
+        key: 'unicorn',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'orc',
+        chance: 0.1,
+      },
+      {
+        key: 'tree',
+        chance: 0.1,
+      },
+      {
+        key: 'dragon',
+        chance: 0.1,
+      },
+      {
+        key: 'angel',
+        chance: 0.1,
+      },
+      {
+        key: 'demon',
+        chance: 0.1,
+      },
+      {
+        key: 'god',
+        chance: 0.1,
+      },
+    ],
   },
   fearsome: {
     key: 'fearsome',
     costModificator: ({ cost }) => cost + 60,
     forgeLevel: 2,
+    elements: [
+      {
+        key: 'shadow',
+        chance: 1,
+      },
+      {
+        key: 'psychic',
+        chance: 0.5,
+      },
+      {
+        key: 'light',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'undead',
+        chance: 1,
+      },
+      {
+        key: 'reptile',
+        chance: 1,
+      },
+      {
+        key: 'shade',
+        chance: 1,
+      },
+      {
+        key: 'kraken',
+        chance: 1,
+      },
+      {
+        key: 'hydra',
+        chance: 1,
+      },
+      {
+        key: 'behemoth',
+        chance: 1,
+      },
+      {
+        key: 'leviathan',
+        chance: 1,
+      },
+      {
+        key: 'dragon',
+        chance: 1,
+      },
+      {
+        key: 'angel',
+        chance: 1,
+      },
+      {
+        key: 'demon',
+        chance: 1,
+      },
+      {
+        key: 'god',
+        chance: 1,
+      },
+      {
+        key: 'walker',
+        chance: 1,
+      },
+      {
+        key: 'minotaur',
+        chance: 0.7,
+      },
+      {
+        key: 'robot',
+        chance: 0.7,
+      },
+      {
+        key: 'djinn',
+        chance: 0.7,
+      },
+      {
+        key: 'chimera',
+        chance: 0.7,
+      },
+      {
+        key: 'giant',
+        chance: 0.7,
+      },
+      {
+        key: 'cyclops',
+        chance: 0.7,
+      },
+      {
+        key: 'voidling',
+        chance: 0.7,
+      },
+      {
+        key: 'any',
+        chance: 0.3,
+      },
+    ],
   },
   // versatile: {
   //   name: 'Versatile',
@@ -88,11 +552,155 @@ const passiveEffects = {
     key: 'vampiric',
     costModificator: ({ cost, attack, hp }) => cost + attack * 20 + hp * 20,
     forgeLevel: 2,
+    elements: [
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'water',
+        chance: 0.5,
+      },
+      {
+        key: 'shadow',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'insect',
+        chance: 1,
+      },
+      {
+        key: 'spirit',
+        chance: 1,
+      },
+      {
+        key: 'ooze',
+        chance: 1,
+      },
+      {
+        key: 'demon',
+        chance: 1,
+      },
+      {
+        key: 'god',
+        chance: 0.5,
+      },
+      {
+        key: 'undead',
+        chance: 0.5,
+      },
+      {
+        key: 'tree',
+        chance: 0.5,
+      },
+      {
+        key: 'reptile',
+        chance: 0.5,
+      },
+      {
+        key: 'wizard',
+        chance: 0.5,
+      },
+      {
+        key: 'djinn',
+        chance: 0.5,
+      },
+      {
+        key: 'shade',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ]
   },
   deadly: {
     key: 'deadly',
     costModificator: ({ cost, attack }) => cost + (attack > 0 ? 300 : 100) - (attack * constants.CARD_PRICE_PER_ATTACK_POINT) / 2,
     forgeLevel: 3,
+    elements: [
+      {
+        key: 'toxic',
+        chance: 1,
+      },
+      {
+        key: 'shadow',
+        chance: 0.5,
+      },
+      {
+        key: 'tech',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'reptile',
+        chance: 1,
+      },
+      {
+        key: 'insect',
+        chance: 1,
+      },
+      {
+        key: 'robot',
+        chance: 1,
+      },
+      {
+        key: 'elf',
+        chance: 1,
+      },
+      {
+        key: 'demon',
+        chance: 1,
+      },
+      {
+        key: 'tree',
+        chance: 0.5,
+      },
+      {
+        key: 'golem',
+        chance: 0.5,
+      },
+      {
+        key: 'djinn',
+        chance: 0.5,
+      },
+      {
+        key: 'wizard',
+        chance: 0.5,
+      },
+      {
+        key: 'harpy',
+        chance: 0.5,
+      },
+      {
+        key: 'goblin',
+        chance: 0.5,
+      },
+      {
+        key: 'dragon',
+        chance: 0.5,
+      },
+      {
+        key: 'god',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+    ],
   },
   // barrier: {
   //   name: 'Barrier',
@@ -108,11 +716,207 @@ const passiveEffects = {
     key: 'swift',
     costModificator: ({ cost, attack }) => cost + attack * constants.CARD_PRICE_PER_ATTACK_POINT,
     forgeLevel: 2,
+    elements: [
+      {
+        key: 'air',
+        chance: 1
+      },
+      {
+        key: 'time',
+        chance: 1
+      },
+      {
+        key: 'light',
+        chance: 0.5,
+      },
+      {
+        key: 'tech',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      },
+      {
+        key: 'earth',
+        chance: 0,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'bird',
+        chance: 1,
+      },
+      {
+        key: 'insect',
+        chance: 1,
+      },
+      {
+        key: 'reptile',
+        chance: 1,
+      },
+      {
+        key: 'beast',
+        chance: 1,
+      },
+      {
+        key: 'fish',
+        chance: 1,
+      },
+      {
+        key: 'elf',
+        chance: 1,
+      },
+      {
+        key: 'merfolk',
+        chance: 1,
+      },
+      {
+        key: 'fairy',
+        chance: 1,
+      },
+      {
+        key: 'harpy',
+        chance: 1,
+      },
+      {
+        key: 'dragonling',
+        chance: 1,
+      },
+      {
+        key: 'phoenix',
+        chance: 1,
+      },
+      {
+        key: 'shade',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'tree',
+        chance: 0.1,
+      },
+      {
+        key: 'giant',
+        chance: 0.1,
+      },
+      {
+        key: 'ooze',
+        chance: 0.1,
+      },
+      {
+        key: 'behemoth',
+        chance: 0.1,
+      },
+      {
+        key: 'leviathan',
+        chance: 0.1,
+      },
+      {
+        key: 'walker',
+        chance: 0.1,
+      },
+    ],
   },
   slow: {
     key: 'slow',
     costModificator: ({ cost, attack, hp }) => cost - attack * Math.floor(constants.CARD_PRICE_PER_ATTACK_POINT / 2) - hp * Math.floor(constants.CARD_PRICE_PER_HP_POINT / 2),
     forgeLevel: 2,
+    elements: [
+      {
+        key: 'earth',
+        chance: 1,
+      },
+      {
+        key: 'tech',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.2,
+      },
+      {
+        key: 'air',
+        chance: 0,
+      },
+      {
+        key: 'time',
+        chance: 0,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'reptile',
+        chance: 1,
+      },
+      {
+        key: 'tree',
+        chance: 1,
+      },
+      {
+        key: 'giant',
+        chance: 1,
+      },
+      {
+        key: 'ooze',
+        chance: 1,
+      },
+      {
+        key: 'behemoth',
+        chance: 1,
+      },
+      {
+        key: 'leviathan',
+        chance: 1,
+      },
+      {
+        key: 'walker',
+        chance: 1,
+      },
+      {
+        key: 'fish',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'bird',
+        chance: 0.1,
+      },
+      {
+        key: 'elf',
+        chance: 0.1,
+      },
+      {
+        key: 'merfolk',
+        chance: 0.1,
+      },
+      {
+        key: 'fairy',
+        chance: 0.1,
+      },
+      {
+        key: 'harpy',
+        chance: 0.1,
+      },
+      {
+        key: 'phoenix',
+        chance: 0.1,
+      },
+      {
+        key: 'shade',
+        chance: 0.1,
+      },
+      {
+        key: 'unicorn',
+        chance: 0.1,
+      },
+    ],
   },
   // haste: {
   //   name: 'Haste',
@@ -128,28 +932,426 @@ const passiveEffects = {
     key: 'big',
     costModificator: ({ cost }) => cost * 1.25,
     forgeLevel: 2,
+    elements: [
+      {
+        key: 'water',
+        chance: 1,
+      },
+      {
+        key: 'earth',
+        chance: 1,
+      },
+      {
+        key: 'nature',
+        chance: 0.5,
+      },
+      {
+        key: 'air',
+        chance: 0.5,
+      },
+      {
+        key: 'any',
+        chance: 0.1,
+      }
+    ],
+    unitTypes: [
+      {
+        key: 'tree',
+        chance: 1,
+      },
+      {
+        key: 'dinosaur',
+        chance: 1,
+      },
+      {
+        key: 'giant',
+        chance: 1,
+      },
+      {
+        key: 'cyclops',
+        chance: 1,
+      },
+      {
+        key: 'kraken',
+        chance: 1,
+      },
+      {
+        key: 'hydra',
+        chance: 1,
+      },
+      {
+        key: 'behemoth',
+        chance: 1,
+      },
+      {
+        key: 'leviathan',
+        chance: 1,
+      },
+      {
+        key: 'dragon',
+        chance: 1,
+      },
+      {
+        key: 'walker',
+        chance: 1,
+      },
+      {
+        key: 'ooze',
+        chance: 0.5,
+      },
+      {
+        key: 'golem',
+        chance: 0.5,
+      },
+      {
+        key: 'fish',
+        chance: 0.5,
+      },
+      {
+        key: 'demon',
+        chance: 0.5,
+      },
+      {
+        key: 'god',
+        chance: 0.5,
+      },
+      {
+        key: 'beast',
+        chance: 0.5,
+      },
+      {
+        key: 'ape',
+        chance: 0.3,
+      },
+      {
+        key: 'voidling',
+        chance: 0.3,
+      },
+      {
+        key: 'angel',
+        chance: 0.3,
+      },
+      {
+        key: 'reptile',
+        chance: 0.3,
+      },
+      {
+        key: 'phoenix',
+        chance: 0.3,
+      },
+      {
+        key: 'dragonling',
+        chance: 0.3,
+      },
+      {
+        key: 'robot',
+        chance: 0.3,
+      },
+      {
+        key: 'insect',
+        chance: 0.1,
+      },
+      {
+        key: 'unicorn',
+        chance: 0.1,
+      },
+      {
+        key: 'bird',
+        chance: 0.1,
+      },
+      {
+        key: 'undead',
+        chance: 0.1,
+      },
+      {
+        key: 'chimera',
+        chance: 0.1,
+      },
+      {
+        key: 'orc',
+        chance: 0.1,
+      },
+      {
+        key: 'elemental',
+        chance: 0.1,
+      },
+      {
+        key: 'harpy',
+        chance: 0.1,
+      },
+      {
+        key: 'minotaur',
+        chance: 0.1,
+      },
+      {
+        key: 'any',
+        chance: 0,
+      }
+    ],
   },
   huge: {
     key: 'huge',
     requirement: 'big',
     costModificator: ({ cost }) => cost * 1.5,
     forgeLevel: 3,
+    unitTypes: [
+      {
+        key: 'tree',
+        chance: 1,
+      },
+      {
+        key: 'dinosaur',
+        chance: 1,
+      },
+      {
+        key: 'kraken',
+        chance: 1,
+      },
+      {
+        key: 'hydra',
+        chance: 1,
+      },
+      {
+        key: 'behemoth',
+        chance: 1,
+      },
+      {
+        key: 'leviathan',
+        chance: 1,
+      },
+      {
+        key: 'dragon',
+        chance: 1,
+      },
+      {
+        key: 'walker',
+        chance: 1,
+      },
+      {
+        key: 'ooze',
+        chance: 0.5,
+      },
+      {
+        key: 'cyclops',
+        chance: 0.5,
+      },
+      {
+        key: 'giant',
+        chance: 0.3,
+      },
+      {
+        key: 'golem',
+        chance: 0.3,
+      },
+      {
+        key: 'fish',
+        chance: 0.3,
+      },
+      {
+        key: 'god',
+        chance: 0.3,
+      },
+      {
+        key: 'demon',
+        chance: 0.1,
+      },
+      {
+        key: 'beast',
+        chance: 0.1,
+      },
+      {
+        key: 'ape',
+        chance: 0.1,
+      },
+      {
+        key: 'voidling',
+        chance: 0.1,
+      },
+      {
+        key: 'reptile',
+        chance: 0.1,
+      },
+      {
+        key: 'robot',
+        chance: 0.1,
+      },
+      {
+        key: 'bird',
+        chance: 0.1,
+      },
+      {
+        key: 'undead',
+        chance: 0.1,
+      },
+      {
+        key: 'chimera',
+        chance: 0.1,
+      },
+      {
+        key: 'elemental',
+        chance: 0.1,
+      },
+      {
+        key: 'harpy',
+        chance: 0.1,
+      },
+      {
+        key: 'minotaur',
+        chance: 0.1,
+      },
+      {
+        key: 'any',
+        chance: 0,
+      }
+    ],
   },
   titan: {
     key: 'titan',
     requirement: 'huge',
     costModificator: ({ cost }) => cost * 2,
     forgeLevel: 4,
+    unitTypes: [
+      {
+        key: 'tree',
+        chance: 1,
+      },
+      {
+        key: 'kraken',
+        chance: 1,
+      },
+      {
+        key: 'behemoth',
+        chance: 1,
+      },
+      {
+        key: 'leviathan',
+        chance: 1,
+      },
+      {
+        key: 'dragon',
+        chance: 1,
+      },
+      {
+        key: 'walker',
+        chance: 1,
+      },
+      {
+        key: 'dinosaur',
+        chance: 0.5,
+      },
+      {
+        key: 'hydra',
+        chance: 0.5,
+      },
+      {
+        key: 'ooze',
+        chance: 0.5,
+      },
+      {
+        key: 'cyclops',
+        chance: 0.3,
+      },
+      {
+        key: 'god',
+        chance: 0.3,
+      },
+      {
+        key: 'golem',
+        chance: 0.1,
+      },
+      {
+        key: 'demon',
+        chance: 0.1,
+      },
+      {
+        key: 'beast',
+        chance: 0.1,
+      },
+      {
+        key: 'ape',
+        chance: 0.1,
+      },
+      {
+        key: 'voidling',
+        chance: 0.1,
+      },
+      {
+        key: 'reptile',
+        chance: 0.1,
+      },
+      {
+        key: 'robot',
+        chance: 0.1,
+      },
+      {
+        key: 'any',
+        chance: 0,
+      }
+    ],
   },
   pierce: {
     key: 'pierce',
     costModificator: ({ cost, attack }) => cost + attack * (constants.CARD_PRICE_PER_ATTACK_POINT / 2),
+    elements: [
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'earth',
+        chance: 1,
+      },
+      {
+        key: 'toxic',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.3,
+      },
+    ],
+    unitTypes: [
+      {
+        key: 'any',
+        chance: 1,
+      },
+      {
+        key: 'giant',
+        chance: 0.3,
+      },
+      {
+        key: 'behemoth',
+        chance: 0.3,
+      },
+      {
+        key: 'leviathan',
+        chance: 0.3,
+      },
+    ],
   },
   splash: {
     key: 'splash',
     requirement: 'pierce',
     costModificator: ({ cost, attack }) => cost + attack * constants.CARD_PRICE_PER_ATTACK_POINT,
     forgeLevel: 3,
+    elements: [
+      {
+        key: 'water',
+        chance: 1,
+      },
+      {
+        key: 'fire',
+        chance: 1,
+      },
+      {
+        key: 'toxic',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.3,
+      },
+    ],
   },
   // scout: {
   //   name: 'Scout',

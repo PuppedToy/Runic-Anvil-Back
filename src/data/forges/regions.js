@@ -857,6 +857,7 @@ const regions = [
         ],
         unitTypes: [
             'human',
+            'reptile',
             'undead',
             'ooze',
             'golem',
@@ -894,11 +895,6 @@ const regions = [
             },
             {
                 key: 'ape',
-                chance: 0.2,
-                maxRarity: 3,
-            },
-            {
-                key: 'reptile',
                 chance: 0.2,
                 maxRarity: 3,
             },

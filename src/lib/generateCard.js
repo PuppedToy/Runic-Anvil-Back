@@ -2,6 +2,8 @@ const md5 = require('md5');
 const { randomInt } = require('../utils/random');
 const { generateForge, applyForge, upgradeRandomForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardName');
+const regions = require('../data/forges/regions');
+const weightedSample = require('../utils/weightedSample');
 
 function createForgeComparator(forgeKey, forgeSubkey) {
   return (a, b) => {
@@ -65,6 +67,7 @@ function upgradeCard(card) {
 
 function generateUnit(level = 1) {
   if (level < 0) throw new Error('Level must be positive');
+  const region = weightedSample(regions);
 
   let card = {
     level: 1,
@@ -72,6 +75,7 @@ function generateUnit(level = 1) {
     hp: randomInt(1, 3),
     type: 'unit',
     unitType: 'human',
+    region: region.key,
   };
 
   console.log(`Created base card ${JSON.stringify(card, null, 2)}`);

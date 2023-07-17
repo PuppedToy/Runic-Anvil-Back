@@ -78,6 +78,28 @@ const effects = {
       fromKingdomEnemyModForgeLevel3,
       addOrUpdateCardSelectorEffectMod,
     ],
+    elements: [
+      {
+        key: 'earth',
+        chance: 1,
+      },
+      {
+        key: 'tech',
+        chance: 1,
+      },
+      {
+        key: 'time',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+      {
+        key: 'fire',
+        chance: 0.1,
+      },
+    ],
     price: ({ value }) => value * 0.5,
   },
   draw: {
@@ -90,6 +112,24 @@ const effects = {
     mods: [
       ...drawValueMods,
       fromKingdomEnemyModForgeLevel3,
+    ],
+    elements: [
+      {
+        key: 'water',
+        chance: 1,
+      },
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'time',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
     ],
     price: () => 50,
   },
@@ -105,6 +145,24 @@ const effects = {
         max: 2,
       },
     },
+    elements: [
+      {
+        key: 'fire',
+        chance: 1,
+      },
+      {
+        key: 'shadow',
+        chance: 1,
+      },
+      {
+        key: 'toxic',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...dealDamageValueMods,
       ...improveTargetMods,
@@ -130,6 +188,24 @@ const effects = {
       ...toKingdomGoldMods,
       reverseGoldMod,
     ],
+    elements: [
+      {
+        key: 'tech',
+        chance: 1,
+      },
+      {
+        key: 'psychic',
+        chance: 1,
+      },
+      {
+        key: 'time',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     price: ({ value }) => value,
   },
   modifyCurrency: {
@@ -149,6 +225,24 @@ const effects = {
       ...modifyCurrencyValueMods,
       ...toKingdomGoldMods,
       reverseGoldMod,
+    ],
+    elements: [
+      {
+        key: 'tech',
+        chance: 1,
+      },
+      {
+        key: 'psychic',
+        chance: 1,
+      },
+      {
+        key: 'time',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
     ],
     price: ({ value }) => value * 0.8,
   },
@@ -182,6 +276,24 @@ const effects = {
         },
       ],
     },
+    elements: [
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'earth',
+        chance: 1,
+      },
+      {
+        key: 'tech',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...statMods,
       ...improveTargetMods,
@@ -197,6 +309,24 @@ const effects = {
       destroyedCard: null,
     },
     target: targets.CHOSEN,
+    elements: [
+      {
+        key: 'shadow',
+        chance: 1,
+      },
+      {
+        key: 'toxic',
+        chance: 1,
+      },
+      {
+        key: 'tech',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       banishModForgeLevel4,
       ...improveTargetMods,
@@ -221,6 +351,24 @@ const effects = {
       toKingdomAllyModForgeLevel3,
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
+    ],
+    elements: [
+      {
+        key: 'air',
+        chance: 1,
+      },
+      {
+        key: 'water',
+        chance: 1,
+      },
+      {
+        key: 'psychic',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
     ],
     price: ({ place }) => {
       let result = 25;
@@ -253,6 +401,24 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
+    elements: [
+      {
+        key: 'light',
+        chance: 1,
+      },
+      {
+        key: 'toxic',
+        chance: 1,
+      },
+      {
+        key: 'air',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     price: () => 200,
   },
   fight: {
@@ -261,6 +427,24 @@ const effects = {
     cardSelectors: {
       foughtCard: null,
     },
+    elements: [
+      {
+        key: 'light',
+        chance: 1,
+      },
+      {
+        key: 'fire',
+        chance: 1,
+      },
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
@@ -280,6 +464,24 @@ const effects = {
         max: 2,
       },
     },
+    elements: [
+      {
+        key: 'light',
+        chance: 1,
+      },
+      {
+        key: 'water',
+        chance: 1,
+      },
+      {
+        key: 'time',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...dealDamageValueMods,
       ...improveTargetMods,
@@ -297,6 +499,24 @@ const effects = {
     to: {
       kingdom: kingdoms.OWNER,
     },
+    elements: [
+      {
+        key: 'shadow',
+        chance: 1,
+      },
+      {
+        key: 'psychic',
+        chance: 1,
+      },
+      {
+        key: 'light',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       toKingdomAllyMod,
       ...improveTargetMods,
@@ -318,6 +538,24 @@ const effects = {
       place: places.BARRACKS,
     },
     value: 1,
+    elements: [
+      {
+        key: 'shadow',
+        chance: 1,
+      },
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'tech',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...resurrectValueMods,
       fromKingdomAllyMod,
@@ -347,6 +585,24 @@ const effects = {
       place: places.NONE,
     },
     value: 1,
+    elements: [
+      {
+        key: 'air',
+        chance: 1,
+      },
+      {
+        key: 'toxic',
+        chance: 1,
+      },
+      {
+        key: 'psychic',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...discardValueMods,
       fromKingdomOwnerMod,
@@ -372,6 +628,24 @@ const effects = {
       kingdom: kingdoms.OWNER,
       place: places.BARRACKS,
     },
+    elements: [
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'time',
+        chance: 1,
+      },
+      {
+        key: 'fire',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...summonValueMods,
       randomCreationMod,
@@ -397,6 +671,24 @@ const effects = {
         step: 40,
       },
     },
+    elements: [
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'water',
+        chance: 1,
+      },
+      {
+        key: 'tech',
+        chance: 1,
+      },
+      {
+        key: 'any',
+        chance: 0.5,
+      },
+    ],
     mods: [
       ...createValueMods,
       randomCreationMod,
