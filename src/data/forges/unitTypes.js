@@ -38,6 +38,10 @@ const unitTypes = {
     key: 'orc',
     forgeLevel: 1,
   },
+  merfolk: {
+    key: 'merfolk',
+    forgeLevel: 1,
+  },
   goblin: {
     key: 'goblin',
     forgeLevel: 1,
@@ -76,10 +80,6 @@ const unitTypes = {
   },
   harpy: {
     key: 'harpy',
-    forgeLevel: 2,
-  },
-  merfolk: {
-    key: 'merfolk',
     forgeLevel: 2,
   },
   centaur: {
