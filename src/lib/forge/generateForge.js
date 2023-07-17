@@ -16,6 +16,77 @@ const { constants } = require('../../data/enums');
 // Filters
 const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
+function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
+  const valuesWithWeights = Object.values(collection);
+  valuesWithWeights.forEach(currentValue => {
+    let elementWeight = 0;
+    let unitTypeWeight = 0;
+    const hasElement = Boolean(card.element);
+    const hasUnitType = (card.unitTypes || []).length > 0;
+    let total = 0;
+    let anyChance = 1;
+    if (hasElement) {
+      const cardElement = elements[card.element];
+      elementWeight = 0;
+      (currentValue.elements || []).forEach(currentElement => {
+        if (
+          cardElement.key === currentElement.key
+          || (cardElement.elements || []).includes(currentElement.key)
+        ) {
+          total++;
+          elementWeight += currentElement.chance;
+        }
+        if (currentElement.key === 'any') {
+          anyChance = currentElement.chance;
+        }
+      });
+      if (total === 0) {
+        elementWeight = anyChance;
+      }
+      else {
+        elementWeight /= total;
+      }
+    }
+    total = 0;
+    anyChance = 1;
+    if (hasUnitType) {
+      (currentValue.unitTypes || []).forEach(currentUnitType => {
+        if (card.unitTypes.includes(currentUnitType.key)) {
+          total++;
+          unitTypeWeight += currentUnitType.chance;
+        }
+        if (currentUnitType.key === 'any') {
+          anyChance = currentUnitType.chance;
+        }
+      });
+      if (total === 0) {
+        unitTypeWeight = anyChance;
+      }
+      else {
+        unitTypeWeight /= total;
+      }
+    }
+    let weight = 0;
+    total = 0;
+    if (!hasElement && !hasUnitType) {
+      weight = 1;
+    }
+    else {
+      if (hasElement) {
+        total++;
+        weight += elementWeight;
+      }
+      if (hasUnitType) {
+        total++;
+        weight += unitTypeWeight;
+      }
+      weight /= total;
+    }
+    currentValue.weight = weight;
+  });
+  return valuesWithWeights.filter(currentValue => currentValue.weight);
+}
+
 // Trigger
 function generateTrigger(card) {
   // @TODO We've used basic triggers like: Destroyed
@@ -337,7 +408,11 @@ const forgeGenerators = [
     type: 'addPassiveEffect',
     weight: 1,
     generate (card) {
-      const sample = weightedSample(passiveEffects, [forgeLevelFilter(card.level)]);
+      const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, passiveEffects);
+      if (!passiveEffectsWithWeights.length) {
+        return null;
+      }
+      const sample = weightedSample(passiveEffectsWithWeights, [forgeLevelFilter(card.level)]);
       if (card.passiveEffects && card.passiveEffects.includes(sample.key)) {
         return null;
       }
