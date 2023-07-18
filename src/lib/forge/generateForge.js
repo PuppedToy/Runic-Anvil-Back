@@ -16,6 +16,33 @@ const { constants } = require('../../data/enums');
 // Filters
 const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
+function generateRegionalObjectWithWeightsBasedOnProperty(card, collectionObject, property) {
+  const collectionWithWeights = Object.values(collectionObject);
+  const cardRegion = regions.find(region.key === card.region);
+  if (cardRegion === null) {
+    throw new Error(`Region ${card.region} not found`);
+  }
+  collectionWithWeights.forEach(currentValue => {
+    const regionalProperty = cardRegion[property].find(item => item.key === currentValue.key);
+    if (regionalProperty) {
+      currentValue.weight = regionalProperty.chance;
+    }
+    else {
+      currentValue.weight = 0;
+    }
+  });
+
+  return collectionWithWeights.filter(currentValue => currentValue.weight);
+}
+
+function generateUnitTypesWithWeights(card) {
+  return generateRegionalObjectWithWeightsBasedOnProperty(card, 'unitTypes', unitTypes);
+}
+
+function generateElementsWithWeights(card) {
+  return generateRegionalObjectWithWeightsBasedOnProperty(card, 'elements', elements.basic);
+}
+
 function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
   const valuesWithWeights = Object.values(collection);
   valuesWithWeights.forEach(currentValue => {
@@ -318,8 +345,9 @@ const forgeGenerators = [
         return null;
       }
       const removeHumanity = isBaseHuman && Math.random() < 0.9;
-      const sample = weightedSample(Object.values(unitTypes), [forgeLevelFilter(card.level)]);
-      if (card.unitTypes.includes(sample.key)) {
+      const unitTypesWithWeights = generateUnitTypesWithWeights(card);
+      const sample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(card.level)]);
+      if (sample === null || card.unitTypes.includes(sample.key)) {
         return null;
       }
       return {
@@ -354,9 +382,15 @@ const forgeGenerators = [
       if (card.element) {
         return null;
       }
-      const sample = weightedSample(Object.values(elements.basic), [forgeLevelFilter(card.level)]);
+      const elementsWithWeights = generateElementsWithWeights(card);
+      const sample = weightedSample(elementsWithWeights, [forgeLevelFilter(card.level)]);
+      if (sample === null) {
+        console.log(`No element found for card ${JSON.stringify(card, null, 2)}`);
+        return null;
+      }
+      const cleanSample = cleanDefinitionObject(sample);
       return {
-        ...sample,
+        ...cleanSample,
       };
     },
     upgrade (forge, card) {
@@ -365,11 +399,11 @@ const forgeGenerators = [
         console.log(`Element ${card.element} is complex`);
         return null;
       }
-      const basicElementValues = Object.values(elements.basic);
       if (!card.element) {
         throw new Error(`Card ${card.name} doesn't have an element`);
       }
-      const otherBasicElements = basicElementValues.filter((currentBasicElement) => currentBasicElement.key !== card.element);
+      const basicElementWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, elements.basic);
+      const otherBasicElements = basicElementWithWeights.filter((currentBasicElement) => currentBasicElement.key !== card.element);
       const newBasicElement = weightedSample(otherBasicElements, [forgeLevelFilter(card.level)]);
       console.log(`Mixing with ${newBasicElement.key}`);
       const complexElement = Object.values(elements.complex).find(
@@ -787,7 +821,7 @@ function generateForge(card) {
   const MAX_ITERATIONS = 10000;
   let forgeGenerator;
   let forge = null;
-  for(let i = 0; !forge && i < 10000; i++) {
+  for(let i = 0; !forge && i < MAX_ITERATIONS; i++) {
     forgeGenerator = weightedSample(forgeGenerators);
     forge = forgeGenerator.generate(card);
   }

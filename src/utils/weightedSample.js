@@ -56,6 +56,10 @@ function weightedSample(collection, filters) {
     });
   }
 
+  if (collectionData.length <= 0) {
+    return null;
+  }
+
   // Calculate the weight sum
   let maxWeight = collectionData.reduce((total, item) => total + getItemWeight(item), 0);
   const randomMark = Math.random() * maxWeight;
