@@ -100,8 +100,8 @@ function generateAction(card) {
   return weightedSample(actions, [forgeLevelFilter(card.level)]);
 }
 
-function cleanDefinitionObject(definitionObject) {
-  const unwantedProperties = ['weight'];
+function cleanDefinitionObject(definitionObject, customUnwantedProperties = []) {
+  const unwantedProperties = ['weight', ...customUnwantedProperties];
   const result = { ...definitionObject };
   unwantedProperties.forEach((property) => {
     delete result[property];
@@ -159,9 +159,10 @@ function processForge(forge, card, upgradingForge) {
 }
 
 function generateEffect(card) {
-  const effect = weightedSample(Object.values(effects), [forgeLevelFilter(card.level)]);
-  const { mods, ...defaultForge } = effect;
-  const processedForge = processForge(defaultForge, card);
+  const effectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, effects);
+  const effect = weightedSample(Object.values(effectsWithWeights), [forgeLevelFilter(card.level)]);
+  const cleanEffect = cleanDefinitionObject(effect, ['mods', 'elements', 'unitTypes']);
+  const processedForge = processForge(cleanEffect, card);
 
   const forge = {
     ...processedForge,
@@ -416,24 +417,30 @@ const forgeGenerators = [
       if (card.passiveEffects && card.passiveEffects.includes(sample.key)) {
         return null;
       }
+      const cleanSample = cleanDefinitionObject(sample, ['elements', 'unitTypes']);
       return {
-        ...sample,
+        ...cleanSample,
       };
     },
     upgrade (forge, card) {
-      const upgradedPassiveEffects = Object.values(passiveEffects).filter(
+      const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, passiveEffects);
+      const upgradedPassiveEffects = Object.values(passiveEffectsWithWeights).filter(
         (passiveEffect) => passiveEffect.forgeLevel <= card.level && card.passiveEffects.includes(passiveEffect.requirement),
       );
       if (!upgradedPassiveEffects.length) {
         return null;
       }
       const chosenMod = weightedSample(upgradedPassiveEffects);
+      if (Math.random() < chosenMod.weight) {
+        return null;
+      }
+      const cleanMod = cleanDefinitionObject(chosenMod, ['elements', 'unitTypes']);
       return {
         forge: {
           ...forge,
-          ...chosenMod,
+          ...cleanMod,
         },
-        mod: chosenMod,
+        mod: cleanMod,
       };
     },
     apply (forge, card) {
