@@ -10,6 +10,7 @@ const {
   effects,
   actions,
   elements,
+  regions,
 } = require('../../data/forges');
 const { constants } = require('../../data/enums');
 
@@ -18,14 +19,14 @@ const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 function generateRegionalObjectWithWeightsBasedOnProperty(card, collectionObject, property) {
   const collectionWithWeights = Object.values(collectionObject);
-  const cardRegion = regions.find(region.key === card.region);
+  const cardRegion = regions.find(region => region.key === card.region);
   if (cardRegion === null) {
     throw new Error(`Region ${card.region} not found`);
   }
   collectionWithWeights.forEach(currentValue => {
-    const regionalProperty = cardRegion[property].find(item => item.key === currentValue.key);
+    const regionalProperty = cardRegion[property].find(item => item === currentValue.key || item.key === currentValue.key);
     if (regionalProperty) {
-      currentValue.weight = regionalProperty.chance;
+      currentValue.weight = regionalProperty.chance || 1;
     }
     else {
       currentValue.weight = 0;
@@ -36,11 +37,11 @@ function generateRegionalObjectWithWeightsBasedOnProperty(card, collectionObject
 }
 
 function generateUnitTypesWithWeights(card) {
-  return generateRegionalObjectWithWeightsBasedOnProperty(card, 'unitTypes', unitTypes);
+  return generateRegionalObjectWithWeightsBasedOnProperty(card, unitTypes, 'unitTypes');
 }
 
 function generateElementsWithWeights(card) {
-  return generateRegionalObjectWithWeightsBasedOnProperty(card, 'elements', elements.basic);
+  return generateRegionalObjectWithWeightsBasedOnProperty(card, elements.basic, 'elements');
 }
 
 function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
@@ -336,7 +337,7 @@ const forgeGenerators = [
     type: 'addUnitType',
     weight: 1,
     generate (card) {
-      const isBaseHuman = card.unitTypes.length === 1 && card.unitTypes[0] !== 'human';
+      const isBaseHuman = card.unitTypes.length === 1 && card.unitTypes[0] === 'human';
       if (
         card.unitTypes.length >= 3
         || (card.unitTypes.length === 2 && Math.random() < 0.2)
@@ -344,15 +345,15 @@ const forgeGenerators = [
       ) {
         return null;
       }
-      const removeHumanity = isBaseHuman && Math.random() < 0.9;
       const unitTypesWithWeights = generateUnitTypesWithWeights(card);
+      console.log(`Regional unit types with weights: ${JSON.stringify(unitTypesWithWeights, null, 2)}`);
       const sample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(card.level)]);
       if (sample === null || card.unitTypes.includes(sample.key)) {
         return null;
       }
       return {
         ...sample,
-        removeHumanity,
+        removeHumanity: isBaseHuman,
       };
     },
     upgrade () {
@@ -364,6 +365,7 @@ const forgeGenerators = [
       if (forge.removeHumanity) {
         newUnitTypes.splice(newUnitTypes.indexOf('human'), 1);
       }
+      newCard.unitTypes = newUnitTypes;
       return newCard;
     },
     applyCost (baseCost, _, card) {
@@ -383,6 +385,10 @@ const forgeGenerators = [
         return null;
       }
       const elementsWithWeights = generateElementsWithWeights(card);
+      console.log(`Regional elements with weights: ${JSON.stringify(elementsWithWeights, null, 2)}`);
+      if (elementsWithWeights.length === 0) {
+        return null;
+      }
       const sample = weightedSample(elementsWithWeights, [forgeLevelFilter(card.level)]);
       if (sample === null) {
         console.log(`No element found for card ${JSON.stringify(card, null, 2)}`);
@@ -402,7 +408,7 @@ const forgeGenerators = [
       if (!card.element) {
         throw new Error(`Card ${card.name} doesn't have an element`);
       }
-      const basicElementWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, elements.basic);
+      const basicElementWithWeights = generateElementsWithWeights(card);
       const otherBasicElements = basicElementWithWeights.filter((currentBasicElement) => currentBasicElement.key !== card.element);
       const newBasicElement = weightedSample(otherBasicElements, [forgeLevelFilter(card.level)]);
       console.log(`Mixing with ${newBasicElement.key}`);

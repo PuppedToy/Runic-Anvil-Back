@@ -16,6 +16,7 @@ const triggerableEffects = require('./triggerableEffects');
 const triggers = require('./triggers');
 const unitTypes = require('./unitTypes');
 const zones = require('./zones');
+const regions = require('./regions');
 
 module.exports = {
   actions,
@@ -36,4 +37,5 @@ module.exports = {
   triggers,
   unitTypes,
   zones,
+  regions,
 };
