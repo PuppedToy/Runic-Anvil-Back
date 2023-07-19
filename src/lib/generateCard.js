@@ -50,7 +50,7 @@ function upgradeCard(card) {
   const { level } = card;
   let upgradedCard = card;
   upgradedCard = levelUpCard(upgradedCard);
-  if (level <= 5) {
+  if (level >= 3) {
     upgradedCard = levelUpCard(upgradedCard);
   }
   if (level === 5) {
@@ -67,7 +67,6 @@ function upgradeCard(card) {
 
 function generateUnit(level = 1) {
   if (level < 0) throw new Error('Level must be positive');
-  const region = weightedSample(regions);
 
   let card = {
     level: 1,
@@ -75,7 +74,6 @@ function generateUnit(level = 1) {
     hp: randomInt(1, 3),
     type: 'unit',
     unitTypes: ['human'],
-    region: region.key,
   };
 
   console.log(`Created base card ${JSON.stringify(card, null, 2)}`);

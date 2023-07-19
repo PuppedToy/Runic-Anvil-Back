@@ -9,23 +9,23 @@ async function createCard(options = {}) {
   let counter = 0;
   do {
     let level = options.level;
-    if (level === undefined || level === null || level < 0 || level > 5) {
-      level = 1;
+    if (level === undefined || level === null || level < 0) {
+      level = 2;
       const random = Math.random();
       if (random < 0.05) {
-        level = 5;
+        level = 6;
       }
       else if (random < 0.3) {
-        level = 4;
+        level = 5;
       }
       else if (random < 0.15) {
-        level = 3;
+        level = 4;
       }
       else if (random < 0.45) {
-        level = 2;
+        level = 3;
       }
       else if (random < 0.55) {
-        level = 0;
+        level = 1;
       }
     }
     console.log(`Creating level ${level} card`);

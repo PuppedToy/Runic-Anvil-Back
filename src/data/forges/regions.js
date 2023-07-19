@@ -1,5 +1,5 @@
-const regions = [
-    {
+const regions = {
+    wheozThana: {
         key: 'wheozThana',
         name: 'Wheoz Thana',
         aliases: ['The Big City', 'The Science Nexus', 'The City of Tomorrow'],
@@ -165,7 +165,7 @@ const regions = [
         locations: ['Thanarian University'],
         professions: ['scientist', 'professor', 'engineer'],
     },
-    {
+    oseshire: {
         key: 'oseshire',
         name: 'Oseshire',
         localNames: ['Sheiran'],
@@ -198,7 +198,7 @@ const regions = [
         elements: ['none'],
         professions: ['farmer', 'villager'],
     },
-    {
+    zraross: {
         key: 'zraross',
         name: 'Zraross',
         aliases: ['Realm of the Lost', 'World of Worlds', 'Unstable Multiverse', 'Chaotic Realm', 'The Lost Realm', 'The Forgotten Realm'],
@@ -206,7 +206,7 @@ const regions = [
         unitTypes: ['any'],
         elements: ['any'],
     },
-    {
+    yoseForest: {
         key: 'yoseForest',
         name: 'Yose Forest',
         description: 'A forest filled with plain living creatures. Very few of them are intelligent.',
@@ -273,7 +273,7 @@ const regions = [
         ],
         maxRarity: 2,
     },
-    {
+    nisetCoast: {
         key: 'nisetCoast',
         name: 'Niset Coast',
         description: 'A coast filled with merfolk and other water creatures.',
@@ -328,7 +328,7 @@ const regions = [
         ],
         maxRarity: 2,
     },
-    {
+    drepmontPeaks: {
         key: 'drepmontPeaks',
         name: 'Drepmont Peaks',
         description: 'A mountain range filled with dwarves and other earth creatures.',
@@ -394,7 +394,7 @@ const regions = [
         ],
         maxRarity: 2,
     },
-    {
+    chisonBurrows: {
         key: 'chisonBurrows',
         name: 'Chison Burrows',
         aliases: ['Hive City', 'The Nest'],
@@ -434,7 +434,7 @@ const regions = [
             },
         ],
     },
-    {
+    ontmouthDepths: {
         key: 'ontmouthDepths',
         name: 'Ontmouth Depths',
         aliases: ['The Deepest Ocean', 'The Water Core', 'Infinity Waters', 'The Infinity Abyss'],
@@ -506,10 +506,10 @@ const regions = [
             },
         ],
     },
-    {
+    akarith: {
         key: 'akarith',
         key: 'Akarith',
-        aliases: ['The Sky City', 'The Floating City', 'The City of the Gods', 'The City of the Sky', 'The City of the Clouds'],
+        aliases: ['The Sky Citadel', 'The Sky Fortress', 'Angel Nest', 'Heaven Citadel', 'Home of Gods', 'Cloud Fortress'],
         localNames: ['Akarithian'],
         elements: [
             'air',
@@ -567,7 +567,7 @@ const regions = [
             },
         ],
     },
-    {
+    yhekaCaves: {
         key: 'yhekaCaves',
         name: 'Yheka Caves',
         aliases: ['Endless Caves'],
@@ -612,7 +612,7 @@ const regions = [
             },
         ],
     },
-    {
+    bluutwell: {
         key: 'bluutwell',
         name: 'Bluutwell',
         aliases: ['Helldoor', 'The Gates of Hell', 'The Underworld'],
@@ -679,7 +679,7 @@ const regions = [
             },
         ],
     },
-    {
+    zhaatinCaves: {
         key: 'zhaatinCaves',
         name: 'Zhaatin Caves',
         aliases: ['Crystal Caves', 'Endless Dream', 'Crystal Dream'],
@@ -735,7 +735,7 @@ const regions = [
             },
         ],
     },
-    {
+    khuyhull: {
         key: 'khuyhull',
         name: 'Khuyhull',
         aliases: ['Ancient Forest', 'Timeless Forest'],
@@ -780,7 +780,7 @@ const regions = [
             },
         ],
     },
-    {
+    xahphiaLake: {
         key: 'xahphiaLake',
         name: 'Xahphia Lake',
         aliases: ['Mirage Lake', 'Mirror Lake', 'The Lake of Illusions'],
@@ -830,7 +830,7 @@ const regions = [
             },
         ],
     },
-    {
+    vluehham: {
         key: 'vluehham',
         name: 'Vluehham',
         aliases: ['Corrupted Valley', 'Polluted Lands'],
@@ -972,7 +972,7 @@ const regions = [
             },
         ],
     },
-    {
+    slotgasWastelands: {
         key: 'slotgasWastelands',
         name: 'Slotgas Wastelands',
         aliases: ['The Sand City', 'The Wastelands', 'The Barren Lands'],
@@ -1032,7 +1032,7 @@ const regions = [
             },
         ],
     },
-    {
+    luhamPools: {
         key: 'luhamPools',
         name: 'Luham Pools',
         aliases: ['The Magma City', 'Lava Pools', 'Luham Hell'],
@@ -1089,7 +1089,7 @@ const regions = [
             },
         ],
     },
-    {
+    biville: {
         key: 'biville',
         name: 'Biville',
         aliases: ['The Flower Forest', 'The Flower City', 'The Pollen Forest'],
@@ -1156,7 +1156,7 @@ const regions = [
             },
         ],
     },
-    {
+    uryburn: {
         key: 'uryburn',
         name: 'Uryburn',
         aliases: ['Eclipse City', 'Evernight'],
@@ -1205,7 +1205,7 @@ const regions = [
             },
         ],
     },
-    {
+    neothana: {
         key: 'neothana',
         name: 'Neothana',
         aliases: ['The City in the Future', 'The New Hope'],
@@ -1260,6 +1260,6 @@ const regions = [
             },
         ],
     },
-];
+};
 
 module.exports = regions;
