@@ -109,7 +109,6 @@ function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
     currentValue.weight = weight;
   });
   const result = valuesWithWeights.filter(currentValue => currentValue.weight);
-  console.log(JSON.stringify(result, null, 2));
   return result;
 }
 
@@ -303,11 +302,23 @@ function mergeMod(forge, mod) {
 const forgeGenerators = [
   {
     type: 'addStat',
-    weight: 1,
-    generate (card) {
-      const min = 2 + Math.round(card.level * 1.55);
-      const max = 4 + Math.round(card.level * 2);
-      const statAmount = randomInt(min, max);
+    weight: 2,
+    complexity: 0,
+    getNextStatsAmount (card) {
+      const statsTotal = card.attack + card.hp;
+      if (statsTotal < 4) {
+        return randomInt(4, 7) - statsTotal;
+      }
+      if (statsTotal < 8) {
+        return randomInt(8, 11) - statsTotal;
+      }
+      if (statsTotal < 12) {
+        return randomInt(12, 15) - statsTotal;
+      }
+      return exponential(16, 9999, 1, 0.7) - statsTotal;
+    },
+    generateStats(card) {
+      const statAmount = this.getNextStatsAmount(card);
       const attack = randomInt(0, statAmount);
       const hp = statAmount - attack;
       return {
@@ -315,8 +326,24 @@ const forgeGenerators = [
         hp,
       };
     },
-    upgrade () {
-      null;
+    generate (card) {
+      if (card.attack + card.hp >= 3) {
+        return null;
+      }
+      return this.generateStats(card);
+    },
+    upgrade (forge, card) {
+      if (card.attack + card.hp >= 16) {
+        return null;
+      }
+      const mod = this.generateStats(card);
+      return {
+        forge: {
+          ...forge,
+          ...mod,
+        },
+        mod,
+      };
     },
     apply (forge, card) {
       const newCard = { ...card };
@@ -326,6 +353,7 @@ const forgeGenerators = [
     },
     applyCost (baseCost, forge, card) {
       const newCard = { ...card };
+      newCard.cost = baseCost;
       return newCard;
     },
     isCommanderForbidden () {
@@ -335,6 +363,7 @@ const forgeGenerators = [
   {
     type: 'addRegion',
     weight: 2,
+    complexity: 0,
     generate (card) {
       if (card.region) {
         return null;
@@ -342,10 +371,10 @@ const forgeGenerators = [
       const region = weightedSample(regions);
       const elementsWithWeights = generateElementsWithWeights(region);
       const unitTypesWithWeights = generateUnitTypesWithWeights(region);
-      if (elementsWithWeights.length === 0) {
-        return null;
+      let elementSample = null;
+      if (Math.random() < 0.9) {
+        elementSample = weightedSample(elementsWithWeights, [forgeLevelFilter(card.level)]);
       }
-      const elementSample = weightedSample(elementsWithWeights, [forgeLevelFilter(card.level)]);
       const unitTypeSample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(card.level)]);
       return {
         region: region.key,
@@ -419,10 +448,13 @@ const forgeGenerators = [
       };
     },
     upgrade (forge, card) {
+      if (Math.random() < 0.5) {
+        return null;
+      }
       const canUpgradeElement = card.element && !elements.complex[card.element];
       if (
-        (card.unitTypes.length === 1 && Math.random() < 0.5)
-        || (card.unitTypes.length === 2 && (!canUpgradeElement || Math.random() < 0.25))
+        (card.unitTypes.length === 1 && Math.random() < 0.25)
+        || (card.unitTypes.length === 2 && (!canUpgradeElement || Math.random() < 0.1))
       ) {
         return this.upgradeUnitType(forge, card);
       }
@@ -456,6 +488,7 @@ const forgeGenerators = [
   {
     type: 'addPassiveEffect',
     weight: 1,
+    complexity: 0,
     generate (card) {
       const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, passiveEffects);
       const passiveEffectsWithoutRequirements = passiveEffectsWithWeights.filter((passiveEffect) => !passiveEffect.requirement);
@@ -519,6 +552,7 @@ const forgeGenerators = [
   {
     type: 'addEffectOnTrigger',
     weight: 1,
+    complexity: 1,
     generate (card) {
       const trigger = generateTrigger(card);
       const effect = generateEffect(card);
@@ -603,6 +637,7 @@ const forgeGenerators = [
   {
     type: 'addEffectOnAction',
     weight: 1,
+    complexity: 1,
     generate (card) {
       const action = generateAction(card);
       const effect = generateEffect(card);
@@ -705,6 +740,7 @@ const forgeGenerators = [
   {
     type: 'addOngoingEffect',
     weight: 1,
+    complexity: 2,
     generate (card) {
       const sample = generateOngoingEffect(card);
       if (card.ongoingEffects && card.ongoingEffects.some(
@@ -832,13 +868,34 @@ function canBeCommander(card) {
   };
 }
 
-function generateForge(card) {
-  const MAX_ITERATIONS = 10000;
+function getCardComplexity(card) {
+  return (card.forges || []).reduce((acc, forge) => acc + (forgeGenerators.find((generator) => generator.type === forge.type)?.complexity || 0), 0);
+}
+
+function generateForge(card, maxIterations = 10000) {
   let forgeGenerator;
   let forge = null;
-  for(let i = 0; !forge && i < MAX_ITERATIONS; i++) {
+  const cardComplexity = getCardComplexity(card);
+  for(let i = 0; !forge && i < maxIterations; i++) {
     forgeGenerator = weightedSample(forgeGenerators);
+    const nextComplexity = cardComplexity + (forgeGenerator.complexity || 0);
+    let chanceToSkip = i * -0.02;
+    if (nextComplexity >= 2) {
+      chanceToSkip += 0.5;
+    }
+    else if (nextComplexity >= 3) {
+      chanceToSkip += 0.75;
+    }
+    else if (nextComplexity >= 4) {
+      chanceToSkip += 1;
+    }
+    if (Math.random() < chanceToSkip) {
+      continue;
+    }
     forge = forgeGenerator.generate(card);
+  }
+  if (!forge) {
+    return null;
   }
   return {
     type: forgeGenerator.type,
@@ -876,7 +933,7 @@ function applyMod(mod, forgeIndex, forge, card) {
 }
 
 function upgradeRandomForge(card) {
-  const remainingForges = [...card.forges];
+  const remainingForges = [...(card.forges || [])];
   console.log(`Remaining forges: ${JSON.stringify(remainingForges, null, 2)}`);
   while (remainingForges.length) {
     const chosenForgeIndex = randomInt(0, remainingForges.length - 1);
@@ -890,7 +947,6 @@ function upgradeRandomForge(card) {
       continue;
     }
     const { mod, forge: upgradedForge } = upgradeResult;
-    console.log(`Found mod ${JSON.stringify(mod, null, 2)}`);
     const forgeIndex = card.forges.findIndex((forge) => forge === chosenForge);
     const newCard = applyMod(mod, forgeIndex, upgradedForge, card);
     return newCard;

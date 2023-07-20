@@ -44,10 +44,6 @@ function weightedSample(collection, filters) {
         || !Object.hasOwnProperty.call(item, 'weight')
         || item.weight > 0);
 
-  if (collectionData.length <= 0) {
-    throw new Error('The received collection has no data with positive weights');
-  }
-
   // Apply filters
   if (filters) {
     const filtersArray = typeof filters === 'function' ? [filters] : filters;

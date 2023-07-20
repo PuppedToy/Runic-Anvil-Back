@@ -2,8 +2,6 @@ const md5 = require('md5');
 const { randomInt } = require('../utils/random');
 const { generateForge, applyForge, upgradeRandomForge } = require('./forge/generateForge');
 const { generateName } = require('./generateCardName');
-const regions = require('../data/forges/regions');
-const weightedSample = require('../utils/weightedSample');
 
 function createForgeComparator(forgeKey, forgeSubkey) {
   return (a, b) => {
@@ -27,23 +25,23 @@ function generateHash(card) {
 
 function levelUpCard(card) {
   const cardForges = card.forges || [];
-  const isNewForge = !cardForges.length || Math.random() < 0.7 - cardForges.length * 0.1;
+  const isNewForge = !cardForges.length || Math.random() < 0.5;
   if (isNewForge) {
-    const newCard =  addForgeToCard(card);
-    console.log(`Added forge to card ${JSON.stringify(newCard, null, 2)}`);
-    return newCard;
+    const newCard =  addForgeToCard(card, 3);
+    if (newCard) {
+      console.log(`Added forge to card ${JSON.stringify(newCard, null, 2)}`);
+      return newCard;
+    }
+  }
+  let newCard = upgradeRandomForge(card);
+  if (newCard === null) {
+    newCard = addForgeToCard(card);
+    console.log(`Could not find a forge to upgrade. Added forge to card ${JSON.stringify(newCard, null, 2)}`);
   }
   else {
-    let newCard = upgradeRandomForge(card);
-    if (newCard === null) {
-      newCard = addForgeToCard(card);
-      console.log(`Could not find a forge to upgrade. Added forge to card ${JSON.stringify(newCard, null, 2)}`);
-    }
-    else {
-      console.log(`Upgraded forge on card ${JSON.stringify(newCard, null, 2)}`);
-    }
-    return newCard;
+    console.log(`Upgraded forge on card ${JSON.stringify(newCard, null, 2)}`);
   }
+  return newCard;
 }
 
 function upgradeCard(card) {
@@ -67,11 +65,14 @@ function upgradeCard(card) {
 
 function generateUnit(level = 1) {
   if (level < 0) throw new Error('Level must be positive');
+  const statsAmount = randomInt(1, 3);
+  const hp = randomInt(1, statsAmount);
+  const attack = statsAmount - hp;
 
   let card = {
     level: 1,
-    attack: randomInt(0, 3),
-    hp: randomInt(1, 3),
+    attack,
+    hp,
     type: 'unit',
     unitTypes: ['human'],
   };
@@ -87,8 +88,9 @@ function generateUnit(level = 1) {
   return card;
 }
 
-function addForgeToCard(card) {
-  const forge = generateForge(card);
+function addForgeToCard(card, maxIterations) {
+  const forge = generateForge(card, maxIterations);
+  if (!forge) return null;
   return applyForge(forge, card);
 }
 
