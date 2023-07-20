@@ -252,9 +252,7 @@ const generateStatMethod = (minIncrement, maxIncrement, withCost = false, keyTra
     }
   });
 
-  return {
-    stats: result,
-  };
+  return result;
 };
 
 const statValueLevel1Mod = {
@@ -296,9 +294,7 @@ const generateReverseStatsMethod = (keyTraveler) => (card, forge) => {
       result[stat] = -value;
     }
   });
-  return {
-    stats: result
-  };
+  return result;
 };
 
 const reverseStatsEffectMod = {
@@ -802,10 +798,8 @@ const generateAddCardSelectorMod = (keyTraveler) => (card, forge) => {
   console.log(`Chosen selector: ${JSON.stringify(chosenSelector, null, 2)}`);
   if (forgeCardSelectors[chosenSelector] === null || Object.keys(forgeCardSelectors[chosenSelector]).length === 0) {
     return {
-      cardSelectors: {
-        [chosenSelector]: {
-          $sample: Object.values(cardSelectors),
-        },
+      [chosenSelector]: {
+        $sample: Object.values(cardSelectors),
       },
     };
   }
@@ -818,7 +812,7 @@ const generateAddCardSelectorMod = (keyTraveler) => (card, forge) => {
 const addOrUpdateCardSelectorEffectMod = {
   id: 'addSelector',
   modLevel: 1,
-  cardSelector: {
+  cardSelectors: {
     $custom: {
       method: generateAddCardSelectorMod((forge) => forge.effect.cardSelectors),
     }
@@ -828,7 +822,7 @@ const addOrUpdateCardSelectorEffectMod = {
 const addOrUpdateCardSelectorOngoingEffectMod = {
   id: 'addSelector',
   modLevel: 1,
-  cardSelector: {
+  cardSelectors: {
     $custom: {
       method: generateAddCardSelectorMod((forge) => forge.ongoingEffect.cardSelectors),
     }
