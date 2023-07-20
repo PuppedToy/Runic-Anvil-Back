@@ -379,7 +379,7 @@ const forgeGenerators = [
       return {
         region: region.key,
         element: elementSample?.key,
-        unitTypes: unitTypeSample.key ? [unitTypeSample.key] : ['human'],
+        unitTypes: unitTypeSample?.key ? [unitTypeSample.key] : ['human'],
       };
     },
     upgradeUnitType (forge, card) {
@@ -878,19 +878,23 @@ function generateForge(card, maxIterations = 10000) {
   const cardComplexity = getCardComplexity(card);
   for(let i = 0; !forge && i < maxIterations; i++) {
     forgeGenerator = weightedSample(forgeGenerators);
-    const nextComplexity = cardComplexity + (forgeGenerator.complexity || 0);
-    let chanceToSkip = i * -0.02;
-    if (nextComplexity >= 2) {
-      chanceToSkip += 0.5;
-    }
-    else if (nextComplexity >= 3) {
-      chanceToSkip += 0.75;
-    }
-    else if (nextComplexity >= 4) {
-      chanceToSkip += 1;
-    }
-    if (Math.random() < chanceToSkip) {
-      continue;
+    const forgeComplexity = forgeGenerator.complexity || 0;
+    if (forgeComplexity) {
+      const nextComplexity = cardComplexity + (forgeComplexity);
+      let chanceToSkip = i * -0.02;
+      if (nextComplexity >= 2 && nextComplexity < 3) {
+        chanceToSkip += 0.5;
+      }
+      else if (nextComplexity >= 3 && nextComplexity < 4) {
+        chanceToSkip += 0.75;
+      }
+      else if (nextComplexity >= 4) {
+        chanceToSkip += 1;
+      }
+      console.log('cardComplexity', cardComplexity, 'nextComplexity', nextComplexity, 'chanceToSkip', chanceToSkip);
+      if (Math.random() < chanceToSkip) {
+        continue;
+      }
     }
     forge = forgeGenerator.generate(card);
   }

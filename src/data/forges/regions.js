@@ -508,7 +508,7 @@ const regions = {
     },
     akarith: {
         key: 'akarith',
-        key: 'Akarith',
+        name: 'Akarith',
         aliases: ['The Sky Citadel', 'The Sky Fortress', 'Angel Nest', 'Heaven Citadel', 'Home of Gods', 'Cloud Fortress'],
         localNames: ['Akarithian'],
         elements: [
