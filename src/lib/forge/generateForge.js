@@ -19,10 +19,14 @@ const forgeLevelFilter = (maxLevel, minLevel = 0) => ({ forgeLevel = 0 }) => max
 
 function generateRegionalObjectWithWeightsBasedOnProperty(region, collectionObject, property) {
   const collectionWithWeights = Object.values(collectionObject);
+  const anyRegionalProperty = region[property].find(item => item.key === 'any');
   collectionWithWeights.forEach(currentValue => {
     const regionalProperty = region[property].find(item => item === currentValue.key || item.key === currentValue.key);
     if (regionalProperty) {
       currentValue.weight = regionalProperty.chance || 1;
+    }
+    else if (anyRegionalProperty) {
+      currentValue.weight = anyRegionalProperty.chance || 1;
     }
     else {
       currentValue.weight = 0;
@@ -302,7 +306,7 @@ function mergeMod(forge, mod) {
 const forgeGenerators = [
   {
     type: 'addStat',
-    weight: 2,
+    weight: 3,
     complexity: 0,
     getNextStatsAmount (card) {
       const statsTotal = card.attack + card.hp;
@@ -362,7 +366,7 @@ const forgeGenerators = [
   },
   {
     type: 'addRegion',
-    weight: 2,
+    weight: 3,
     complexity: 0,
     generate (card) {
       if (card.region) {
@@ -938,11 +942,9 @@ function applyMod(mod, forgeIndex, forge, card) {
 
 function upgradeRandomForge(card) {
   const remainingForges = [...(card.forges || [])];
-  console.log(`Remaining forges: ${JSON.stringify(remainingForges, null, 2)}`);
   while (remainingForges.length) {
     const chosenForgeIndex = randomInt(0, remainingForges.length - 1);
     const chosenForge = remainingForges[chosenForgeIndex];
-    console.log(`Evaluating forge [${chosenForgeIndex}] ${JSON.stringify(chosenForge, null, 2)}`);
     remainingForges.splice(chosenForgeIndex, 1);
     const forgeGenerator = forgeGenerators.find((generator) => generator.type === chosenForge.type);
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${chosenForge.type}`);
