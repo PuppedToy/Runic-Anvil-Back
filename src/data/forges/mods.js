@@ -694,6 +694,7 @@ const toKingdomGoldMods = [
   toKingdomEnemyStealMod,
 ];
 
+// @TODO Fix this mod to.kingdom is undefined
 const reverseGoldMod = {
   id: 'reverse',
   forgeLevel: 4,
