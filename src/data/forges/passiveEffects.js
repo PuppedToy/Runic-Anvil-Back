@@ -1371,6 +1371,19 @@ const passiveEffects = {
     key: 'slow',
     costModificator: ({ cost, attack, hp }) => cost - attack * Math.floor(constants.CARD_PRICE_PER_ATTACK_POINT / 2) - hp * Math.floor(constants.CARD_PRICE_PER_HP_POINT / 2),
     forgeLevel: 2,
+    adjectives: [
+      'slow',
+      'sluggish',
+      'lethargic',
+      'lazy',
+      'slothful',
+      'crawling',
+      'plodding',
+      'lagging',
+      'dawdling',
+      'idle',
+      'relaxed',
+    ],
     elements: [
       {
         key: 'earth',
@@ -1397,6 +1410,23 @@ const passiveEffects = {
       {
         key: 'reptile',
         chance: 1,
+        adjectives: [
+          'aldabra',
+          'ploughshare',
+          'angonoka',
+          'big-headed',
+          'leaf-tailed',
+          'matamata',
+        ],
+        nouns: [
+          'turtle',
+          'tortoise',
+          'gharial',
+          'gecko',
+          'worm',
+          'devil',
+          'tuatara',
+        ],
       },
       {
         key: 'tree',
@@ -1425,6 +1455,32 @@ const passiveEffects = {
       {
         key: 'fish',
         chance: 1,
+        adjectives: [
+          'nurse',
+          'cownose',
+        ],
+        nouns: [
+          'seahorse',
+          'stargazer',
+          'stonefish',
+          'blobfish',
+          'gurnard',
+          'flounder',
+          'toadfish',
+          'batfish',
+          'sculpin',
+          'robin',
+          'catfish',
+          'burbot',
+          'ling',
+          'hagfish',
+          'oarfish',
+          'pufferfish',
+          'sunfish',
+          'ray',
+          'mudskipper',
+          'archerfish',
+        ],
       },
       {
         key: 'any',
@@ -1468,6 +1524,14 @@ const passiveEffects = {
     key: 'big',
     costModificator: ({ cost }) => cost * 1.25,
     forgeLevel: 2,
+    adjectives: [
+      'big',
+      'giant',
+      'mighty',
+      'stout',
+      'towering',
+      'hulking',
+    ],
     elements: [
       {
         key: 'water',
@@ -1630,6 +1694,13 @@ const passiveEffects = {
     requirement: 'big',
     costModificator: ({ cost }) => cost * 1.5,
     forgeLevel: 3,
+    adjectives: [
+      'huge',
+      'colossal',
+      'massive',
+      'enormous',
+      'gigantic',
+    ],
     unitTypes: [
       {
         key: 'tree',
@@ -1746,6 +1817,18 @@ const passiveEffects = {
     requirement: 'huge',
     costModificator: ({ cost }) => cost * 2,
     forgeLevel: 4,
+    adjectives: [
+      'titan',
+      'titanic',
+      'immense',
+      'gargantuan',
+      'monstrous',
+    ],
+    nouns: [
+      'titan',
+      'colossus',
+      'megalith',
+    ],
     unitTypes: [
       {
         key: 'tree',
