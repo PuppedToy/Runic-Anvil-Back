@@ -1,16 +1,91 @@
 /* eslint-disable max-len */
 const { constants } = require('../enums');
 
+const beastRangedProfessions = [
+  'spitter',
+  'sprayer',
+];
+
+const beastSiegeProfessions = [
+  'bombardier',
+  'artillerist',
+];
+
 const passiveEffects = {
   ranged: {
     key: 'ranged',
     costModificator: ({ cost, attack, hp }) => cost
       + (attack * constants.CARD_PRICE_PER_ATTACK_POINT)
       - (hp * constants.CARD_PRICE_PER_HP_POINT) / 2,
+    professions: ['hunter', 'ranger', 'archer', 'slinger', 'shooter', 'sniper', 'marksman'],
+    adjectives: [
+      {
+        key: 'precise',
+        minAttack: 3,
+      },
+      {
+        key: 'accurate',
+        minAttack: 3,
+      },
+      {
+        key: 'sharp-eyed',
+        minAttack: 3,
+      },
+      {
+        key: 'disciplined',
+        minAttack: 2,
+      },
+      {
+        key: 'patient',
+        minAttack: 2,
+      },
+      {
+        key: 'master',
+        minAttack: 6,
+      },
+      {
+        key: 'confident',
+        minAttack: 3,
+      },
+      {
+        key: 'focused',
+        minAttack: 2,
+      },
+      {
+        key: 'inaccurate',
+        maxAttack: 0,
+      },
+      {
+        key: 'unsteady',
+        maxAttack: 0,
+      },
+      {
+        key: 'untrained',
+        maxAttack: 1,
+      },
+      {
+        key: 'uncoordinated',
+        maxAttack: 0,
+      },
+      {
+        key: 'inconsistent',
+        maxAttack: 1,
+      },
+      {
+        key: 'clumsy',
+        maxAttack: 1,
+      },
+      {
+        key: 'hesitant',
+        maxAttack: 1,
+      },
+    ],
     unitTypes: [
       {
         key: 'insect',
         chance: 1,
+        nouns: ['hornworm'],
+        professions: [...beastRangedProfessions],
       },
       {
         key: 'elf',
@@ -23,6 +98,7 @@ const passiveEffects = {
       {
         key: 'wizard',
         chance: 1,
+        professions: ['caster'],
       },
       {
         key: 'any',
@@ -31,10 +107,12 @@ const passiveEffects = {
       {
         key: 'beast',
         chance: 0.1,
+        professions: [...beastRangedProfessions],
       },
       {
         key: 'bird',
         chance: 0.1,
+        professions: [...beastRangedProfessions],
       },
       {
         key: 'undead',
@@ -43,6 +121,7 @@ const passiveEffects = {
       {
         key: 'dinosaur',
         chance: 0.1,
+        professions: [...beastRangedProfessions],
       },
       {
         key: 'giant',
@@ -55,10 +134,12 @@ const passiveEffects = {
       {
         key: 'kraken',
         chance: 0.1,
+        professions: [...beastRangedProfessions],
       },
       {
         key: 'hydra',
         chance: 0.1,
+        professions: [...beastRangedProfessions],
       },
       {
         key: 'cyclops',
@@ -67,20 +148,90 @@ const passiveEffects = {
       {
         key: 'leviathan',
         chance: 0.1,
+        professions: [...beastRangedProfessions],
       },
     ],
+    elements: [
+      {
+        key: 'tech',
+        chance: 1,
+        professions: ['gunner', 'sniper', 'blaster'],
+      },
+      {
+        key: 'nature',
+        chance: 1,
+      },
+      {
+        key: 'fire',
+        chance: 1,
+        professions: ['firebreather', 'pyromancer', 'firethrower', 'arsonist'],
+      },
+      {
+        key: 'water',
+        chance: 1,
+      },
+    ]
   },
   siege: {
     key: 'siege',
     costModificator: ({ cost }) => Math.max(0, cost - 100),
+    adjectives: [
+      {
+        key: 'demolition',
+        minAttack: 2,
+      },
+      {
+        key: 'wall-breaker',
+        minAttack: 3,
+      },
+      {
+        key: 'wrecking',
+        minAttack: 2,
+      },
+      {
+        key: 'breaching',
+        minAttack: 2,
+      },
+      {
+        key: 'siege',
+        minAttack: 1,
+      },
+      {
+        key: 'barrier-crushing',
+        minAttack: 4,
+      },
+      {
+        key: 'shattering',
+        minAttack: 4,
+      },
+      {
+        key: 'unreliable',
+        maxAttack: 0,
+      },
+      {
+        key: 'unimpressive',
+        maxAttack: 0,
+      },
+      {
+        key: 'feeble',
+        maxAttack: 0,
+      },
+      {
+        key: 'flawed',
+        maxAttack: 0,
+      },
+    ],
+    professions: ['wallcrusher', 'raider', 'specialist', 'expert'],
     unitTypes: [
       {
         key: 'wizard',
         chance: 1,
+        professions: ['warcaster', 'siege-mage', ...beastRangedProfessions],
       },
       {
         key: 'giant',
         chance: 1,
+        professions: ['battering-ram'],
       },
       {
         key: 'any',
@@ -103,6 +254,23 @@ const passiveEffects = {
         chance: 0.1,
       },
     ],
+    elements: [
+      {
+        key: 'tech',
+        chance: 1,
+        professions: [...beastSiegeProfessions, 'cannoneer', 'war engineer', 'siege engineer', 'mortar', 'railgun'],
+      },
+      {
+        key: 'earth',
+        chance: 1,
+        professions: ['boulderthrower', 'boulderhurler', 'boulderlauncher', 'catapult', 'trebuchet'],
+      },
+      {
+        key: 'fire',
+        chance: 1,
+        professions: [...beastSiegeProfessions, 'cannoneer', 'fire-catapult', 'fire-trebuchet'],
+      },
+    ]
   },
   // building: {
   //   name: 'Building',
@@ -112,6 +280,41 @@ const passiveEffects = {
   taunting: {
     key: 'taunting',
     costModificator: ({ cost }) => cost + 40,
+    adjectives: [
+      'vanguard',
+      'battlefront',
+      'frontliner',
+      'forerunner',
+      'blitzkrieg',
+      'valiant',
+      'brave',
+      'daring',
+      'corageous',
+      'resolute',
+      'stalwart',
+      {
+        key: 'heroic',
+        minAttack: 5,
+        minHp: 5,
+      },
+    ],
+    professions: [
+      'vanguard',
+      'defender',
+      'protector',
+      'guardian',
+      'warden',
+      {
+        key: 'champion',
+        minAttack: 5,
+        minHp: 5,
+      },
+      {
+        key: 'warmaster',
+        minAttack: 5,
+        minHp: 5,
+      },
+    ],
     elements: [
       {
         key: 'earth',
@@ -177,6 +380,39 @@ const passiveEffects = {
     key: 'challenger',
     costModificator: ({ cost }) => cost + 100,
     forgeLevel: 2,
+    adjectives: [
+      'challenging',
+      'provocative',
+      'defiant',
+      'confrontational',
+      'dueling',
+    ],
+    professions: [
+      'duelist',
+      'challenger',
+      'enforcer',
+      'brawler',
+      'instigator',
+      {
+        key: 'champion',
+        minAttack: 5,
+        minHp: 5,
+      },
+      {
+        key: 'warmaster',
+        minAttack: 5,
+        minHp: 5,
+      },
+      {
+        key: 'duelmaster',
+        minAttack: 7,
+        minHp: 7,
+      },
+      {
+        key: 'executioner',
+        minAttack: 7,
+      },
+    ],
     elements: [
       {
         key: 'light',
@@ -185,6 +421,7 @@ const passiveEffects = {
       {
         key: 'psychic',
         chance: 1,
+        professions: ['manipulator', 'trickster', 'hypnotist'],
       },
       {
         key: 'earth',
@@ -207,6 +444,7 @@ const passiveEffects = {
       {
         key: 'angel',
         chance: 1,
+        professions: ['inquisitor', 'avenger', 'punisher', 'judge', 'arbiter'],
       },
       {
         key: 'minotaur',
@@ -276,6 +514,39 @@ const passiveEffects = {
   berserker: {
     key: 'berserker',
     costModificator: ({ cost }) => Math.max(0, cost - 60),
+    adjectives: [
+      'relentless',
+      'unyielding',
+      'indomitable',
+      'fearless',
+      'unbending',
+      'reckless',
+      'mad',
+      'frenzied',
+      'rampaging',
+      'raving',
+      'berserk',
+      'savage',
+      'ferocious',
+      'furious',
+      'wild',
+      'untamed',
+      'uncontrollable',
+      'unrestrained',
+      'unbridled',
+      'bloodthirsty',
+      'wrathful',
+    ],
+    professions: [
+      'berserker',
+      'lunatic',
+      'maniac',
+      'zealot',
+      'marauder',
+      'brute',
+      'reaver',
+      'raider',
+    ],
     elements: [
       {
         key: 'fire',
@@ -353,6 +624,68 @@ const passiveEffects = {
     key: 'fearful',
     costModificator: ({ cost }) => Math.max(0, cost - 40),
     forgeLevel: 2,
+    adjectives: [
+      'fearful',
+      'frightened',
+      'scared',
+      'afraid',
+      'terrified',
+      'petrified',
+      'horrified',
+      'panicked',
+      'alarmed',
+      'cautious',
+      'anxious',
+      'bashful',
+      'shy',
+      'timid',
+      'hesitant',
+      'nervous',
+      {
+        key: 'tactical',
+        minAttack: 5,
+        minHp: 5,
+      },
+      {
+        key: 'strategic',
+        minAttack: 5,
+        minHp: 5,
+      },
+      {
+        key: 'command',
+        minAttack: 5,
+        minHp: 5,
+      },
+    ],
+    professions: [
+      'coward',
+      'yellowbelly',
+      'wimp',
+      'chickenheart',
+      'milksop',
+      'poltroon',
+      'dastard',
+      'craven',
+      'runaway',
+      'quitter',
+      'sissy',
+      'deserter',
+      {
+        key: 'strategist',
+        minAttack: 5,
+        minHp: 5,
+      },
+      {
+        key: 'advisor',
+        minAttack: 5,
+        minHp: 5,
+      },
+      {
+        key: 'analyst',
+        minAttack: 5,
+        minHp: 5,
+      },
+    ],
     elements: [
       {
         key: 'water',
@@ -430,10 +763,35 @@ const passiveEffects = {
     key: 'fearsome',
     costModificator: ({ cost }) => cost + 60,
     forgeLevel: 2,
+    adjectives: [
+      'fearsome',
+      'terrifying',
+      'menacing',
+      'intimidating',
+      'threatening',
+      'frightening',
+      'dreadful',
+    ],
     elements: [
       {
         key: 'shadow',
         chance: 1,
+        adjectives: [
+          'haunting',
+          'ghastly',
+          'sinister',
+          'macabre',
+          'bloodcurdling',
+          'spine-chilling',
+          'eerie',
+          'nightmarish',
+        ],
+        professions: [
+          'terror',
+          'horror',
+          'harbinger',
+          'dreadbringer',
+        ],
       },
       {
         key: 'psychic',
@@ -552,6 +910,16 @@ const passiveEffects = {
     key: 'vampiric',
     costModificator: ({ cost, attack, hp }) => cost + attack * 20 + hp * 20,
     forgeLevel: 2,
+    adjectives: [
+      'siphoning',
+      'parasitic',
+      'vampiring',
+      'leeching',
+      'absoribing',
+      'rejuvenating',
+      'revitalizing',
+      'resilient',
+    ],
     elements: [
       {
         key: 'nature',
@@ -625,6 +993,92 @@ const passiveEffects = {
     key: 'deadly',
     costModificator: ({ cost, attack }) => cost + (attack > 0 ? 300 : 100) - (attack * constants.CARD_PRICE_PER_ATTACK_POINT) / 2,
     forgeLevel: 3,
+    adjectives: [
+      {
+        key: 'deadly',
+        minAttack: 1,
+      },
+      {
+        key: 'fatal',
+        minAttack: 1,
+      },
+      {
+        key: 'lethal',
+        minAttack: 1,
+      },
+      {
+        key: 'mortal',
+        minAttack: 1,
+      },
+      {
+        key: 'ruthless',
+        minAttack: 1,
+      },
+      {
+        key: 'homicidal',
+        minAttack: 1,
+      },
+      {
+        key: 'merciless',
+        minAttack: 1,
+      },
+      {
+        key: 'murderous',
+        minAttack: 1,
+      },
+      {
+        key: 'unskilled',
+        maxAttack: 1,
+      },
+      {
+        key: 'unlucky',
+        maxAttack: 1,
+      },
+      {
+        key: 'unreliable',
+        maxAttack: 1,
+      },
+      {
+        key: 'inefficient',
+        maxAttack: 1,
+      },
+      {
+        key: 'unproductive',
+        maxAttack: 1,
+      },
+      {
+        key: 'misguided',
+        maxAttack: 1,
+      },
+      {
+        key: 'non-lethal',
+        maxAttack: 1,
+      },
+      {
+        key: 'non-fatal',
+        maxAttack: 1,
+      },
+      {
+        key: 'clumsy',
+        maxAttack: 1,
+      },
+      {
+        key: 'untrained',
+        maxAttack: 1,
+      },
+    ],
+    professions: [
+      'assassin',
+      'executioner',
+      'slayer',
+      'butcher',
+      'exterminator',
+      'killer',
+      'annihilator',
+      'destroyer',
+      'operative',
+      'agent',
+    ],
     elements: [
       {
         key: 'toxic',
@@ -716,6 +1170,17 @@ const passiveEffects = {
     key: 'swift',
     costModificator: ({ cost, attack }) => cost + attack * constants.CARD_PRICE_PER_ATTACK_POINT,
     forgeLevel: 2,
+    adjectives: [
+      'swift',
+      'quick',
+      'rapid',
+      'speedy',
+      'fast',
+      'fleet',
+      'nimble',
+      'agile',
+      'brisk',
+    ],
     elements: [
       {
         key: 'air',
@@ -746,22 +1211,162 @@ const passiveEffects = {
       {
         key: 'bird',
         chance: 1,
+        adjectives: [
+          'peregrine',
+          'white-throated',
+          'eurasian',
+          'grey-headed',
+          'brazilian',
+          'northern',
+          'red-breasted',
+          'common',
+          'golden',
+          'red-tailed',
+          'spur-winged',
+          'eider',
+          'white-rumped',
+          'snowy',
+        ],
+        nouns: [
+          'falcon',
+          'hawk',
+          'needletail',
+          'gyrfalcon',
+          'albatross',
+          'bat',
+          'merganser',
+          'gannet',
+          'swift',
+          'eagle',
+          'goose',
+          'pigeon',
+          'merlin',
+          'owl',
+        ],
       },
       {
         key: 'insect',
         chance: 1,
+        adjectives: [
+          'tiger',
+          'green',
+          'praying',
+          'cheetah',
+          'eastern',
+          'hummingbird',
+          'stick',
+          'silver',
+        ],
+        nouns: [
+          'dragonfly',
+          'horsefly',
+          'cockroach',
+          'ant',
+          'lacewing',
+          'mantis',
+          'housefly',
+          'fly',
+          'silverfish',
+          'moth',
+          'strider',
+          'grasshopper',
+          'aphid',
+          'bee',
+          'hoverfly',
+          'hornet',
+        ],
       },
       {
         key: 'reptile',
         chance: 1,
+        adjectives: [
+          'green',
+          'collared',
+          'wall',
+          'spiny-tailed',
+          'gila',
+          'frilled',
+          'black',
+          'coachwhip',
+          'snapping',
+          'nile',
+          'blue-tailed',
+          'egg-eating',
+          'horned',
+          'western',
+          'rainbow',
+        ],
+        nouns: [
+          'lizard',
+          'iguana',
+          'racer',
+          'snake',
+          'monitor',
+          'skink',
+          'anole',
+          'adder',
+          'whiptail',
+          'chameleon',
+          {
+            key: 'basilisk',
+            minAttack: 5,
+            minHp: 5,
+          }
+        ],
       },
       {
         key: 'beast',
         chance: 1,
+        nouns: [
+          'cheetah',
+          'leopard',
+          'lion',
+          'tiger',
+          'panther',
+          'pronghorn',
+          'greyhound',
+          'kangaroo',
+          'antelope',
+          'gazelle',
+          'wildebeest',
+          'stork',
+          'springbok',
+          'hare',
+          'horse',
+        ],
       },
       {
         key: 'fish',
         chance: 1,
+        adjectives: [
+          'black',
+          'yellowfin',
+          'mako',
+          'blue',
+          'atlantic',
+          'skipjack',
+          'yellowtail',
+          'great',
+          'northern',
+          'king',
+          'sailfish',
+        ],
+        nouns: [
+          'sailfish',
+          'marlin',
+          'swordfish',
+          'tuna',
+          'wahoo',
+          'shark',
+          'barracuda',
+          'bonito',
+          'dorado',
+          'amberjack',
+          'bonefish',
+          'pike',
+          'mackerel',
+          'dolphin',
+        ],
       },
       {
         key: 'elf',
