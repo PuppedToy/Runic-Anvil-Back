@@ -65,7 +65,7 @@ function upgradeCard(card) {
 
 function generateUnit(level = 1) {
   if (level < 0) throw new Error('Level must be positive');
-  const statsAmount = randomInt(1, 3);
+  const statsAmount = randomInt(1, constants.STAT_THRESHOLDS[0]);
   const hp = randomInt(1, statsAmount);
   const attack = statsAmount - hp;
 

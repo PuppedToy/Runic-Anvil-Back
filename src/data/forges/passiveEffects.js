@@ -342,7 +342,7 @@ const passiveEffects = {
         chance: 1,
       },
       {
-        key: 'tree',
+        key: 'treant',
         chance: 1,
       },
       {
@@ -575,7 +575,7 @@ const passiveEffects = {
         chance: 0.1,
       },
       {
-        key: 'tree',
+        key: 'treant',
         chance: 0.1,
       },
       {
@@ -706,7 +706,7 @@ const passiveEffects = {
         chance: 0.1,
       },
       {
-        key: 'tree',
+        key: 'treant',
         chance: 0.1,
       },
       {
@@ -915,7 +915,7 @@ const passiveEffects = {
         chance: 0.5,
       },
       {
-        key: 'tree',
+        key: 'treant',
         chance: 0.5,
       },
       {
@@ -1070,7 +1070,7 @@ const passiveEffects = {
         chance: 1,
       },
       {
-        key: 'tree',
+        key: 'treant',
         chance: 0.5,
       },
       {
@@ -1342,7 +1342,7 @@ const passiveEffects = {
         chance: 0.5,
       },
       {
-        key: 'tree',
+        key: 'treant',
         chance: 0.1,
       },
       {
@@ -1429,7 +1429,7 @@ const passiveEffects = {
         ],
       },
       {
-        key: 'tree',
+        key: 'treant',
         chance: 1,
       },
       {
@@ -1556,7 +1556,7 @@ const passiveEffects = {
     ],
     unitTypes: [
       {
-        key: 'tree',
+        key: 'treant',
         chance: 1,
       },
       {
@@ -1703,7 +1703,7 @@ const passiveEffects = {
     ],
     unitTypes: [
       {
-        key: 'tree',
+        key: 'treant',
         chance: 1,
       },
       {
@@ -1831,7 +1831,7 @@ const passiveEffects = {
     ],
     unitTypes: [
       {
-        key: 'tree',
+        key: 'treant',
         chance: 1,
       },
       {

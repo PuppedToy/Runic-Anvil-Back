@@ -78,6 +78,21 @@ const effects = {
       fromKingdomEnemyModForgeLevel3,
       addOrUpdateCardSelectorEffectMod,
     ],
+    adjectives: [
+      'commanding',
+      'tactical',
+      'coordinated',
+      'strategic',
+    ],
+    professions: [
+      'strategist',
+      'tactician',
+      'organizer',
+      'supervisor',
+      'facilitator',
+      'operator',
+      'arranger',
+    ],
     elements: [
       {
         key: 'earth',
@@ -113,6 +128,24 @@ const effects = {
       ...drawValueMods,
       fromKingdomEnemyModForgeLevel3,
     ],
+    adjectives: [
+      'resourceful',
+      'contributive',
+      'supportive',
+      'helpful',
+      'generous',
+    ],
+    professions: [
+      'provider',
+      'supplier',
+      'contributor',
+      'benefactor',
+      'patron',
+      'sponsor',
+      'backer',
+      'donor',
+      'nurturer',
+    ],
     elements: [
       {
         key: 'water',
@@ -145,6 +178,13 @@ const effects = {
         max: 2,
       },
     },
+    adjectives: [
+      'destructive',
+    ],
+    professions: [
+      'warrior',
+      'soldier',
+    ],
     elements: [
       {
         key: 'fire',

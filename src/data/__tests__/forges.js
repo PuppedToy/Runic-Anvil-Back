@@ -13,7 +13,7 @@ const passiveEffects = require('../forges/passiveEffects');
 const targetTypes = require('../forges/targetTypes');
 const triggerableEffects = require('../forges/triggerableEffects');
 const triggers = require('../forges/triggers');
-const unitTypes = require('../forges/unitTypes');
+const { unitTypes } = require('../forges/unitTypes');
 const zones = require('../forges/zones');
 
 describe('Forges Data', () => {

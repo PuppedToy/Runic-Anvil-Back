@@ -131,7 +131,7 @@ function generateAction(card) {
 
 function cleanDefinitionObject(definitionObject, customUnwantedProperties = []) {
   if (!definitionObject) return null;
-  const unwantedProperties = ['weight', ...customUnwantedProperties];
+  const unwantedProperties = ['weight', 'adjectives', 'nouns', ...customUnwantedProperties];
   const result = { ...definitionObject };
   unwantedProperties.forEach((property) => {
     delete result[property];
@@ -310,16 +310,21 @@ const forgeGenerators = [
     complexity: 0,
     getNextStatsAmount (card) {
       const statsTotal = card.attack + card.hp;
-      if (statsTotal < 4) {
-        return randomInt(4, 7) - statsTotal;
+      for (let index = 0; index < constants.STAT_THRESHOLDS.length; index += 1) {
+        const threshold = constants.STAT_THRESHOLDS[index];
+        if (statsTotal < threshold + 1 && index < constants.STAT_THRESHOLDS.length - 1) {
+          return randomInt(
+            constants.STAT_THRESHOLDS[index] + 1,
+            constants.STAT_THRESHOLDS[index + 1]
+          ) - statsTotal;
+        }
       }
-      if (statsTotal < 8) {
-        return randomInt(8, 11) - statsTotal;
-      }
-      if (statsTotal < 12) {
-        return randomInt(12, 15) - statsTotal;
-      }
-      return exponential(16, 9999, 1, 0.7) - statsTotal;
+      return exponential(
+        constants.STAT_THRESHOLDS[index] + 1,
+        9999,
+        1,
+        0.7
+      ) - statsTotal;
     },
     generateStats(card) {
       const statAmount = this.getNextStatsAmount(card);
@@ -331,13 +336,13 @@ const forgeGenerators = [
       };
     },
     generate (card) {
-      if (card.attack + card.hp >= 3) {
+      if (card.attack + card.hp >= constants.STAT_THRESHOLDS[0]) {
         return null;
       }
       return this.generateStats(card);
     },
     upgrade (forge, card) {
-      if (card.attack + card.hp >= 16) {
+      if (card.attack + card.hp >= constants.STAT_THRESHOLDS[constants.STAT_THRESHOLDS.length - 1]) {
         return null;
       }
       const mod = this.generateStats(card);

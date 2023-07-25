@@ -3,12 +3,15 @@ const regions = {
         key: 'wheozThana',
         name: 'Wheoz Thana',
         aliases: ['The Big City', 'The Science Nexus', 'The City of Tomorrow'],
-        localNames: ['Thanarian'],
+        localNames: ['thanarian', 'cityborn'],
         unitTypes: [
             'human',
-            'wizard',
-            'robot',
-            'god',
+            'merfolk',
+            'mech',
+            {
+                key: 'ant',
+                maxRarity: 2,
+            },
             {
                 key: 'dwarf',
                 chance: 0.7,
@@ -30,7 +33,7 @@ const regions = {
                 chance: 0.2,
             },
             {
-                key: 'golem',
+                key: 'spirit',
                 chance: 0.2,
             },
             {
@@ -39,7 +42,7 @@ const regions = {
                 maxRarity: 4,
             },
             {
-                key: 'voidling',
+                key: 'voidspawn',
                 chance: 0.1,
             },
             {
@@ -59,11 +62,7 @@ const regions = {
                 chance: 0.1,
             },
             {
-                key: 'tree',
-                chance: 0.1,
-            },
-            {
-                key: 'dinosaur',
+                key: 'plant',
                 chance: 0.1,
             },
             {
@@ -71,51 +70,7 @@ const regions = {
                 chance: 0.1,
             },
             {
-                key: 'dragonling',
-                chance: 0.1,
-            },
-            {
-                key: 'chimera',
-                chance: 0.1,
-            },
-            {
-                key: 'phoenix',
-                chance: 0.1,
-            },
-            {
-                key: 'kraken',
-                chance: 0.1,
-            },
-            {
-                key: 'hydra',
-                chance: 0.1,
-            },
-            {
-                key: 'unicorn',
-                chance: 0.1,
-            },
-            {
-                key: 'cyclops',
-                chance: 0.1,
-            },
-            {
-                key: 'behemoth',
-                chance: 0.1,
-            },
-            {
-                key: 'leviathan',
-                chance: 0.1,
-            },
-            {
-                key: 'dragon',
-                chance: 0.1,
-            },
-            {
-                key: 'angel',
-                chance: 0.1,
-            },
-            {
-                key: 'demon',
+                key: 'legendary',
                 chance: 0.1,
             },
         ],
@@ -163,12 +118,36 @@ const regions = {
             },
         ],
         locations: ['Thanarian University'],
-        professions: ['scientist', 'professor', 'engineer'],
+    },
+    alphatownRuins: {
+        key: 'alphatownRuins',
+        name: 'Alphatown Ruins',
+        aliases: ['The Punished City', 'The Void Ruins', 'The Dead City', 'Ruins of Void', 'Voidspring Ruins'],
+        localNames: ['alpharian', 'voidtouched', 'ruined', 'punished'],
+        elements: [
+            'shadow',
+            'nature',
+        ],
+        unitTypes: [
+            'undead',
+            'ghost',
+            'voidspawn',
+            'god',
+            'insect',
+            {
+                key: 'humanoid',
+                chance: 0.1,
+            },
+            {
+                key: 'ooze',
+                chance: 0.1,
+            },
+        ],
     },
     oseshire: {
         key: 'oseshire',
         name: 'Oseshire',
-        localNames: ['Sheiran'],
+        localNames: ['sheiran'],
         unitTypes: [
             'human',
             {
@@ -196,13 +175,12 @@ const regions = {
             },
         ],
         elements: ['none'],
-        professions: ['farmer', 'villager'],
     },
     zraross: {
         key: 'zraross',
         name: 'Zraross',
         aliases: ['Realm of the Lost', 'World of Worlds', 'Unstable Multiverse', 'Chaotic Realm', 'The Lost Realm', 'The Forgotten Realm'],
-        localNames: ['Zrarossian', 'One of the Lost'],
+        localNames: ['zrarossian', 'lost', 'forgotten', 'dimensional', 'chaosborn'],
         unitTypes: ['any'],
         elements: ['any'],
     },
@@ -211,7 +189,7 @@ const regions = {
         name: 'Yose Forest',
         description: 'A forest filled with plain living creatures. Very few of them are intelligent.',
         aliases: ['Elven Forest', 'The Wild Forest'],
-        localNames: ['Yosian'],
+        localNames: ['yosian', 'forestal'],
         elements: [
             'nature',
             'earth',
@@ -242,13 +220,23 @@ const regions = {
                 maxRarity: 5,
             },
             {
-                key: 'centaur',
+                key: 'plant',
                 maxRarity: 5,
-                chance: 0.2,
             },
             {
-                key: 'tree',
+                key: 'nymph',
+                chance: 0.5,
                 maxRarity: 5,
+            },
+            {
+                key: 'fairy',
+                maxRarity: 5,
+                chance: 0.4,
+            },
+            {
+                key: 'unicorn',
+                maxRarity: 5,
+                chance: 0.1,
             },
             'bird',
             'insect',
@@ -259,17 +247,10 @@ const regions = {
                 chance: 0.4,
             },
             {
-                key: 'fairy',
-                chance: 0.4,
-            },
-            {
-                key: 'unicorn',
-                chance: 0.1,
-            },
-            {
                 key: 'ooze',
+                maxRarity: 4,
                 chance: 0.1,
-            }
+            },
         ],
         maxRarity: 2,
     },
@@ -301,7 +282,7 @@ const regions = {
                 maxRarity: 5,
             },
             {
-                key: 'tree',
+                key: 'plant',
                 chance: 0.2,
                 maxRarity: 5,
             },
@@ -314,15 +295,11 @@ const regions = {
                 chance: 0.2,
             },
             {
-                key: 'fairy',
-                chance: 0.2,
-            },
-            {
-                key: 'unicorn',
+                key: 'ooze',
                 chance: 0.1,
             },
             {
-                key: 'ooze',
+                key: 'elemental',
                 chance: 0.1,
             },
         ],
@@ -356,22 +333,17 @@ const regions = {
                 chance: 0.5,
             },
             {
-                key: 'minotaur',
-                maxRarity: 5,
-                chance: 0.2,
-            },
-            {
                 key: 'golem',
                 maxRarity: 5,
                 chance: 0.5,
             },
             {
-                key: 'tree',
+                key: 'plant',
                 chance: 0.2,
                 maxRarity: 5,
             },
             {
-                key: 'robot',
+                key: 'mech',
                 chance: 0.2,
                 maxRarity: 5,
             },
@@ -388,8 +360,12 @@ const regions = {
                 chance: 0.2,
             },
             {
-                key: 'fairy',
-                chance: 0.2,
+                key: 'ooze',
+                chance: 0.1,
+            },
+            {
+                key: 'elemental',
+                chance: 0.1,
             },
         ],
         maxRarity: 2,
@@ -452,19 +428,17 @@ const regions = {
         ],
         unitTypes: [
             'fish',
-            'shade',
-            'kraken',
-            'leviathan',
             'dragon',
+            'imp',
             'demon',
-            'god',
-            'walker',
+            'supreme',
+            'voidspawn',
             {
                 key: 'golem',
                 chance: 0.2,
             },
             {
-                key: 'spirit',
+                key: 'ghost',
                 chance: 0.2,
             },
             {
@@ -531,7 +505,6 @@ const regions = {
             'angel',
             'dragon',
             'god',
-            'walker',
             {
                 key: 'dragonling',
                 chance: 0.4,
@@ -545,19 +518,15 @@ const regions = {
                 chance: 0.2,
             },
             {
-                key: 'fairy',
-                chance: 0.2,
-            },
-            {
                 key: 'insect',
                 chance: 0.2,
             },
             {
-                key: 'unicorn',
-                chance: 0.1,
+                key: 'fairy',
+                chance: 0.2,
             },
             {
-                key: 'harpy',
+                key: 'unicorn',
                 chance: 0.1,
             },
             {
@@ -587,14 +556,15 @@ const regions = {
         unitTypes: [
             'goblin',
             'giant',
-            'harpy',
-            'cyclops',
-            'voidling',
+            'voidspawn',
             'dragon',
             'demon',
-            'walker',
             {
                 key: 'elemental',
+                chance: 0.4,
+            },
+            {
+                key: 'ghost',
                 chance: 0.4,
             },
             {
@@ -603,6 +573,10 @@ const regions = {
             },
             {
                 key: 'dwarf',
+                chance: 0.2,
+            },
+            {
+                key: 'djinn',
                 chance: 0.2,
             },
             {
@@ -631,15 +605,14 @@ const regions = {
         ],
         unitTypes: [
             'undead',
-            'spirit',
+            'imp',
+            'ghost',
             'djinn',
-            'shade',
-            'voidling',
+            'voidspawn',
             'chimera',
             'dragon',
             'demon',
-            'god',
-            'walker',
+            'supreme',
             {
                 key: 'orc',
                 chance: 0.5,
@@ -647,10 +620,6 @@ const regions = {
             {
                 key: 'goblin',
                 chance: 0.5,
-            },
-            {
-                key: 'harpy',
-                chance: 0.3,
             },
             {
                 key: 'human',
@@ -662,10 +631,6 @@ const regions = {
             },
             {
                 key: 'dwarf',
-                chance: 0.3,
-            },
-            {
-                key: 'wizard',
                 chance: 0.3,
             },
             {
@@ -705,23 +670,19 @@ const regions = {
             'beast',
             'insect',
             'bird',
-            'fairy',
+            'spirit',
             'unicorn',
             'dragon',
-            {
-                key: 'elemental',
-                chance: 0.4,
-            },
             {
                 key: 'dragonling',
                 chance: 0.2,
             },
             {
-                key: 'golem',
+                key: 'undead',
                 chance: 0.2,
             },
             {
-                key: 'djinn',
+                key: 'golem',
                 chance: 0.2,
             },
             {
@@ -753,31 +714,16 @@ const regions = {
             'bird',
             'insect',
             'beast',
-            'tree',
+            'plant',
+            'giant',
+            'undead',
             'reptile',
-            'elemental',
-            'dinosaur',
-            'centaur',
-            'minotaur',
-            'cyclops',
-            'unicorn',
-            'hydra',
-            'behemoth',
+            'spirit',
             'dragon',
-            'walker',
-            {
-                key: 'dragonling',
-                chance: 0.4,
-            },
-            {
-                key: 'ape',
-                chance: 0.2,
-            },
-            {
-                key: 'ooze',
-                chance: 0.1,
-                maxRarity: 4,
-            },
+            'voidspawn',
+            'ape',
+            'ooze',
+            'primordial',
         ],
     },
     xahphiaLake: {
@@ -800,7 +746,6 @@ const regions = {
         unitTypes: [
             'djinn',
             'spirit',
-            'wizard',
             'unicorn',
             'dragon',
             {
@@ -821,6 +766,10 @@ const regions = {
             },
             {
                 key: 'golem',
+                chance: 0.2,
+            },
+            {
+                key: 'undead',
                 chance: 0.2,
             },
             {
@@ -861,18 +810,15 @@ const regions = {
             'undead',
             'ooze',
             'golem',
-            'tree',
+            'plant',
             'djinn',
             'spirit',
             'chimera',
-            'voidling',
-            'dragon',
-            'angel',
-            'demon',
-            'god',
-            'walker',
+            'voidspawn',
+            'legendary',
+            'supreme',
             {
-                key: 'robot',
+                key: 'mech',
                 chance: 0.7,
             },
             {
@@ -899,24 +845,8 @@ const regions = {
                 maxRarity: 3,
             },
             {
-                key: 'shade',
-                chance: 0.4,
-            },
-            {
                 key: 'elemental',
                 chance: 0.4,
-            },
-            {
-                key: 'harpy',
-                chance: 0.2,
-            },
-            {
-                key: 'hydra',
-                chance: 0.2,
-            },
-            {
-                key: 'behemoth',
-                chance: 0.2,
             },
             {
                 key: 'elf',
@@ -947,23 +877,11 @@ const regions = {
                 chance: 0.1,
             },
             {
-                key: 'minotaur',
-                chance: 0.1,
-            },
-            {
-                key: 'centaur',
-                chance: 0.1,
-            },
-            {
-                key: 'fairy',
+                key: 'spirit',
                 chance: 0.1,
             },
             {
                 key: 'cyclops',
-                chance: 0.1,
-            },
-            {
-                key: 'dinosaur',
                 chance: 0.1,
             },
             {
@@ -989,10 +907,8 @@ const regions = {
             'dwarf',
             'orc',
             'golem',
-            'wizard',
             'dragon',
-            'behemoth',
-            'walker',
+            'voidspawn',
             {
                 key: 'insect',
                 chance: 0.2,
@@ -1012,10 +928,6 @@ const regions = {
                 key: 'bird',
                 chance: 0.2,
                 maxRarity: 3,
-            },
-            {
-                key: 'minotaur',
-                chance: 0.2,
             },
             {
                 key: 'elemental',
@@ -1052,11 +964,9 @@ const regions = {
         unitTypes: [
             'fish',
             'merfolk',
-            'kraken',
             'phoenix',
-            'leviathan',
             'dragon',
-            'walker',
+            'voidspawn',
             {
                 key: 'elemental',
                 chance: 0.4,
@@ -1075,7 +985,7 @@ const regions = {
                 chance: 0.2,
             },
             {
-                key: 'robot',
+                key: 'mech',
                 chance: 0.2,
             },
             {
@@ -1107,16 +1017,24 @@ const regions = {
             },
         ],
         unitTypes: [
-            'insect',
-            'tree',
+            'bee',
+            'flower',
             'elf',
             'giant',
             'dragon',
-            'god',
+            'supreme',
             'walker',
             {
                 key: 'bird',
                 chance: 0.5,
+            },
+            {
+                key: 'plant',
+                chance: 0.5,
+            },
+            {
+                key: 'insect',
+                chance: 0.2,
             },
             {
                 key: 'beast',
@@ -1131,10 +1049,6 @@ const regions = {
                 chance: 0.2,
             },
             {
-                key: 'elemental',
-                chance: 0.2,
-            },
-            {
                 key: 'dragonling',
                 chance: 0.2,
             },
@@ -1144,6 +1058,10 @@ const regions = {
             },
             {
                 key: 'unicorn',
+                chance: 0.1,
+            },
+            {
+                key: 'elemental',
                 chance: 0.1,
             },
             {
@@ -1174,17 +1092,12 @@ const regions = {
             },
         ],
         unitTypes: [
-            'beast',
+            'wolf',
             'fish',
             'elf',
             'dwarf',
-            'harpy',
-            'shade',
-            'hydra',
-            'dragon',
-            'angel',
-            'demon',
-            'god',
+            'legendary',
+            'supreme',
             'walker',
             {
                 key: 'elemental',
@@ -1196,6 +1109,10 @@ const regions = {
             },
             {
                 key: 'djinn',
+                chance: 0.2,
+            },
+            {
+                key: 'beast',
                 chance: 0.2,
             },
             {
@@ -1220,8 +1137,7 @@ const regions = {
             'elf',
             'dwarf',
             'merfolk',
-            'robot',
-            'wizard',
+            'mech',
             'goblin',
             'orc',
             'god',
@@ -1242,7 +1158,7 @@ const regions = {
                 chance: 0.5,
             },
             {
-                key: 'tree',
+                key: 'plant',
                 chance: 0.2,
             },
             {

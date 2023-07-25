@@ -14,7 +14,7 @@ const passiveEffects = require('./passiveEffects');
 const targetTypes = require('./targetTypes');
 const triggerableEffects = require('./triggerableEffects');
 const triggers = require('./triggers');
-const unitTypes = require('./unitTypes');
+const { unitTypes } = require('./unitTypes');
 const zones = require('./zones');
 const regions = require('./regions');
 

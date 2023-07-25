@@ -4,7 +4,7 @@ const { validate, Joi } = require('../../utils/joiExtended');
 const controller = require('./cards.controller');
 
 const cardTypes = require('../../data/forges/cardTypes');
-const unitTypes = require('../../data/forges/unitTypes');
+const { unitTypes } = require('../../data/forges/unitTypes');
 const { forgeGenerators } = require('../../lib/forge/generateForge');
 
 const router = express.Router();

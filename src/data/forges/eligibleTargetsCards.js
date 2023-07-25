@@ -1,4 +1,4 @@
-const unitTypes = require('./unitTypes');
+const { unitTypes } = require('./unitTypes');
 const passiveEffects = require('./passiveEffects');
 const triggerableEffects = require('./triggerableEffects');
 const zones = require('./zones');

@@ -7,6 +7,7 @@ module.exports = {
     CARD_PRICE_PER_HP_POINT: 40,
     COMMANDER_DEFAULT_VALUE: 100,
     RECOMMENDED_COMMANDER_LOWER_THRESHOLD: 80,
+    STAT_THRESHOLDS: [5, 10, 15],
   },
   kingdoms: {
     OWNER: 'owner',

@@ -1195,8 +1195,8 @@ const nounsOld = {
         profession: true,
       },
     ],
-    tree: [], /* {
-      name: 'Tree',
+    treant: [], /* {
+      name: 'treant',
       forgeLevel: 2,
     }, */
     fungus: [], /* {

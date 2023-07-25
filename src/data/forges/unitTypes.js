@@ -1,175 +1,261 @@
+const unitTypeGroups = {
+  humanoid: {
+    key: 'humanoid',
+    types: [
+      'human',
+      'dwarf',
+      'elf',
+      'orc',
+      'merfolk',
+      'goblin',
+    ],
+  },
+  tree: {
+    key: 'tree',
+    types: [
+      'treant',
+      'ent',
+    ],
+  },
+  legendary: {
+    key: 'legendary',
+    types: [
+      'dragon',
+      'demon',
+      'angel',
+    ],
+  },
+  supreme: {
+    key: 'supreme',
+    types: [
+      'god',
+      'primordial',
+    ],
+  },
+};
+
+// All forge 0 units are considered basic regoinless cards
 const unitTypes = {
   human: {
     key: 'human',
   },
+  dwarf: {
+    key: 'dwarf',
+  },
+  elf: {
+    key: 'elf',
+  },
+  orc: {
+    key: 'orc',
+  },  
+  merfolk: {
+    key: 'merfolk',
+  },
+  goblin: {
+    key: 'goblin',
+  },
   bird: {
     key: 'bird',
-    forgeLevel: 1,
+    evolutions: [
+      {
+        key: 'griffin',
+        forgeLevel: 2,
+      },
+      {
+        key: 'phoenix',
+        forgeLevel: 3,
+      }
+    ],
   },
   insect: {
     key: 'insect',
-    forgeLevel: 1,
+    evolutions: [
+      'ant',
+      'bee',
+      {
+        key: 'spider',
+        forgeLevel: 2,
+      },
+      {
+        key: 'scorpion',
+        forgeLevel: 2,
+      },
+    ],
   },
   ape: {
     key: 'ape',
-    forgeLevel: 1,
+    evolutions: [
+      'gorilla',
+      {
+        key: 'yeti',
+        forgeLevel: 2,
+      },
+    ],
   },
   beast: {
     key: 'beast',
-    forgeLevel: 1,
+    evolutions: [
+      'wolf',
+      {
+        key: 'dinosaur',
+        forgeLevel: 2,
+      },
+      {
+        key: 'chimera',
+        forgeLevel: 2,
+      },
+      {
+        key: 'hydra',
+        forgeLevel: 3,
+      },
+      {
+        key: 'behemoth',
+        forgeLevel: 3,
+      },
+      {
+        key: 'unicorn',
+        forgeLevel: 3,
+      },
+    ],
   },
   reptile: {
     key: 'reptile',
-    forgeLevel: 1,
+    evolutions: [
+      'turtle',
+      {
+        key: 'dragonling',
+        forgeLevel: 2,
+      },
+      {
+        key: 'basilisk',
+        forgeLevel: 3,
+      },
+    ],
   },
   fish: {
     key: 'fish',
     forgeLevel: 1,
+    evolutions: [
+      'shark',
+      {
+        key: 'whale',
+        forgeLevel: 2,
+      },
+      {
+        key: 'kraken',
+        forgeLevel: 3,
+      },
+      {
+        key: 'leviathan',
+        forgeLevel: 3,
+      }
+    ],
   },
-  dwarf: {
-    key: 'dwarf',
-    forgeLevel: 1,
-  },
-  elf: {
-    key: 'elf',
-    forgeLevel: 1,
-  },
-  orc: {
-    key: 'orc',
-    forgeLevel: 1,
-  },
-  merfolk: {
-    key: 'merfolk',
-    forgeLevel: 1,
-  },
-  goblin: {
-    key: 'goblin',
-    forgeLevel: 1,
-  },
-  tree: {
-    key: 'tree',
-    forgeLevel: 2,
+  plant: {
+    key: 'plant',
+    evolutions: [
+      'mushroom',
+      'flower',
+      {
+        key: 'treant',
+        forgeLevel: 2,
+      },
+      {
+        key: 'ent',
+        forgeLevel: 3,
+      },
+    ],
   },
   undead: {
     key: 'undead',
-    forgeLevel: 2,
+    forgeLevel: 1,
+    // evolutions: [
+    //   'skeleton',
+    //   'zombie',
+    //   'ghoul',
+    // ],
   },
-  elemental: {
-    key: 'elemental',
-    forgeLevel: 2,
+  mech: {
+    key: 'mech',
+    forgeLevel: 1,
+    evolutions: [
+      'golem',
+      'robot',
+      {
+        key: 'droid',
+        forgeLevel: 3,
+      },
+    ],
   },
-  golem: {
-    key: 'golem',
-    forgeLevel: 2,
-  },
-  spirit: {
-    key: 'spirit',
-    forgeLevel: 2,
-  },
-  dinosaur: {
-    key: 'dinosaur',
-    forgeLevel: 2,
-  },
-  giant: {
-    key: 'giant',
-    forgeLevel: 2,
+  imp: {
+    key: 'imp',
+    forgeLevel: 1,
   },
   fairy: {
     key: 'fairy',
-    forgeLevel: 2,
+    forgeLevel: 1,
   },
-  harpy: {
-    key: 'harpy',
-    forgeLevel: 2,
+  elemental: {
+    key: 'elemental',
+    forgeLevel: 1,
   },
-  centaur: {
-    key: 'centaur',
-    forgeLevel: 2,
+  spirit: {
+    key: 'spirit',
+    forgeLevel: 1,
+    evolutions: [
+      'ghost',
+      'nymph',
+      {
+        key: 'djinn',
+        forgeLevel: 3,
+      },
+    ],
   },
-  minotaur: {
-    key: 'minotaur',
-    forgeLevel: 2,
+  giant: {
+    key: 'giant',
+    forgeLevel: 1,
+    evolutions: [
+      // 'troll',
+      // 'ogre',
+      'cyclops',
+    ],
   },
   ooze: {
     key: 'ooze',
-    forgeLevel: 2,
-  },
-  wizard: {
-    key: 'wizard',
-    forgeLevel: 2,
-  },
-  dragonling: {
-    key: 'dragonling',
-    forgeLevel: 2,
-  },
-  robot: {
-    key: 'robot',
-    forgeLevel: 3,
-  },
-  djinn: {
-    key: 'djinn',
-    forgeLevel: 3,
-  },
-  shade: {
-    key: 'shade',
-    forgeLevel: 3,
-  },
-  chimera: {
-    key: 'chimera',
-    forgeLevel: 3,
-  },
-  kraken: {
-    key: 'kraken',
-    forgeLevel: 3,
-  },
-  hydra: {
-    key: 'hydra',
-    forgeLevel: 3,
-  },
-  phoenix: {
-    key: 'phoenix',
-    forgeLevel: 3,
-  },
-  unicorn: {
-    key: 'unicorn',
-    forgeLevel: 3,
-  },
-  cyclops: {
-    key: 'cyclops',
-    forgeLevel: 3,
-  },
-  behemoth: {
-    key: 'behemoth',
-    forgeLevel: 3,
-  },
-  leviathan: {
-    key: 'leviathan',
-    forgeLevel: 3,
-  },
-  voidling: {
-    key: 'voidling',
-    forgeLevel: 3,
+    forgeLevel: 1,
   },
   dragon: {
     key: 'dragon',
-    forgeLevel: 4,
-  },
-  angel: {
-    key: 'angel',
     forgeLevel: 4,
   },
   demon: {
     key: 'demon',
     forgeLevel: 4,
   },
+  angel: {
+    key: 'angel',
+    forgeLevel: 4,
+  },
   god: {
     key: 'god',
     forgeLevel: 5,
   },
-  walker: {
-    key: 'walker',
+  primordial: {
+    key: 'primordial',
     forgeLevel: 5,
+  },
+  voidspawn: {
+    key: 'voidspawn',
+    // 7 because it is forbidden
+    forgeLevel: 7,
+    evolutions: [
+      'voidlord',
+      'walker',
+    ],
   },
 };
 
-module.exports = unitTypes;
+module.exports = {
+  unitTypes,
+  unitTypeGroups,
+};
