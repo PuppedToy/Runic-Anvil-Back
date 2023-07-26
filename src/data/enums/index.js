@@ -8,6 +8,7 @@ module.exports = {
     COMMANDER_DEFAULT_VALUE: 100,
     RECOMMENDED_COMMANDER_LOWER_THRESHOLD: 80,
     STAT_THRESHOLDS: [5, 10, 15],
+    FLAVOR_UPGRADE_CHANCE: 0.5,
   },
   kingdoms: {
     OWNER: 'owner',

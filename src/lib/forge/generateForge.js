@@ -882,20 +882,21 @@ function getCardComplexity(card) {
 }
 
 function upgradeFlavor(card) {
-  const addRegionForgeGenerator = card.forges.find((forge) => forge.type === 'addRegion');
+  const addRegionForgeGenerator = forgeGenerators.find((forge) => forge.type === 'addRegion');
   let newCard;
   if (!card.region) {
     const regionForge = addRegionForgeGenerator.generate(card);
     if (!regionForge) {
       console.error(`Card ${card.name} doesn't have a region and can't generate one`);
-      return null;
+      return newCard;
     }
+    regionForge.type = 'addRegion';
     newCard = applyForge(regionForge, card);
   } else {
     const regionForge = card.forges.find((forge) => forge.type === 'addRegion');
-    const upgradeResult = regionForgeGenerator.upgrade(regionForge, card);
+    const upgradeResult = addRegionForgeGenerator.upgrade(regionForge, card);
     if (!upgradeResult) {
-      return null;
+      return newCard;
     }
     const { mod, forge: upgradedForge } = upgradeResult;
     const forgeIndex = card.forges.findIndex((forge) => forge === regionForge);
@@ -969,7 +970,7 @@ function applyMod(mod, forgeIndex, forge, card) {
 }
 
 function upgradeRandomForge(card) {
-  const remainingForges = [...(card.forges || [])];
+  const remainingForges = [...(card.forges || [])].filter((forge) => forge.type !== 'addRegion');
   while (remainingForges.length) {
     const chosenForgeIndex = randomInt(0, remainingForges.length - 1);
     const chosenForge = remainingForges[chosenForgeIndex];
@@ -1017,6 +1018,7 @@ module.exports = {
   getCost,
   canBeCommander,
   applyCardCalculatedFields,
+  upgradeFlavor,
 
   forgeGenerators,
 };
