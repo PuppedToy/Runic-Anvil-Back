@@ -371,7 +371,7 @@ const forgeGenerators = [
   },
   {
     type: 'addRegion',
-    weight: 3,
+    weight: 0,
     complexity: 0,
     generate (card) {
       if (card.region) {
@@ -879,6 +879,29 @@ function canBeCommander(card) {
 
 function getCardComplexity(card) {
   return (card.forges || []).reduce((acc, forge) => acc + (forgeGenerators.find((generator) => generator.type === forge.type)?.complexity || 0), 0);
+}
+
+function upgradeFlavor(card) {
+  const addRegionForgeGenerator = card.forges.find((forge) => forge.type === 'addRegion');
+  let newCard;
+  if (!card.region) {
+    const regionForge = addRegionForgeGenerator.generate(card);
+    if (!regionForge) {
+      console.error(`Card ${card.name} doesn't have a region and can't generate one`);
+      return null;
+    }
+    newCard = applyForge(regionForge, card);
+  } else {
+    const regionForge = card.forges.find((forge) => forge.type === 'addRegion');
+    const upgradeResult = regionForgeGenerator.upgrade(regionForge, card);
+    if (!upgradeResult) {
+      return null;
+    }
+    const { mod, forge: upgradedForge } = upgradeResult;
+    const forgeIndex = card.forges.findIndex((forge) => forge === regionForge);
+    newCard = applyMod(mod, forgeIndex, upgradedForge, card);
+  }
+  return newCard;
 }
 
 function generateForge(card, maxIterations = 10000) {
