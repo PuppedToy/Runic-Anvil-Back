@@ -21,7 +21,16 @@ function generateRegionalObjectWithWeightsBasedOnProperty(region, collectionObje
   const collectionWithWeights = Object.values(collectionObject);
   const anyRegionalProperty = region[property].find(item => item.key === 'any');
   collectionWithWeights.forEach(currentValue => {
-    const regionalProperty = region[property].find(item => item === currentValue.key || item.key === currentValue.key);
+    let regionalProperty = region[property].find(item =>
+      item === currentValue.key
+      || item.key === currentValue.key
+    );
+    if (!regionalProperty && currentValue.parent) {
+      regionalProperty = region[property].find(item =>
+        item === currentValue.parent
+        || item.key === currentValue.parent
+      );
+    }
     if (regionalProperty) {
       currentValue.weight = regionalProperty.chance || 1;
     }
@@ -36,8 +45,8 @@ function generateRegionalObjectWithWeightsBasedOnProperty(region, collectionObje
   return collectionWithWeights.filter(currentValue => currentValue.weight);
 }
 
-function generateUnitTypesWithWeights(region) {
-  return generateRegionalObjectWithWeightsBasedOnProperty(region, unitTypes, 'unitTypes');
+function generateUnitTypesWithWeights(region, optionalCollection) {
+  return generateRegionalObjectWithWeightsBasedOnProperty(region, optionalCollection || unitTypes, 'unitTypes');
 }
 
 function generateElementsWithWeights(region) {
@@ -320,7 +329,7 @@ const forgeGenerators = [
         }
       }
       return exponential(
-        constants.STAT_THRESHOLDS[index] + 1,
+        constants.STAT_THRESHOLDS[constants.STAT_THRESHOLDS.length - 1] + 1,
         9999,
         1,
         0.7
@@ -391,7 +400,7 @@ const forgeGenerators = [
         unitTypes: unitTypeSample?.key ? [unitTypeSample.key] : ['human'],
       };
     },
-    upgradeUnitType (forge, card) {
+    addExtraUnitType (forge, card) {
       const region = regions[card.region];
       const unitTypesWithWeights = generateUnitTypesWithWeights(region);
       if (unitTypesWithWeights.length === 0) {
@@ -412,6 +421,49 @@ const forgeGenerators = [
       const repeatedUntiTypesFilter = (currentUnitType) => !card.unitTypes.includes(currentUnitType.key);
       console.log(`Finding secondary type of levels ${minLevel}-${maxLevel}`);
       const sample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(maxLevel, minLevel), repeatedUntiTypesFilter]);
+      if (sample === null) {
+        return null;
+      }
+      const newForge = {
+        ...forge,
+        unitTypes: [...card.unitTypes, sample.key],
+      };
+      return {
+        forge: newForge,
+        mod: cleanDefinitionObject(sample),
+      };
+    },
+    upgradeUnitType (forge, card) {
+      const region = regions[card.region];
+      const evolutions = [];
+      card.unitTypes.forEach((currentUnitType) => {
+        console.log(`Checking unit type "${currentUnitType}"`);
+        const foundUnitType = unitTypes[currentUnitType];
+        console.log(`Found unit type: ${JSON.stringify(foundUnitType, null, 2)}`);
+        if (foundUnitType.evolutions) {
+          foundUnitType.evolutions.forEach((currentEvolution) => {
+            if (typeof currentEvolution === 'string') {
+              evolutions.push({
+                key: currentEvolution,
+                parent: currentUnitType,
+              });
+            }
+            else {
+              evolutions.push({
+                ...currentEvolution,
+                parent: currentUnitType,
+              });
+            }
+          });
+        }
+      });
+      console.log(`Evolutions: ${JSON.stringify(evolutions, null, 2)}`);
+      if (evolutions.length === 0) {
+        return null;
+      }
+      const unitTypesWithWeights = generateUnitTypesWithWeights(region, evolutions);
+      console.log(`Unit types with weights: ${JSON.stringify(unitTypesWithWeights, null, 2)}`);
+      const sample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(card.level)]);
       if (sample === null) {
         return null;
       }
@@ -457,15 +509,18 @@ const forgeGenerators = [
       };
     },
     upgrade (forge, card) {
-      if (Math.random() < 0.5) {
-        return null;
-      }
       const canUpgradeElement = card.element && !elements.complex[card.element];
       if (
-        (card.unitTypes.length === 1 && Math.random() < 0.25)
+        (card.unitTypes.length === 1 && Math.random() < 0.5)
         || (card.unitTypes.length === 2 && (!canUpgradeElement || Math.random() < 0.1))
       ) {
-        return this.upgradeUnitType(forge, card);
+        if (card.unitTypes.length === 1 && Math.random() < 0.75) {
+          const result = this.upgradeUnitType(forge, card);
+          if (result) {
+            return result;
+          }
+        }
+        return this.addExtraUnitType(forge, card);
       }
       if (canUpgradeElement) {
         return this.upgradeElement(forge, card);

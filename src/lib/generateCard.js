@@ -51,7 +51,14 @@ function levelUpCard(card) {
   }
   if (Math.random() < constants.FLAVOR_UPGRADE_CHANCE) {
     console.log('Upgrading flavor...');
-    newCard = upgradeFlavor(newCard);
+    const flavouredCard = upgradeFlavor(newCard);
+    if (flavouredCard) {
+      console.log(`Upgraded flavor on card ${JSON.stringify(flavouredCard, null, 2)}`);
+      newCard = flavouredCard;
+    }
+    else {
+      console.log('Could not upgrade flavor');
+    }
   }
   return newCard;
 }
