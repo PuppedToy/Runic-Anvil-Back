@@ -674,7 +674,7 @@ const toKingdomEnemySubtractMod = {
   to: {
     kingdom: kingdoms.ENEMY,
   },
-  operations: operations.SUBTRACT,
+  operation: operations.SUBTRACT,
   kingdomSelector: 'toKingdom',
 };
 
@@ -684,7 +684,7 @@ const toKingdomEnemyStealMod = {
   to: {
     kingdom: kingdoms.ENEMY,
   },
-  operations: operations.STEAL,
+  operation: operations.STEAL,
   kingdomSelector: 'toKingdom',
 };
 
