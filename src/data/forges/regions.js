@@ -3,7 +3,7 @@ const regions = {
         key: 'wheozThana',
         name: 'Wheoz Thana',
         aliases: ['The Big City', 'The Science Nexus', 'The City of Tomorrow'],
-        localNames: ['thanarian', 'cityborn'],
+        adjectives: ['thanarian', 'cityborn'],
         unitTypes: [
             'human',
             'merfolk',
@@ -123,7 +123,7 @@ const regions = {
         key: 'alphatownRuins',
         name: 'Alphatown Ruins',
         aliases: ['The Punished City', 'The Void Ruins', 'The Dead City', 'Ruins of Void', 'Voidspring Ruins'],
-        localNames: ['alpharian', 'voidtouched', 'ruined', 'punished'],
+        adjectives: ['alpharian', 'voidtouched', 'ruined', 'punished'],
         elements: [
             'shadow',
             'nature',
@@ -147,7 +147,7 @@ const regions = {
     oseshire: {
         key: 'oseshire',
         name: 'Oseshire',
-        localNames: ['sheiran'],
+        adjectives: ['sheiran'],
         unitTypes: [
             'human',
             {
@@ -180,7 +180,7 @@ const regions = {
         key: 'zraross',
         name: 'Zraross',
         aliases: ['Realm of the Lost', 'World of Worlds', 'Unstable Multiverse', 'Chaotic Realm', 'The Lost Realm', 'The Forgotten Realm'],
-        localNames: ['zrarossian', 'lost', 'forgotten', 'dimensional', 'chaosborn'],
+        adjectives: ['zrarossian', 'lost', 'forgotten', 'dimensional', 'chaosborn'],
         unitTypes: ['any'],
         elements: ['any'],
     },
@@ -189,7 +189,7 @@ const regions = {
         name: 'Yose Forest',
         description: 'A forest filled with plain living creatures. Very few of them are intelligent.',
         aliases: ['Elven Forest', 'The Wild Forest'],
-        localNames: ['yosian', 'forestal'],
+        adjectives: ['yosian', 'forestal'],
         elements: [
             'nature',
             'earth',
@@ -259,7 +259,7 @@ const regions = {
         name: 'Niset Coast',
         description: 'A coast filled with merfolk and other water creatures.',
         aliases: ['Merfolk City', 'Underwater City'],
-        localNames: ['Nisetian'],
+        adjectives: ['Nisetian'],
         elements: [
             'water',
             {
@@ -310,7 +310,7 @@ const regions = {
         name: 'Drepmont Peaks',
         description: 'A mountain range filled with dwarves and other earth creatures.',
         aliases: ['Dwarven Mountains', 'The Mountain Range', 'The Mountain Peaks'],
-        localNames: ['Drepmontian'],
+        adjectives: ['Drepmontian'],
         elements: [
             'earth',
             {
@@ -374,7 +374,7 @@ const regions = {
         key: 'chisonBurrows',
         name: 'Chison Burrows',
         aliases: ['Hive City', 'The Nest'],
-        localNames: ['Chisonian'],
+        adjectives: ['Chisonian'],
         elements: [
             'earth',
             'air',
@@ -414,7 +414,7 @@ const regions = {
         key: 'ontmouthDepths',
         name: 'Ontmouth Depths',
         aliases: ['The Deepest Ocean', 'The Water Core', 'Infinity Waters', 'The Infinity Abyss'],
-        localNames: ['Ontmouthian'],
+        adjectives: ['Ontmouthian'],
         elements: [
             'water',
             'shadow',
@@ -484,7 +484,7 @@ const regions = {
         key: 'akarith',
         name: 'Akarith',
         aliases: ['The Sky Citadel', 'The Sky Fortress', 'Angel Nest', 'Heaven Citadel', 'Home of Gods', 'Cloud Fortress'],
-        localNames: ['Akarithian'],
+        adjectives: ['Akarithian'],
         elements: [
             'air',
             'light',
@@ -540,7 +540,7 @@ const regions = {
         key: 'yhekaCaves',
         name: 'Yheka Caves',
         aliases: ['Endless Caves'],
-        localNames: ['Yhekan'],
+        adjectives: ['Yhekan'],
         elements: [
             'earth',
             'shadow',
@@ -590,7 +590,7 @@ const regions = {
         key: 'bluutwell',
         name: 'Bluutwell',
         aliases: ['Helldoor', 'The Gates of Hell', 'The Underworld'],
-        localNames: ['Bluutwellian', 'Damned'],
+        adjectives: ['Bluutwellian', 'Damned'],
         elements: [
             'shadow',
             'fire',
@@ -648,7 +648,7 @@ const regions = {
         key: 'zhaatinCaves',
         name: 'Zhaatin Caves',
         aliases: ['Crystal Caves', 'Endless Dream', 'Crystal Dream'],
-        localNames: ['Zhaatinian', 'Crystalline'],
+        adjectives: ['Zhaatinian', 'Crystalline'],
         elements: [
             'earth',
             'light',
@@ -700,7 +700,7 @@ const regions = {
         key: 'khuyhull',
         name: 'Khuyhull',
         aliases: ['Ancient Forest', 'Timeless Forest'],
-        localNames: ['Khuyhullian'],
+        adjectives: ['Khuyhullian'],
         elements: [
             'nature',
             'air',
@@ -730,7 +730,7 @@ const regions = {
         key: 'xahphiaLake',
         name: 'Xahphia Lake',
         aliases: ['Mirage Lake', 'Mirror Lake', 'The Lake of Illusions'],
-        localNames: ['Xahphian'],
+        adjectives: ['Xahphian'],
         elements: [
             'water',
             'psychic',
@@ -783,7 +783,7 @@ const regions = {
         key: 'vluehham',
         name: 'Vluehham',
         aliases: ['Corrupted Valley', 'Polluted Lands'],
-        localNames: ['Vluehhamian'],
+        adjectives: ['Vluehhamian'],
         elements: [
             'toxic',
             'shadow',
@@ -894,7 +894,7 @@ const regions = {
         key: 'slotgasWastelands',
         name: 'Slotgas Wastelands',
         aliases: ['The Sand City', 'The Wastelands', 'The Barren Lands'],
-        localNames: ['Slotgasian', 'Sanddweller'],
+        adjectives: ['Slotgasian', 'Sanddweller'],
         elements: [
             'earth',
             'air',
@@ -948,7 +948,7 @@ const regions = {
         key: 'luhamPools',
         name: 'Luham Pools',
         aliases: ['The Magma City', 'Lava Pools', 'Luham Hell'],
-        localNames: ['Luhamian'],
+        adjectives: ['Luhamian'],
         elements: [
             'fire',
             'earth',
@@ -1003,7 +1003,7 @@ const regions = {
         key: 'biville',
         name: 'Biville',
         aliases: ['The Flower Forest', 'The Flower City', 'The Pollen Forest'],
-        localNames: ['Bivillian', 'Flowerborn'],
+        adjectives: ['Bivillian', 'Flowerborn'],
         elements: [
             'nature',
             'air',
@@ -1078,7 +1078,7 @@ const regions = {
         key: 'uryburn',
         name: 'Uryburn',
         aliases: ['Eclipse City', 'Evernight'],
-        localNames: ['Uryburnian', 'Eclipsian'],
+        adjectives: ['Uryburnian', 'Eclipsian'],
         elements: [
             'shadow',
             'light',
@@ -1126,7 +1126,7 @@ const regions = {
         key: 'neothana',
         name: 'Neothana',
         aliases: ['The City in the Future', 'The New Hope'],
-        localNames: ['Neothanian'],
+        adjectives: ['Neothanian'],
         elements: [
             'tech',
             'time',
