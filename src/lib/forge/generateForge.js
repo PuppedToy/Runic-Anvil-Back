@@ -140,7 +140,7 @@ function generateAction(card) {
 
 function cleanDefinitionObject(definitionObject, customUnwantedProperties = []) {
   if (!definitionObject) return null;
-  const unwantedProperties = ['weight', 'adjectives', 'nouns', ...customUnwantedProperties];
+  const unwantedProperties = ['weight', 'adjectives', 'main', ...customUnwantedProperties];
   const result = { ...definitionObject };
   unwantedProperties.forEach((property) => {
     delete result[property];

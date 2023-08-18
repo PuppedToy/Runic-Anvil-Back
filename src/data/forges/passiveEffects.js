@@ -84,7 +84,7 @@ const passiveEffects = {
       {
         key: 'insect',
         chance: 1,
-        nouns: ['hornworm'],
+        mainNouns: ['hornworm'],
         professions: [...beastRangedProfessions],
       },
       {
@@ -1168,7 +1168,7 @@ const passiveEffects = {
           'white-rumped',
           'snowy',
         ],
-        nouns: [
+        mainNouns: [
           'falcon',
           'hawk',
           'needletail',
@@ -1198,7 +1198,7 @@ const passiveEffects = {
           'stick',
           'silver',
         ],
-        nouns: [
+        mainNouns: [
           'dragonfly',
           'horsefly',
           'cockroach',
@@ -1237,7 +1237,7 @@ const passiveEffects = {
           'western',
           'rainbow',
         ],
-        nouns: [
+        mainNouns: [
           'lizard',
           'iguana',
           'racer',
@@ -1258,7 +1258,7 @@ const passiveEffects = {
       {
         key: 'beast',
         chance: 1,
-        nouns: [
+        mainNouns: [
           'cheetah',
           'leopard',
           'lion',
@@ -1292,7 +1292,7 @@ const passiveEffects = {
           'king',
           'sailfish',
         ],
-        nouns: [
+        mainNouns: [
           'sailfish',
           'marlin',
           'swordfish',
@@ -1418,7 +1418,7 @@ const passiveEffects = {
           'leaf-tailed',
           'matamata',
         ],
-        nouns: [
+        mainNouns: [
           'turtle',
           'tortoise',
           'gharial',
@@ -1459,7 +1459,7 @@ const passiveEffects = {
           'nurse',
           'cownose',
         ],
-        nouns: [
+        mainNouns: [
           'seahorse',
           'stargazer',
           'stonefish',
@@ -1824,7 +1824,7 @@ const passiveEffects = {
       'gargantuan',
       'monstrous',
     ],
-    nouns: [
+    mainNouns: [
       'titan',
       'colossus',
       'megalith',

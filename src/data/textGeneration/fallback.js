@@ -15,7 +15,7 @@ These are the list of words that will be used:
 */
 
 const fallback = {
-    main: [
+    mainNouns: [
         'warrior',
         'warmaster',
         'battlemaster',
@@ -338,7 +338,7 @@ const fallback = {
         'battlemaster',
         'engineer',
     ],
-    other: [
+    otherNouns: [
         'region',
         'photo',
         'arrival',
@@ -590,7 +590,7 @@ const fallback = {
         'disaster',
         'statement',
     ],
-    profession: [
+    professions: [
         'bailiff',
         'catchpole',
         'chancellor',
@@ -1146,7 +1146,7 @@ const fallback = {
         'weeper',
         'wetnurse',
     ],
-    adjective: [
+    adjectives: [
         'abandoned',
         'crimsom',
         'elven',
@@ -2373,3 +2373,5 @@ const fallback = {
         'zealous',
     ],
 };
+
+module.exports = fallback;

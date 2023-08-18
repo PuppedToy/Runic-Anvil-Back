@@ -635,7 +635,7 @@ const complex = {
     nightmare: {
         key: 'nightmare',
         elements: [basic.shadow.key, basic.psychic.key],
-        nouns: [
+        mainNouns: [
             'horror',
         ],
         professions: [
@@ -652,7 +652,7 @@ const complex = {
     nanotech: {
         key: 'nanotech',
         elements: [basic.shadow.key, basic.tech.key],
-        nouns: [
+        mainNouns: [
             'nanobot',
             'nanite',
             'nanomachine',

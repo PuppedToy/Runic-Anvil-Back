@@ -1,56 +1,100 @@
-const stringSimilarity = require('string-similarity');
-
-const adjectives = require('../data/textGeneration/adjectives');
-const nouns = require('../data/textGeneration/nouns');
+const fallbackText = require('../data/textGeneration/fallback');
 const templates = require('../data/textGeneration/templates');
 const weighedSample = require('../utils/weightedSample');
 
-function getKeywords(item) {
-  let result = [];
-  if (!item) {
-    return result;
-  }
-  if (typeof item === 'string') {
-    result = item.split(' ').map((word) => word.toLowerCase());
-  } else if (item instanceof Array) {
-    result = item.map(getKeywords).flat();
-  } else if (typeof item === 'object') {
-    Object.values(item).forEach((value) => {
-      result = result.concat(getKeywords(value));
-    });
-  }
+const regions = require('../data/forges/regions');
+const effects = require('../data/forges/effects');
+const triggers = require('../data/forges/triggers');
+const actions = require('../data/forges/actions');
+const unitTypes = require('../data/forges/unitTypes');
+const elements = require('../data/forges/elements');
+const passiveEffects = require('../data/forges/passiveEffects');
 
-  // Remove duplicates
-  result = [...new Set(result)];
+const rnamegen = require('rnamegen');
 
-  return result;
-}
+function getCardDictionaries(card) {
+  const result = {
+    mainNouns: [],
+    adjectives: [],
+    professions: [],
+    otherNouns: [],
+  };
 
-function addWeightsToObjectListComparingWithAKeywordList(list = [], keywordList = []) {
-  const result = list.map(({ word, relatedWords = [], ...rest }) => {
-    const newObject = {
-      word, relatedWords, weight: 1, ...rest,
-    };
-
-    const allWords = [word, ...relatedWords];
-    keywordList.forEach((keyword) => {
-      allWords.forEach((currentWord) => {
-        const similarity = stringSimilarity.compareTwoStrings(keyword, currentWord);
-
-        if (similarity >= 0.5) {
-          newObject.weight += parseInt(similarity * 4, 10);
-        }
+  const resultKeys = Object.keys(result);
+  const addNames = (baseDictionary) => {
+    if (baseDictionary) {
+      resultKeys.forEach((key) => {
+        const resultDictionary = result[key];
+        (baseDictionary[key] || []).forEach((word) => {
+          if (
+            typeof word === 'string'
+          ) {
+            resultDictionary.push(word);
+          }
+          else if (
+            typeof word === 'object'
+            && (word.minAttack === undefined || word.minAttack <= card.attack)
+            && (word.maxAttack === undefined || word.maxAttack >= card.attack)
+            && (word.minHp === undefined || word.minHp <= card.hp)
+            && (word.maxHp === undefined || word.maxHp >= card.hp)
+          ) {
+            resultDictionary.push(word.key);
+          }
+        });
       });
-    });
+    }
+  };
 
-    return newObject;
+  const {
+    region,
+    element,
+    unitTypes: cardUnitTypes = [],
+    triggers: cardTriggers = [],
+    actions: cardActions = [],
+    passiveEffects: cardPassiveEffects = [],
+  } = card;
+
+  if (region) {
+    const cardRegion = regions[region];
+    addNames(cardRegion);
+  }
+  if (element) {
+    let cardElement = elements.basic[element];
+    if (!cardElement) {
+      cardElement = elements.complex[element];
+    }
+    addNames(cardElement);
+  }
+  cardUnitTypes.forEach((unitType) => {
+    const cardUnitType = unitTypes[unitType];
+    addNames(cardUnitType);
   });
-
+  cardPassiveEffects.forEach((passiveEffect) => {
+    const cardPassiveEffect = passiveEffects[passiveEffect];
+    addNames(cardPassiveEffect);
+  });
+  cardTriggers.forEach((trigger) => {
+    const cardTrigger = triggers[trigger?.trigger?.key];
+    const cardEffect = effects[trigger?.effect?.key];
+    addNames(cardTrigger);
+    addNames(cardEffect);
+  });
+  cardActions.forEach((action) => {
+    const cardAction = actions[action?.action?.key];
+    const cardEffect = effects[action?.effect?.key];
+    addNames(cardAction);
+    addNames(cardEffect);
+  });
   return result;
 }
 
-function upperFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+function upperFirstLetters(string) {
+  const delimiters = [' ', '-', '\''];
+  delimiters.forEach((delimiter) => {
+    string = string.split(delimiter).map((word) => word[0].toUpperCase() + word.slice(1)).join(delimiter);
+  });
+  string = string.replace(/\'S /g, '\'s ');
+  return string;
 }
 
 function generateName(card, options = {}) {
@@ -70,53 +114,50 @@ function generateName(card, options = {}) {
   }
 
   const chosenTemplate = template
-    || weighedSample(templates.filter((currentTemplate) => currentTemplate.type === card.type));
+    || weighedSample(templates.filter(
+      (currentTemplate) => currentTemplate.type === card.type && currentTemplate.forgeLevel === card.level,
+    ));
 
-  const keyWords = getKeywords(card);
+  const dictionaries = getCardDictionaries(card);
+  Object.entries(dictionaries).forEach(([key, dictionary]) => {
+    if (!dictionary || !dictionary.length) {
+      console.warn(`No dictionary found for ${key} in card ${JSON.stringify(card, null, 2)}}`);
+      dictionaries[key] = [...fallbackText[key]];
+    }
+  });
+
   let result = chosenTemplate.value;
 
-  const genericMainNouns = nouns.main.generic;
-  const specificMainNouns = nouns.main[card.unitType || 'human'];
-  const mainNouns = [...genericMainNouns, ...specificMainNouns];
-  const otherNouns = nouns.other;
-  const allNouns = [...mainNouns, ...otherNouns];
-  const professionNouns = allNouns.filter((noun) => Boolean(noun.profession));
-  const weightedAdjectives = addWeightsToObjectListComparingWithAKeywordList(adjectives, keyWords);
-  const weightedMainNouns = addWeightsToObjectListComparingWithAKeywordList(mainNouns, keyWords);
-  const weightedOtherNouns = addWeightsToObjectListComparingWithAKeywordList(otherNouns, keyWords);
-  const weightedAllNouns = addWeightsToObjectListComparingWithAKeywordList(allNouns, keyWords);
-  const weightedProfessionNouns = addWeightsToObjectListComparingWithAKeywordList(
-    professionNouns,
-    keyWords,
-  );
+  const cardRegion = regions[card.region];
+  if (!cardRegion) {
+    result = result.replace(/\$region/g, '$otherNouns');
+  }
+  else {
+    dictionaries.regions = [cardRegion.name, ...(cardRegion.aliases || [])];
+  }
 
-  result = result.replace(/\$[a-z]+/g, (match) => {
-    let dictionary = weightedAllNouns;
-    if (match === '$adjective') {
-      dictionary = weightedAdjectives;
-    } else if (match === '$other') {
-      dictionary = weightedOtherNouns;
-    } else if (match === '$noun') {
-      dictionary = weightedAllNouns;
-    } else if (match === '$main') {
-      dictionary = weightedMainNouns;
-    } else if (match === '$profession') {
-      dictionary = weightedProfessionNouns;
-    } else {
-      throw new Error(`Unknown template: ${match}`);
+  while (result.includes('$properNoun')) {
+    result = result.replace('$properNoun', rnamegen(1, 5, 11)[0]);
+  }
+
+  const keys = Object.keys(dictionaries);
+  keys.forEach((key) => {
+    const singularKey = key.slice(0, -1);
+    // Find all ocurrences of $singularKey and replace them with the reuslt of upperFirstLetters(weighedSample(dictionary))
+    while (result.includes(`$${singularKey}`)) {
+      result = result.replace(`$${singularKey}`, upperFirstLetters(weighedSample(dictionaries[key])));
     }
-    try {
-      return upperFirstLetter(weighedSample(dictionary).word);
-    } catch (error) {
-      console.error(`Detected error while trying to read the chosen template: ${chosenTemplate.value}. The current result is ${result} and the match is ${match}`);
-      console.error(`Card: ${JSON.stringify(card)}`, null, 2);
-      console.error(`Keywords: ${JSON.stringify(keyWords)}`);
-      console.error(`Dictionary: ${JSON.stringify(dictionary)}`, null, 2);
-      throw error;
-    }
+  });
+
+  // Check if there are $words like this and raise an error for each
+  result.match(/\$[a-z]+/g)?.forEach((match) => {
+    console.error(`Detected error while trying to read the chosen template: ${chosenTemplate.value}. The current result is ${result} and the match is ${match}`);
+    console.error(`Card: ${JSON.stringify(card)}`, null, 2);
+    console.error(`Dictionary: ${JSON.stringify(dictionary)}`, null, 2);
+    throw new Error(`Unknown template: ${match}`);
   });
 
   return result;
 }
 
-module.exports = { getKeywords, addWeightsToObjectListComparingWithAKeywordList, generateName };
+module.exports = { getCardDictionaries, upperFirstLetters, generateName };

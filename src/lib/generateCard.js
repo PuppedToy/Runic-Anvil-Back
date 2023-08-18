@@ -101,10 +101,8 @@ function generateUnit(level = 1) {
     card = upgradeCard(card);
   }
 
-  console.log(`Forged: ${JSON.stringify(card, null, 2)}`);
-
-  // @TODO change every upgrade
   card.name = generateName(card);
+  console.log(`Forged: ${JSON.stringify(card, null, 2)}`);
   return card;
 }
 

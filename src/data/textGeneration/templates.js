@@ -2,7 +2,7 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 1,
-    value: '$adjective $main',
+    value: '$adjective $mainNoun',
   },
   {
     type: 'unit',
@@ -12,37 +12,37 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 1,
-    value: '$profession $main',
+    value: '$profession $mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 1,
-    value: '$main, $profession',
+    value: '$mainNoun, $profession',
   },
   {
     type: 'unit',
     forgeLevel: 1,
-    value: '$main of $other',
+    value: '$mainNoun of $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 1,
-    value: '$profession of $other',
+    value: '$profession of $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 2,
-    value: '$adjective $main in $region',
+    value: '$adjective $mainNoun in $region',
   },
   {
     type: 'unit',
     forgeLevel: 2,
-    value: '$adjective $profession of $other',
+    value: '$adjective $profession of $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 2,
-    value: '$adjective $profession $main',
+    value: '$adjective $profession $mainNoun',
   },
   {
     type: 'unit',
@@ -52,47 +52,47 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 2,
-    value: '$profession of $other and $other',
+    value: '$profession of $otherNoun and $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 2,
-    value: '$adjective $main of $other',
+    value: '$adjective $mainNoun of $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 2,
-    value: '$profession $main of $other',
+    value: '$profession $mainNoun of $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 2,
-    value: '$adjective $main, $profession',
+    value: '$adjective $mainNoun, $profession',
   },
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$main of the $adjective $other',
+    value: '$mainNoun of the $adjective $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$adjective and $adjective $main',
+    value: '$adjective and $adjective $mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$main-$main of $other',
+    value: '$mainNoun-$mainNoun of $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$main for the $adjective $other',
+    value: '$mainNoun for the $adjective $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$profession-$profession $main',
+    value: '$profession-$profession $mainNoun',
   },
   {
     type: 'unit',
@@ -102,7 +102,7 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$main of $region',
+    value: '$mainNoun of $region',
   },
   {
     type: 'unit',
@@ -112,7 +112,7 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$region\'s $main',
+    value: '$region\'s $mainNoun',
   },
   {
     type: 'unit',
@@ -122,12 +122,12 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$adjective $other$profession',
+    value: '$adjective $otherNoun$profession',
   },
   {
     type: 'unit',
     forgeLevel: 3,
-    value: '$other$profession $main',
+    value: '$otherNoun$profession $mainNoun',
   },
   {
     type: 'unit',
@@ -137,82 +137,82 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 4,
-    value: '$other$profession of $region',
+    value: '$otherNoun$profession of $region',
   },
   {
     type: 'unit',
     forgeLevel: 4,
-    value: '$adjective $other$profession of $region',
+    value: '$adjective $otherNoun$profession of $region',
   },
   {
     type: 'unit',
     forgeLevel: 4,
-    value: '$region\'s $adjective $other$profession',
+    value: '$region\'s $adjective $otherNoun$profession',
   },
   {
     type: 'unit',
     forgeLevel: 4,
-    value: '$other$profession $profession',
+    value: '$otherNoun$profession $profession',
   },
   {
     type: 'unit',
     forgeLevel: 4,
-    value: '$adjective $other$profession',
+    value: '$adjective $otherNoun$profession',
   },
   {
     type: 'unit',
     forgeLevel: 4,
-    value: '$other-$other $main',
+    value: '$otherNoun-$otherNoun $mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 4,
-    value: '$profession and $profession $main',
+    value: '$profession and $profession $mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, $profession of the $other $professions',
+    value: '$properNoun, $profession of the $otherNoun $professions',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $main-$main',
+    value: '$properNoun, the $mainNoun-$mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $other$main',
+    value: '$properNoun, the $otherNoun$mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $other$profession',
+    value: '$properNoun, the $otherNoun$profession',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $adjective $main-$main',
+    value: '$properNoun, the $adjective $mainNoun-$mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $adjective $other$main',
+    value: '$properNoun, the $adjective $otherNoun$mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $adjective $other$profession',
+    value: '$properNoun, the $adjective $otherNoun$profession',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, $region\'s $adjective $other$profession',
+    value: '$properNoun, $region\'s $adjective $otherNoun$profession',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $adjective-$adjective $main of $region',
+    value: '$properNoun, the $adjective-$adjective $mainNoun of $region',
   },
   {
     type: 'unit',
@@ -222,37 +222,37 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $region\'s $other $profession',
+    value: '$properNoun, the $region\'s $otherNoun $profession',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, $main of $other and $other',
+    value: '$properNoun, $mainNoun of $otherNoun and $otherNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$adjective $other$main $properNoun',
+    value: '$adjective $otherNoun$mainNoun $properNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun the $other$adjective',
+    value: '$properNoun the $otherNoun$adjective',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$adjective $properNoun, $region\'s $other$main',
+    value: '$adjective $properNoun, $region\'s $otherNoun$mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $other $main',
+    value: '$properNoun, the $otherNoun $mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $other $adjective',
+    value: '$properNoun, the $otherNoun $adjective',
   },
   {
     type: 'unit',
@@ -262,12 +262,12 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$adjective and $adjective $properNoun, $region\'s $other$main',
+    value: '$adjective and $adjective $properNoun, $region\'s $otherNoun$mainNoun',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$adjective $properNoun of $other, the $profession $main',
+    value: '$adjective $properNoun of $otherNoun, the $profession $mainNoun',
   },
   {
     type: 'unit',
@@ -277,12 +277,12 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, the $other$adjective of $region',
+    value: '$properNoun, the $otherNoun$adjective of $region',
   },
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$properNoun, $other$profession of $region',
+    value: '$properNoun, $otherNoun$profession of $region',
   },
   {
     type: 'unit',
@@ -292,7 +292,7 @@ const templates = [
   {
     type: 'unit',
     forgeLevel: 5,
-    value: '$other$adjective $properNoun, the $profession',
+    value: '$otherNoun$adjective $properNoun, the $profession',
   },
 ];
 
