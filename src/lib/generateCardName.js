@@ -1,3 +1,5 @@
+const rnamegen = require('rnamegen');
+
 const fallbackText = require('../data/textGeneration/fallback');
 const templates = require('../data/textGeneration/templates');
 const weighedSample = require('../utils/weightedSample');
@@ -9,8 +11,6 @@ const actions = require('../data/forges/actions');
 const unitTypes = require('../data/forges/unitTypes');
 const elements = require('../data/forges/elements');
 const passiveEffects = require('../data/forges/passiveEffects');
-
-const rnamegen = require('rnamegen');
 
 function getCardDictionaries(card) {
   const result = {
@@ -30,8 +30,7 @@ function getCardDictionaries(card) {
             typeof word === 'string'
           ) {
             resultDictionary.push(word);
-          }
-          else if (
+          } else if (
             typeof word === 'object'
             && (word.minAttack === undefined || word.minAttack <= card.attack)
             && (word.maxAttack === undefined || word.maxAttack >= card.attack)
@@ -89,12 +88,16 @@ function getCardDictionaries(card) {
 }
 
 function upperFirstLetters(string) {
+  let result = string;
   const delimiters = [' ', '-', '\''];
   delimiters.forEach((delimiter) => {
-    string = string.split(delimiter).map((word) => word[0].toUpperCase() + word.slice(1)).join(delimiter);
+    result = result
+      .split(delimiter)
+      .map((word) => word[0].toUpperCase() + word.slice(1))
+      .join(delimiter);
   });
-  string = string.replace(/\'S /g, '\'s ');
-  return string;
+  result = result.replace(/'S /g, '\'s ');
+  return result;
 }
 
 function generateName(card, options = {}) {
@@ -115,7 +118,8 @@ function generateName(card, options = {}) {
 
   const chosenTemplate = template
     || weighedSample(templates.filter(
-      (currentTemplate) => currentTemplate.type === card.type && currentTemplate.forgeLevel === card.level,
+      (currentTemplate) => currentTemplate.type === card.type
+        && currentTemplate.forgeLevel === card.level,
     ));
 
   const dictionaries = getCardDictionaries(card);
@@ -131,8 +135,7 @@ function generateName(card, options = {}) {
   const cardRegion = regions[card.region];
   if (!cardRegion) {
     result = result.replace(/\$region/g, '$otherNouns');
-  }
-  else {
+  } else {
     dictionaries.regions = [cardRegion.name, ...(cardRegion.aliases || [])];
   }
 
@@ -143,9 +146,8 @@ function generateName(card, options = {}) {
   const keys = Object.keys(dictionaries);
   keys.forEach((key) => {
     const singularKey = key.slice(0, -1);
-    // Find all ocurrences of $singularKey and replace them with the reuslt of upperFirstLetters(weighedSample(dictionary))
     while (result.includes(`$${singularKey}`)) {
-      result = result.replace(`$${singularKey}`, upperFirstLetters(weighedSample(dictionaries[key])));
+      result = result.replace(`$${singularKey}`, weighedSample(dictionaries[key]));
     }
   });
 
@@ -153,11 +155,11 @@ function generateName(card, options = {}) {
   result.match(/\$[a-z]+/g)?.forEach((match) => {
     console.error(`Detected error while trying to read the chosen template: ${chosenTemplate.value}. The current result is ${result} and the match is ${match}`);
     console.error(`Card: ${JSON.stringify(card)}`, null, 2);
-    console.error(`Dictionary: ${JSON.stringify(dictionary)}`, null, 2);
+    console.error(`Dictionaries: ${JSON.stringify(dictionaries)}`, null, 2);
     throw new Error(`Unknown template: ${match}`);
   });
 
-  return result;
+  return upperFirstLetters(result);
 }
 
 module.exports = { getCardDictionaries, upperFirstLetters, generateName };

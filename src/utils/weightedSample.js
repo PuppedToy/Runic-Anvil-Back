@@ -60,7 +60,7 @@ function weightedSample(collection, filters) {
   let maxWeight = collectionData.reduce((total, item) => total + getItemWeight(item), 0);
   const randomMark = Math.random() * maxWeight;
 
-  let foundItem = collectionData.find((item) => {
+  const foundItem = collectionData.find((item) => {
     const itemWeight = getItemWeight(item);
     maxWeight -= itemWeight;
     return randomMark > maxWeight;

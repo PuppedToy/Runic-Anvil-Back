@@ -29,6 +29,7 @@ if (command === 'generate') {
     method = generateCardsWithoutImage;
   }
 
+  console.log(`Generating ${amount} cards`);
   method(amount, { level })
     .then((cards) => {
       console.log(`Generated ${cards.length} cards`);
@@ -47,7 +48,7 @@ async function preprocessCards() {
   await checkCommanders();
 }
 
-if (command == 'cache-costs') {
+if (command === 'cache-costs') {
   cacheCosts()
     .then(() => {
       console.log('Cached costs');
@@ -59,7 +60,7 @@ if (command == 'cache-costs') {
     });
 }
 
-if (command == 'remove-imageless') {
+if (command === 'remove-imageless') {
   removeImageless()
     .then(() => {
       console.log('Removed imageless cards');
@@ -71,7 +72,7 @@ if (command == 'remove-imageless') {
     });
 }
 
-if (command == 'regenerate-hashes') {
+if (command === 'regenerate-hashes') {
   regenerateHashes()
     .then(() => {
       console.log('Regenerated hashes');
@@ -83,7 +84,7 @@ if (command == 'regenerate-hashes') {
     });
 }
 
-if (command == 'check-commanders') {
+if (command === 'check-commanders') {
   checkCommanders()
     .then(() => {
       console.log('Checked commanders');
@@ -95,7 +96,7 @@ if (command == 'check-commanders') {
     });
 }
 
-if (command == 'preprocess-cards') {
+if (command === 'preprocess-cards') {
   preprocessCards()
     .then(() => {
       console.log('Preprocessed cards');

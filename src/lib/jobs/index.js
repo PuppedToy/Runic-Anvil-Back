@@ -33,19 +33,19 @@ async function generateCardsWithoutImage(n, { level }) {
 }
 
 function cacheCosts() {
-  return db.cards.cacheCosts()
+  return db.cards.cacheCosts();
 }
 
 function removeImageless() {
-  return db.cards.removeImageless()
+  return db.cards.removeImageless();
 }
 
 function regenerateHashes() {
-  return db.cards.regenerateHashes()  
+  return db.cards.regenerateHashes();
 }
 
 function checkCommanders() {
-  return db.cards.checkCommanders()
+  return db.cards.checkCommanders();
 }
 
 module.exports = {

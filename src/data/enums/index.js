@@ -44,5 +44,5 @@ module.exports = {
     SPECIFIC: 'specific',
     RANDOM: 'random',
     DISCOVER: 'discover',
-  }
+  },
 };

@@ -170,7 +170,7 @@ const passiveEffects = {
         key: 'water',
         chance: 1,
       },
-    ]
+    ],
   },
   siege: {
     key: 'siege',
@@ -270,7 +270,7 @@ const passiveEffects = {
         chance: 1,
         professions: [...beastSiegeProfessions, 'cannoneer', 'fire-catapult', 'fire-trebuchet'],
       },
-    ]
+    ],
   },
   taunting: {
     key: 'taunting',
@@ -369,7 +369,7 @@ const passiveEffects = {
         key: 'harpy',
         chance: 0.1,
       },
-    ]
+    ],
   },
   challenger: {
     key: 'challenger',
@@ -674,7 +674,7 @@ const passiveEffects = {
       {
         key: 'any',
         chance: 0.1,
-      }
+      },
     ],
     unitTypes: [
       {
@@ -938,7 +938,7 @@ const passiveEffects = {
         key: 'any',
         chance: 0.1,
       },
-    ]
+    ],
   },
   deadly: {
     key: 'deadly',
@@ -1125,11 +1125,11 @@ const passiveEffects = {
     elements: [
       {
         key: 'air',
-        chance: 1
+        chance: 1,
       },
       {
         key: 'time',
-        chance: 1
+        chance: 1,
       },
       {
         key: 'light',
@@ -1252,7 +1252,7 @@ const passiveEffects = {
             key: 'basilisk',
             minAttack: 5,
             minHp: 5,
-          }
+          },
         ],
       },
       {
@@ -1552,7 +1552,7 @@ const passiveEffects = {
       {
         key: 'any',
         chance: 0.1,
-      }
+      },
     ],
     unitTypes: [
       {
@@ -1686,7 +1686,7 @@ const passiveEffects = {
       {
         key: 'any',
         chance: 0,
-      }
+      },
     ],
   },
   huge: {
@@ -1809,7 +1809,7 @@ const passiveEffects = {
       {
         key: 'any',
         chance: 0,
-      }
+      },
     ],
   },
   titan: {
@@ -1905,7 +1905,7 @@ const passiveEffects = {
       {
         key: 'any',
         chance: 0,
-      }
+      },
     ],
   },
   pierce: {

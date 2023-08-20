@@ -105,7 +105,7 @@ async function search(query = {}) {
   if (query.maxRarity) {
     $and.push({ rarityLevel: { $lte: query.maxRarity } });
   }
-  
+
   if (query.triggerEffect) {
     $and.push({ triggers: { $exists: true } });
   } else if (query.triggerEffect === false) {
@@ -123,7 +123,7 @@ async function search(query = {}) {
   } else if (query.recommendedAsCommander === false) {
     $and.push({ recommendedAsCommander: false });
   }
-  
+
   if (query.voidWaveCard) {
     $and.push({
       triggers: { $exists: false },
@@ -311,7 +311,7 @@ async function cacheCosts() {
           costCache: newCost,
           costCacheVersion: COST_CACHE_VERSION,
         },
-      }
+      },
     );
 
     processedCards++;
@@ -363,7 +363,7 @@ async function regenerateHashes() {
           $set: {
             hash,
           },
-        }
+        },
       );
     }
 
@@ -390,7 +390,7 @@ async function checkCommanders() {
           canBeCommander: allowed,
           recommendedAsCommander: recommended,
         },
-      }
+      },
     );
 
     processedCards++;

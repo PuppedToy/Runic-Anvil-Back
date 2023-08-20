@@ -19,30 +19,24 @@ const forgeLevelFilter = (maxLevel, minLevel = 0) => ({ forgeLevel = 0 }) => max
 
 function generateRegionalObjectWithWeightsBasedOnProperty(region, collectionObject, property) {
   const collectionWithWeights = Object.values(collectionObject);
-  const anyRegionalProperty = region[property].find(item => item.key === 'any');
-  collectionWithWeights.forEach(currentValue => {
-    let regionalProperty = region[property].find(item =>
-      item === currentValue.key
-      || item.key === currentValue.key
-    );
+  const anyRegionalProperty = region[property].find((item) => item.key === 'any' || item === 'any');
+  collectionWithWeights.forEach((currentValue) => {
+    let regionalProperty = region[property].find((item) => item === currentValue.key
+      || item.key === currentValue.key);
     if (!regionalProperty && currentValue.parent) {
-      regionalProperty = region[property].find(item =>
-        item === currentValue.parent
-        || item.key === currentValue.parent
-      );
+      regionalProperty = region[property].find((item) => item === currentValue.parent
+        || item.key === currentValue.parent);
     }
     if (regionalProperty) {
       currentValue.weight = regionalProperty.chance || 1;
-    }
-    else if (anyRegionalProperty) {
+    } else if (anyRegionalProperty) {
       currentValue.weight = anyRegionalProperty.chance || 1;
-    }
-    else {
+    } else {
       currentValue.weight = 0;
     }
   });
 
-  return collectionWithWeights.filter(currentValue => currentValue.weight);
+  return collectionWithWeights.filter((currentValue) => currentValue.weight);
 }
 
 function generateUnitTypesWithWeights(region, optionalCollection) {
@@ -55,7 +49,7 @@ function generateElementsWithWeights(region) {
 
 function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
   const valuesWithWeights = Object.values(collection);
-  valuesWithWeights.forEach(currentValue => {
+  valuesWithWeights.forEach((currentValue) => {
     let elementWeight = 0;
     let unitTypeWeight = 0;
     const hasElement = Boolean(card.element);
@@ -65,12 +59,12 @@ function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
     if (hasElement) {
       const cardElement = elements.complex[card.element] || elements.basic[card.element];
       elementWeight = 0;
-      (currentValue.elements || []).forEach(currentElement => {
+      (currentValue.elements || []).forEach((currentElement) => {
         if (
           cardElement.key === currentElement.key
           || (cardElement.elements || []).includes(currentElement.key)
         ) {
-          total++;
+          total += 1;
           elementWeight += currentElement.chance;
         }
         if (currentElement.key === 'any') {
@@ -79,17 +73,16 @@ function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
       });
       if (total === 0) {
         elementWeight = anyChance;
-      }
-      else {
+      } else {
         elementWeight /= total;
       }
     }
     total = 0;
     anyChance = 1;
     if (hasUnitType) {
-      (currentValue.unitTypes || []).forEach(currentUnitType => {
+      (currentValue.unitTypes || []).forEach((currentUnitType) => {
         if (card.unitTypes.includes(currentUnitType.key)) {
-          total++;
+          total += 1;
           unitTypeWeight += currentUnitType.chance;
         }
         if (currentUnitType.key === 'any') {
@@ -98,8 +91,7 @@ function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
       });
       if (total === 0) {
         unitTypeWeight = anyChance;
-      }
-      else {
+      } else {
         unitTypeWeight /= total;
       }
     }
@@ -107,21 +99,20 @@ function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
     total = 0;
     if (!hasElement && !hasUnitType) {
       weight = 1;
-    }
-    else {
+    } else {
       if (hasElement) {
-        total++;
+        total += 1;
         weight += elementWeight;
       }
       if (hasUnitType) {
-        total++;
+        total += 1;
         weight += unitTypeWeight;
       }
       weight /= total;
     }
     currentValue.weight = weight;
   });
-  const result = valuesWithWeights.filter(currentValue => currentValue.weight);
+  const result = valuesWithWeights.filter((currentValue) => currentValue.weight);
   return result;
 }
 
@@ -180,7 +171,7 @@ const processOperations = {
 
 function processForge(forge, card, upgradingForge) {
   if (!Array.isArray(forge) && typeof forge === 'object') {
-    let resultForge = { ...forge };
+    const resultForge = { ...forge };
     Object.entries(resultForge).forEach(([key, value]) => {
       const keyWithoutDollar = key.replace('$', '');
       if (Object.hasOwnProperty.call(processOperations, keyWithoutDollar)) {
@@ -317,14 +308,14 @@ const forgeGenerators = [
     type: 'addStat',
     weight: 3,
     complexity: 0,
-    getNextStatsAmount (card) {
+    getNextStatsAmount(card) {
       const statsTotal = card.attack + card.hp;
       for (let index = 0; index < constants.STAT_THRESHOLDS.length; index += 1) {
         const threshold = constants.STAT_THRESHOLDS[index];
         if (statsTotal < threshold + 1 && index < constants.STAT_THRESHOLDS.length - 1) {
           return randomInt(
             constants.STAT_THRESHOLDS[index] + 1,
-            constants.STAT_THRESHOLDS[index + 1]
+            constants.STAT_THRESHOLDS[index + 1],
           ) - statsTotal;
         }
       }
@@ -332,7 +323,7 @@ const forgeGenerators = [
         constants.STAT_THRESHOLDS[constants.STAT_THRESHOLDS.length - 1] + 1,
         9999,
         1,
-        0.7
+        0.7,
       ) - statsTotal;
     },
     generateStats(card) {
@@ -344,13 +335,13 @@ const forgeGenerators = [
         hp,
       };
     },
-    generate (card) {
+    generate(card) {
       if (card.attack + card.hp >= constants.STAT_THRESHOLDS[0]) {
         return null;
       }
       return this.generateStats(card);
     },
-    upgrade (forge, card) {
+    upgrade(forge, card) {
       if (card.attack + card.hp >= constants.STAT_THRESHOLDS[constants.STAT_THRESHOLDS.length - 1]) {
         return null;
       }
@@ -363,18 +354,18 @@ const forgeGenerators = [
         mod,
       };
     },
-    apply (forge, card) {
+    apply(forge, card) {
       const newCard = { ...card };
       newCard.attack += forge.attack;
       newCard.hp += forge.hp;
       return newCard;
     },
-    applyCost (baseCost, forge, card) {
+    applyCost(baseCost, forge, card) {
       const newCard = { ...card };
       newCard.cost = baseCost;
       return newCard;
     },
-    isCommanderForbidden () {
+    isCommanderForbidden() {
       false;
     },
   },
@@ -382,7 +373,7 @@ const forgeGenerators = [
     type: 'addRegion',
     weight: 0,
     complexity: 0,
-    generate (card) {
+    generate(card) {
       if (card.region) {
         return null;
       }
@@ -400,7 +391,7 @@ const forgeGenerators = [
         unitTypes: unitTypeSample?.key ? [unitTypeSample.key] : ['human'],
       };
     },
-    addExtraUnitType (forge, card) {
+    addExtraUnitType(forge, card) {
       const region = regions[card.region];
       const unitTypesWithWeights = generateUnitTypesWithWeights(region);
       if (unitTypesWithWeights.length === 0) {
@@ -417,7 +408,7 @@ const forgeGenerators = [
         maxLevel = Math.min(maxLevel, foundUnitType.forgeLevel);
       });
       maxLevel = Math.min(card.level, maxLevel + 1);
-      minLevel = minLevel - 1;
+      minLevel -= 1;
       const repeatedUntiTypesFilter = (currentUnitType) => !card.unitTypes.includes(currentUnitType.key);
       console.log(`Finding secondary type of levels ${minLevel}-${maxLevel}`);
       const sample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(maxLevel, minLevel), repeatedUntiTypesFilter]);
@@ -433,7 +424,7 @@ const forgeGenerators = [
         mod: cleanDefinitionObject(sample),
       };
     },
-    upgradeUnitType (forge, card) {
+    upgradeUnitType(forge, card) {
       const region = regions[card.region];
       const evolutions = [];
       card.unitTypes.forEach((currentUnitType) => {
@@ -447,8 +438,7 @@ const forgeGenerators = [
                 key: currentEvolution,
                 parent: currentUnitType,
               });
-            }
-            else {
+            } else {
               evolutions.push({
                 ...currentEvolution,
                 parent: currentUnitType,
@@ -476,7 +466,7 @@ const forgeGenerators = [
         mod: cleanDefinitionObject(sample),
       };
     },
-    upgradeElement (forge, card) {
+    upgradeElement(forge, card) {
       console.log(`Upgrading element ${card.element}`);
       if (elements.complex[card.element]) {
         console.log(`Element ${card.element} is complex`);
@@ -501,14 +491,14 @@ const forgeGenerators = [
         ...forge,
         element: complexElement.key,
       };
-    
+
       console.log(`Result forge: ${JSON.stringify(newForge, null, 2)}`);
       return {
         forge: newForge,
         mod: complexElement,
       };
     },
-    upgrade (forge, card) {
+    upgrade(forge, card) {
       const canUpgradeElement = card.element && !elements.complex[card.element];
       if (
         (card.unitTypes.length === 1 && Math.random() < 0.5)
@@ -527,7 +517,7 @@ const forgeGenerators = [
       }
       return null;
     },
-    apply (forge, card) {
+    apply(forge, card) {
       const newCard = { ...card };
       if (forge.region) {
         newCard.region = forge.region;
@@ -540,12 +530,12 @@ const forgeGenerators = [
       }
       return newCard;
     },
-    applyCost (baseCost, _, card) {
+    applyCost(baseCost, _, card) {
       const newCard = { ...card };
       newCard.cost = baseCost;
       return newCard;
     },
-    isCommanderForbidden () {
+    isCommanderForbidden() {
       return false;
     },
   },
@@ -553,7 +543,7 @@ const forgeGenerators = [
     type: 'addPassiveEffect',
     weight: 1,
     complexity: 0,
-    generate (card) {
+    generate(card) {
       const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, passiveEffects);
       const passiveEffectsWithoutRequirements = passiveEffectsWithWeights.filter((passiveEffect) => !passiveEffect.requirement);
       if (!passiveEffectsWithWeights.length) {
@@ -568,7 +558,7 @@ const forgeGenerators = [
         ...cleanSample,
       };
     },
-    upgrade (forge, card) {
+    upgrade(forge, card) {
       const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, passiveEffects);
       const upgradedPassiveEffects = Object.values(passiveEffectsWithWeights).filter(
         (passiveEffect) => passiveEffect.forgeLevel <= card.level && card.passiveEffects.includes(passiveEffect.requirement),
@@ -589,27 +579,27 @@ const forgeGenerators = [
         mod: cleanMod,
       };
     },
-    apply (forge, card) {
+    apply(forge, card) {
       const newCard = { ...card };
       newCard.passiveEffects = newCard.passiveEffects || [];
       newCard.passiveEffects.push(forge.key);
       return newCard;
     },
-    applyMod (mod, forge, card) {
+    applyMod(mod, forge, card) {
       const newCard = { ...card };
       if (mod.requirement) {
         newCard.passiveEffects = newCard.passiveEffects.filter((passiveEffect) => passiveEffect !== mod.requirement);
       }
       return this.apply(forge, newCard);
     },
-    applyCost (baseCost, forge, card) {
+    applyCost(baseCost, forge, card) {
       const newCard = { ...card };
       const foundPassiveEffect = passiveEffects[forge.key];
       newCard.cost = baseCost;
       newCard.cost = foundPassiveEffect.costModificator ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
       return newCard;
     },
-    isCommanderForbidden () {
+    isCommanderForbidden() {
       return false;
     },
   },
@@ -617,13 +607,12 @@ const forgeGenerators = [
     type: 'addEffectOnTrigger',
     weight: 1,
     complexity: 1,
-    generate (card) {
+    generate(card) {
       const trigger = generateTrigger(card);
       const effect = generateEffect(card);
       if (card.triggers && card.triggers.some(
-        ({ trigger: currentTrigger, effect: currentEffect }) => 
-          currentTrigger.key === trigger.key
-          && currentEffect.key === effect.key
+        ({ trigger: currentTrigger, effect: currentEffect }) => currentTrigger.key === trigger.key
+          && currentEffect.key === effect.key,
       )) {
         return null;
       }
@@ -633,7 +622,7 @@ const forgeGenerators = [
         effect,
       };
     },
-    upgrade (forge, card) {
+    upgrade(forge, card) {
       if (card.level <= 0) {
         throw new Error(`Card ${card.name} doesn't have a level`);
       }
@@ -658,7 +647,7 @@ const forgeGenerators = [
         mod: processedEffectMod,
       };
     },
-    apply (forge, card) {
+    apply(forge, card) {
       const newCard = { ...card };
       if (!newCard.triggers) newCard.triggers = [];
       newCard.triggers.push({
@@ -667,11 +656,10 @@ const forgeGenerators = [
       });
       return newCard;
     },
-    applyMod (mod, forge, card) {
+    applyMod(mod, forge, card) {
       const newCard = { ...card };
       const foundTriggerIndex = newCard.triggers.findIndex(
-        ({ trigger, effect }) => 
-          trigger.key === forge.trigger.key
+        ({ trigger, effect }) => trigger.key === forge.trigger.key
           && effect.key === forge.effect.key,
       );
       if (foundTriggerIndex === -1) {
@@ -680,7 +668,7 @@ const forgeGenerators = [
       newCard.triggers.splice(foundTriggerIndex, 1);
       return this.apply(forge, newCard);
     },
-    applyCost (baseCost, forge, card) {
+    applyCost(baseCost, forge, card) {
       const newCard = { ...card };
       const foundEffect = effects[forge.effect.key];
       const extraPrice = foundEffect.price ? foundEffect.price(forge.effect) : 0;
@@ -693,7 +681,7 @@ const forgeGenerators = [
       newCard.cost = baseCost + extraPriceModded;
       return newCard;
     },
-    isCommanderForbidden (forge) {
+    isCommanderForbidden(forge) {
       const foundTrigger = triggers[forge.trigger.key];
       return foundTrigger.isCommanderForbidden ? foundTrigger.isCommanderForbidden() : false;
     },
@@ -702,13 +690,12 @@ const forgeGenerators = [
     type: 'addEffectOnAction',
     weight: 1,
     complexity: 1,
-    generate (card) {
+    generate(card) {
       const action = generateAction(card);
       const effect = generateEffect(card);
       if (card.actions && card.actions.some(
-        ({ action: currentAction, effect: currentEffect }) => 
-        currentAction.key === action.key
-          && currentEffect.key === effect.key
+        ({ action: currentAction, effect: currentEffect }) => currentAction.key === action.key
+          && currentEffect.key === effect.key,
       )) {
         return null;
       }
@@ -718,7 +705,7 @@ const forgeGenerators = [
         effect,
       };
     },
-    upgrade (forge, card) {
+    upgrade(forge, card) {
       if (card.level <= 0) {
         throw new Error(`Card ${card.name} doesn't have a level`);
       }
@@ -743,7 +730,7 @@ const forgeGenerators = [
         mod: processedEffectMod,
       };
     },
-    apply (forge, card) {
+    apply(forge, card) {
       const newCard = { ...card };
       if (!newCard.actions) newCard.actions = [];
       newCard.actions.push({
@@ -752,7 +739,7 @@ const forgeGenerators = [
       });
       return newCard;
     },
-    findAction (forge, card) {
+    findAction(forge, card) {
       const { actions } = card;
       const foundAction = actions.find(
         ({ action, effect }) => action.key === forge.action.key
@@ -760,11 +747,10 @@ const forgeGenerators = [
       );
       return foundAction;
     },
-    applyMod (mod, forge, card) {
+    applyMod(mod, forge, card) {
       const newCard = { ...card };
       const foundActionIndex = newCard.actions.findIndex(
-        ({ action, effect }) =>
-          action.key === forge.action.key
+        ({ action, effect }) => action.key === forge.action.key
           && effect.key === forge.effect.key,
       );
       if (foundActionIndex === -1) {
@@ -773,7 +759,7 @@ const forgeGenerators = [
       newCard.actions.splice(foundActionIndex, 1);
       return this.apply(forge, newCard);
     },
-    applyCost (baseCost, forge, card, forgeIndex) {
+    applyCost(baseCost, forge, card, forgeIndex) {
       const newCard = { ...card };
       const foundEffect = effects[forge.effect.key];
       const effectPrice = foundEffect.price ? foundEffect.price(forge.effect) : 0;
@@ -805,7 +791,7 @@ const forgeGenerators = [
     type: 'addOngoingEffect',
     weight: 1,
     complexity: 2,
-    generate (card) {
+    generate(card) {
       const sample = generateOngoingEffect(card);
       if (card.ongoingEffects && card.ongoingEffects.some(
         ({ key }) => key === sample.key,
@@ -819,7 +805,7 @@ const forgeGenerators = [
         },
       };
     },
-    upgrade (forge, card) {
+    upgrade(forge, card) {
       if (card.level <= 0) {
         throw new Error(`Card ${card.name} doesn't have a level`);
       }
@@ -842,7 +828,7 @@ const forgeGenerators = [
         mod: processedEffectMod,
       };
     },
-    apply (forge, card) {
+    apply(forge, card) {
       const newCard = { ...card };
       if (!newCard.ongoingEffects) newCard.ongoingEffects = [];
       newCard.ongoingEffects.push({
@@ -850,7 +836,7 @@ const forgeGenerators = [
       });
       return newCard;
     },
-    applyMod (mod, forge, card) {
+    applyMod(mod, forge, card) {
       const newCard = { ...card };
       const foundOngoingEffect = newCard.ongoingEffects.findIndex(
         ({ key }) => key === forge.ongoingEffect.key,
@@ -861,7 +847,7 @@ const forgeGenerators = [
       newCard.ongoingEffects.splice(foundOngoingEffect, 1);
       return this.apply(forge, newCard);
     },
-    applyCost (baseCost, forge, card) {
+    applyCost(baseCost, forge, card) {
       const newCard = { ...card };
       const foundOngoingEffect = ongoingEffects[forge.ongoingEffect.key];
       let passiveEffectCostModificator = ({ cost }) => cost;
@@ -878,8 +864,7 @@ const forgeGenerators = [
       );
       if (forge.target === 'any') {
         extraPriceModded *= 0.1;
-      }
-      else if (forge.target === 'enemy') {
+      } else if (forge.target === 'enemy') {
         extraPriceModded *= -1;
       }
       if (extraPriceModded < 0) {
@@ -888,10 +873,10 @@ const forgeGenerators = [
       newCard.cost = baseCost + extraPriceModded;
       return newCard;
     },
-    isCommanderForbidden () {
+    isCommanderForbidden() {
       return false;
     },
-  }
+  },
 ];
 
 function getCost(card) {
@@ -919,7 +904,7 @@ function canBeCommander(card) {
     'addEffectOnTrigger',
     'addEffectOnAction',
     'addOngoingEffects',
-  ]
+  ];
   const hasForgesOfInterestingCommanderTypes = forges.some((forge) => interestingForgeTypes.includes(forge.type));
   const baseCost = getCardBaseCost(card);
   const cardCost = getCost(card);
@@ -964,7 +949,7 @@ function generateForge(card, maxIterations = 10000) {
   let forgeGenerator;
   let forge = null;
   const cardComplexity = getCardComplexity(card);
-  for(let i = 0; !forge && i < maxIterations; i++) {
+  for (let i = 0; !forge && i < maxIterations; i++) {
     forgeGenerator = weightedSample(forgeGenerators);
     const forgeComplexity = forgeGenerator.complexity || 0;
     if (forgeComplexity) {
@@ -972,11 +957,9 @@ function generateForge(card, maxIterations = 10000) {
       let chanceToSkip = i * -0.02;
       if (nextComplexity >= 2 && nextComplexity < 3) {
         chanceToSkip += 0.5;
-      }
-      else if (nextComplexity >= 3 && nextComplexity < 4) {
+      } else if (nextComplexity >= 3 && nextComplexity < 4) {
         chanceToSkip += 0.75;
-      }
-      else if (nextComplexity >= 4) {
+      } else if (nextComplexity >= 4) {
         chanceToSkip += 1;
       }
       console.log('cardComplexity', cardComplexity, 'nextComplexity', nextComplexity, 'chanceToSkip', chanceToSkip);

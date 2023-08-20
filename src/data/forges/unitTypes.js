@@ -47,7 +47,7 @@ const unitTypes = {
   },
   orc: {
     key: 'orc',
-  },  
+  },
   merfolk: {
     key: 'merfolk',
   },
@@ -64,7 +64,7 @@ const unitTypes = {
       {
         key: 'phoenix',
         forgeLevel: 3,
-      }
+      },
     ],
   },
   insect: {
@@ -148,7 +148,7 @@ const unitTypes = {
       {
         key: 'leviathan',
         forgeLevel: 3,
-      }
+      },
     ],
   },
   plant: {

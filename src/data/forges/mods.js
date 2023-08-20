@@ -1,5 +1,7 @@
 const cardSelectors = require('./cardSelectors');
-const { places, kingdoms, targets, operations, stats, creations } = require('../enums');
+const {
+  places, kingdoms, targets, operations, stats, creations,
+} = require('../enums');
 const { randomInt } = require('../../utils/random');
 const weightedSample = require('../../utils/weightedSample');
 
@@ -49,7 +51,7 @@ const deployValueMods = [
 const drawValueLevel1Mod = {
   id: 'value',
   modLevel: 1,
-  value: 2
+  value: 2,
 };
 
 const drawValueLevel2Mod = {
@@ -147,7 +149,6 @@ const modifyInvestmentValueLevel2Mod = {
   },
 };
 
-
 const modifyInvestmentValueLevel3Mod = {
   id: 'value',
   modLevel: 3,
@@ -227,8 +228,8 @@ const generateStatMethod = (minIncrement, maxIncrement, withCost = false, keyTra
   if (withCost) {
     availableStats.push(stats.COST);
   }
-  const statsToInclude = availableStats.filter(stat => statsObject[stat]);
-  const availableStatsNotIncluded = availableStats.filter(stat => !statsObject[stat]);
+  const statsToInclude = availableStats.filter((stat) => statsObject[stat]);
+  const availableStatsNotIncluded = availableStats.filter((stat) => !statsObject[stat]);
   console.log(`Generating stats for ${JSON.stringify(statsToInclude)} and ${JSON.stringify(availableStatsNotIncluded)}`);
   if (Math.random() < 0.5 && availableStatsNotIncluded.length > 0) {
     const statToInclude = weightedSample(availableStatsNotIncluded);
@@ -238,8 +239,7 @@ const generateStatMethod = (minIncrement, maxIncrement, withCost = false, keyTra
   if (Math.random() < 0.5) {
     const randomStat = weightedSample(statsToInclude);
     result[randomStat] += totalIncrement * multipliers[randomStat];
-  }
-  else {
+  } else {
     while (totalIncrement > 0) {
       const randomStat = weightedSample(statsToInclude);
       result[randomStat] += multipliers[randomStat];
@@ -301,9 +301,9 @@ const reverseStatsEffectMod = {
   id: 'reverse',
   stats: {
     $custom: {
-      method: generateReverseStatsMethod((forge) => forge.effect.stats)
+      method: generateReverseStatsMethod((forge) => forge.effect.stats),
     },
-  }
+  },
 };
 
 const reverseStatsOngoingEffectMod = {
@@ -312,7 +312,7 @@ const reverseStatsOngoingEffectMod = {
     $custom: {
       method: generateReverseStatsMethod((forge) => forge.ongoingEffect.stats),
     },
-  }
+  },
 };
 
 const statMods = [
@@ -321,7 +321,6 @@ const statMods = [
   statValueLevel3Mod,
   reverseStatsEffectMod,
 ];
-
 
 const ongoingStatValueLevel1Mod = {
   id: 'value',
@@ -571,7 +570,6 @@ const toPlaceAnyButBarracksMod = {
   },
 };
 
-
 const toPlaceAnyIngameButBarracksMod = {
   id: 'toPlace',
   modLevel: 1,
@@ -610,7 +608,7 @@ const toOwnerOrAllyLevel2Mod = {
   to: {
     kingdom: {
       $sample: [kingdoms.OWNER, kingdoms.ALLY],
-    }
+    },
   },
 };
 
@@ -704,11 +702,11 @@ const reverseGoldMod = {
         if (to.kingdom === kingdoms.ALLY) {
           return kingdoms.ENEMY;
         }
-        else if (to.kingdom === kingdoms.ENEMY) {
+        if (to.kingdom === kingdoms.ENEMY) {
           return Math.random() > 0.5 ? kingdoms.ALLY : kingdoms.OWNER;
         }
-      }
-    }
+      },
+    },
   },
   operation: {
     $custom: {
@@ -716,10 +714,10 @@ const reverseGoldMod = {
         if (operation === operations.ADD) {
           return operations.SUBTRACT;
         }
-        else if (operation === operations.SUBTRACT || operation === operations.STEAL) {
+        if (operation === operations.SUBTRACT || operation === operations.STEAL) {
           return operations.ADD;
         }
-      }
+      },
     },
   },
 };
@@ -804,10 +802,9 @@ const generateAddCardSelectorMod = (keyTraveler) => (card, forge) => {
       },
     };
   }
-  else {
-    // @TODO Update
-    return null;
-  }
+
+  // @TODO Update
+  return null;
 };
 
 const addOrUpdateCardSelectorEffectMod = {
@@ -816,8 +813,8 @@ const addOrUpdateCardSelectorEffectMod = {
   cardSelectors: {
     $custom: {
       method: generateAddCardSelectorMod((forge) => forge.effect.cardSelectors),
-    }
-  }
+    },
+  },
 };
 
 const addOrUpdateCardSelectorOngoingEffectMod = {
@@ -826,91 +823,91 @@ const addOrUpdateCardSelectorOngoingEffectMod = {
   cardSelectors: {
     $custom: {
       method: generateAddCardSelectorMod((forge) => forge.ongoingEffect.cardSelectors),
-    }
-  }
+    },
+  },
 };
-  
+
 module.exports = {
-    effects: {
-        improveTargetMods,
-        addOrUpdateCardSelectorEffectMod,
-        deployValueLevel1Mod,
-        deployValueLevel2Mod,
-        deployValueLevel3Mod,
-        deployValueMods,
-        drawValueLevel1Mod,
-        drawValueLevel2Mod,
-        drawValueLevel3Mod,
-        drawValueMods,
-        dealDamageValueLevel1Mod,
-        dealDamageValueLevel2Mod,
-        dealDamageValueLevel3Mod,
-        dealDamageValueMods,
-        modifyInvestmentValueLevel1Mod,
-        modifyInvestmentValueLevel2Mod,
-        modifyInvestmentValueLevel3Mod,
-        modifyInvestmentValueMods,
-        modifyCurrencyValueLevel1Mod,
-        modifyCurrencyValueLevel2Mod,
-        modifyCurrencyValueLevel3Mod,
-        modifyCurrencyValueMods,
-        statValueLevel1Mod,
-        statValueLevel2Mod,
-        statValueLevel3Mod,
-        reverseStatsEffectMod,
-        statMods,
-        resurrectValueLevel1Mod,
-        resurrectValueLevel2Mod,
-        resurrectValueMods,
-        summonValueLevel1Mod,
-        summonValueLevel2Mod,
-        summonValueLevel3Mod,
-        summonValueMods,
-        createValueLevel1Mod,
-        createValueLevel2Mod,
-        createValueLevel3Mod,
-        createValueMods,
-        discardValueLevel1Mod,
-        discardValueLevel2Mod,
-        discardValueMods,
-        fromDeckMod,
-        toRangedOrMeleeMod,
-        toWarOrSiegeMod,
-        deployToPlaceMods,
-        toWarOrBarracksMod,
-        toSiegeMod,
-        moveToPlaceMods,
-        toPlaceDeckModForgeLevel3,
-        toPlaceAnyButBarracksMod,
-        toPlaceAnyIngameButBarracksMod,
-        toPlaceHandMod,
-        toDeckMod,
-        toOwnerOrAllyLevel2Mod,
-        toKingdomAllyMod,
-        fromKingdomOwnerMod,
-        fromKingdomAllyLevel2Mod,
-        toKingdomEnemyLevel2Mod,
-        toKingdomAllyModForgeLevel3,
-        toKingdomEnemyLevel2ModForgeLevel4,
-        toKingdomEnemySubtractMod,
-        toKingdomEnemyStealMod,
-        toKingdomGoldMods,
-        reverseGoldMod,
-        fromKingdomAllyMod,
-        fromKingdomEnemyModForgeLevel3,
-        fromKingdomEnemyLevel2Mod,
-        banishModForgeLevel4,
-        randomCreationMod,
-        discoverMod,
-        improveTargetLevel1Mod,
-        improveTargetLevel2Mod,
-    },
-    ongoingEffects: {
-        addOrUpdateCardSelectorOngoingEffectMod,
-        ongoingStatValueLevel1Mod,
-        ongoingStatValueLevel2Mod,
-        ongoingStatValueLevel3Mod,
-        reverseStatsOngoingEffectMod,
-        ongoingStatMods,
-    },
+  effects: {
+    improveTargetMods,
+    addOrUpdateCardSelectorEffectMod,
+    deployValueLevel1Mod,
+    deployValueLevel2Mod,
+    deployValueLevel3Mod,
+    deployValueMods,
+    drawValueLevel1Mod,
+    drawValueLevel2Mod,
+    drawValueLevel3Mod,
+    drawValueMods,
+    dealDamageValueLevel1Mod,
+    dealDamageValueLevel2Mod,
+    dealDamageValueLevel3Mod,
+    dealDamageValueMods,
+    modifyInvestmentValueLevel1Mod,
+    modifyInvestmentValueLevel2Mod,
+    modifyInvestmentValueLevel3Mod,
+    modifyInvestmentValueMods,
+    modifyCurrencyValueLevel1Mod,
+    modifyCurrencyValueLevel2Mod,
+    modifyCurrencyValueLevel3Mod,
+    modifyCurrencyValueMods,
+    statValueLevel1Mod,
+    statValueLevel2Mod,
+    statValueLevel3Mod,
+    reverseStatsEffectMod,
+    statMods,
+    resurrectValueLevel1Mod,
+    resurrectValueLevel2Mod,
+    resurrectValueMods,
+    summonValueLevel1Mod,
+    summonValueLevel2Mod,
+    summonValueLevel3Mod,
+    summonValueMods,
+    createValueLevel1Mod,
+    createValueLevel2Mod,
+    createValueLevel3Mod,
+    createValueMods,
+    discardValueLevel1Mod,
+    discardValueLevel2Mod,
+    discardValueMods,
+    fromDeckMod,
+    toRangedOrMeleeMod,
+    toWarOrSiegeMod,
+    deployToPlaceMods,
+    toWarOrBarracksMod,
+    toSiegeMod,
+    moveToPlaceMods,
+    toPlaceDeckModForgeLevel3,
+    toPlaceAnyButBarracksMod,
+    toPlaceAnyIngameButBarracksMod,
+    toPlaceHandMod,
+    toDeckMod,
+    toOwnerOrAllyLevel2Mod,
+    toKingdomAllyMod,
+    fromKingdomOwnerMod,
+    fromKingdomAllyLevel2Mod,
+    toKingdomEnemyLevel2Mod,
+    toKingdomAllyModForgeLevel3,
+    toKingdomEnemyLevel2ModForgeLevel4,
+    toKingdomEnemySubtractMod,
+    toKingdomEnemyStealMod,
+    toKingdomGoldMods,
+    reverseGoldMod,
+    fromKingdomAllyMod,
+    fromKingdomEnemyModForgeLevel3,
+    fromKingdomEnemyLevel2Mod,
+    banishModForgeLevel4,
+    randomCreationMod,
+    discoverMod,
+    improveTargetLevel1Mod,
+    improveTargetLevel2Mod,
+  },
+  ongoingEffects: {
+    addOrUpdateCardSelectorOngoingEffectMod,
+    ongoingStatValueLevel1Mod,
+    ongoingStatValueLevel2Mod,
+    ongoingStatValueLevel3Mod,
+    reverseStatsOngoingEffectMod,
+    ongoingStatMods,
+  },
 };

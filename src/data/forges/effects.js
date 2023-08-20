@@ -7,9 +7,12 @@
  * Grant state until condition
  */
 
-const { constants, places, kingdoms, targets, operations, stats, creations } = require('../enums');
+const {
+  constants, places, kingdoms, targets, operations, stats, creations,
+} = require('../enums');
 const statusEffects = require('./statusEffects');
 const { effects: effectMods } = require('./mods');
+
 const {
   improveTargetMods,
   addOrUpdateCardSelectorEffectMod,
@@ -415,8 +418,7 @@ const effects = {
 
       if (place === places.BARRACKS || place === places.WAR_ZONE) {
         result = 50;
-      }
-      else if (place === places.SIEGE_ZONE) {
+      } else if (place === places.SIEGE_ZONE) {
         result = 100;
       }
 

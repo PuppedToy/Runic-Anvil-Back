@@ -1,6 +1,8 @@
 const md5 = require('md5');
 const { randomInt } = require('../utils/random');
-const { generateForge, applyForge, upgradeRandomForge, upgradeFlavor } = require('./forge/generateForge');
+const {
+  generateForge, applyForge, upgradeRandomForge, upgradeFlavor,
+} = require('./forge/generateForge');
 const { generateName } = require('./generateCardName');
 const { constants } = require('../data/enums');
 const { unitTypes } = require('../data/forges');
@@ -11,12 +13,20 @@ function createForgeComparator(forgeKey, forgeSubkey) {
     const triggerComparison = a[forgeKey].key.localeCompare(b[forgeKey].key);
     if (triggerComparison !== 0) return triggerComparison;
     return a[forgeSubkey].key.localeCompare(b[forgeSubkey].key);
-  }
+  };
 }
 
 function generateHash(card) {
   const {
-    level, attack, hp, unitType, element, passiveEffects = [], triggers = [], actions = [], conditionalEffects = [],
+    level,
+    attack,
+    hp,
+    unitType,
+    element,
+    passiveEffects = [],
+    triggers = [],
+    actions = [],
+    conditionalEffects = [],
   } = card;
   const sortedPassiveEffects = JSON.stringify(passiveEffects.sort());
   const sortedTriggers = JSON.stringify(triggers.sort(createForgeComparator('trigger', 'effect')));
@@ -31,7 +41,7 @@ function levelUpCard(card) {
   const isNewForge = !cardForges.length || Math.random() < 0.5;
   let newCard;
   if (isNewForge) {
-    newCard =  addForgeToCard(card, 3);
+    newCard = addForgeToCard(card, 3);
     if (newCard) {
       console.log(`Added forge to card ${JSON.stringify(newCard, null, 2)}`);
     }
@@ -41,8 +51,7 @@ function levelUpCard(card) {
     if (!newCard) {
       newCard = addForgeToCard(card);
       console.log(`Could not find a forge to upgrade. Added forge to card ${JSON.stringify(newCard, null, 2)}`);
-    }
-    else {
+    } else {
       console.log(`Upgraded forge on card ${JSON.stringify(newCard, null, 2)}`);
     }
   }
@@ -55,8 +64,7 @@ function levelUpCard(card) {
     if (flavouredCard) {
       console.log(`Upgraded flavor on card ${JSON.stringify(flavouredCard, null, 2)}`);
       newCard = flavouredCard;
-    }
-    else {
+    } else {
       console.log('Could not upgrade flavor');
     }
   }
@@ -72,14 +80,14 @@ function upgradeCard(card) {
     upgradedCard = levelUpCard(upgradedCard);
     upgradedCard = levelUpCard(upgradedCard);
   }
-  const { hashContent, hash } = generateHash(card);
-  card.hashContent = hashContent;
-  card.hash = hash;
   upgradedCard.level += 1;
+  const { hashContent, hash } = generateHash(card);
+  upgradedCard.hashContent = hashContent;
+  upgradedCard.hash = hash;
   return upgradedCard;
 }
 
-const startingUnitTypes = Object.values(unitTypes).filter(unitType => !unitType.forgeLevel);
+const startingUnitTypes = Object.values(unitTypes).filter((unitType) => !unitType.forgeLevel);
 function generateUnit(level = 1) {
   if (level < 0) throw new Error('Level must be positive');
   const statsAmount = randomInt(1, constants.STAT_THRESHOLDS[0]);

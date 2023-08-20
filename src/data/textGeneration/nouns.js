@@ -1508,7 +1508,7 @@ const nouns = [
     // Are creations bound to the caster element by default?
     elements: ['tech'],
     effectKeywords: ['summon', 'create'],
-  }
+  },
 ];
 
 module.exports = nouns;
