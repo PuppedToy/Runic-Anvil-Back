@@ -41,6 +41,18 @@ function getCardDictionaries(card) {
           }
         });
       });
+      if (baseDictionary.unitTypes) {
+        baseDictionary.unitTypes.forEach((unitType) => {
+          if (typeof unitType === 'object') {
+            addNames(unitType);
+          }
+        });
+        baseDictionary.elements.forEach((element) => {
+          if (typeof element === 'object') {
+            addNames(element);
+          }
+        });
+      }
     }
   };
 

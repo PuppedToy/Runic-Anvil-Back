@@ -95,6 +95,22 @@ const effects = {
       'facilitator',
       'operator',
       'arranger',
+      {
+        key: 'commander',
+        minHp: 4,
+      },
+      {
+        key: 'general',
+        minHp: 4,
+      },
+      {
+        key: 'captain',
+        minHp: 4,
+      },
+      {
+        key: 'lieutenant',
+        minHp: 3,
+      },
     ],
     elements: [
       {
@@ -342,7 +358,8 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ value, stat }) => value * (stat === stats.ATTACK ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
+    price: ({ value, stat }) => value * (stat === stats.ATTACK
+      ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
   },
   destroy: {
     key: 'destroy',
