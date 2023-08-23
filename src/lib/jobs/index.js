@@ -6,6 +6,7 @@ const DEFAULT_IMAGE = '/pics/__default/00000.png';
 
 async function generateFullCard(options) {
   const newCard = await createCard(options);
+  if (newCard === null) return null;
   const cardWithImage = await addImageToCard(newCard);
   return cardWithImage;
 }
@@ -16,7 +17,9 @@ async function generateCards(n, options) {
     console.log(`Generating card ${i + 1} of ${n}`);
     // eslint-disable-next-line no-await-in-loop
     const card = await generateFullCard(options);
-    cards.push(card);
+    if (card !== null) {
+      cards.push(card);
+    }
   }
   return cards;
 }
@@ -27,7 +30,9 @@ async function generateCardsWithoutImage(n, { level }) {
     console.log(`[NOIMG] Generating card ${i + 1} of ${n}`);
     // eslint-disable-next-line no-await-in-loop
     const card = await createCard({ image: DEFAULT_IMAGE, level });
-    cards.push(card);
+    if (card !== null) {
+      cards.push(card);
+    }
   }
   return cards;
 }

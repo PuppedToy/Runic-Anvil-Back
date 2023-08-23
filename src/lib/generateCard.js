@@ -36,36 +36,32 @@ function generateHash(card) {
   return { hashContent, hash: md5(hashContent) };
 }
 
+function addForgeToCard(card, maxIterations) {
+  const forge = generateForge(card, maxIterations);
+  if (!forge) return null;
+  return applyForge(forge, card);
+}
+
 function levelUpCard(card) {
   const cardForges = card.forges || [];
   const isNewForge = !cardForges.length || Math.random() < 0.5;
   let newCard;
   if (isNewForge) {
     newCard = addForgeToCard(card, 3);
-    if (newCard) {
-      console.log(`Added forge to card ${JSON.stringify(newCard, null, 2)}`);
-    }
   }
   if (!newCard) {
     newCard = upgradeRandomForge(card);
     if (!newCard) {
       newCard = addForgeToCard(card);
-      console.log(`Could not find a forge to upgrade. Added forge to card ${JSON.stringify(newCard, null, 2)}`);
-    } else {
-      console.log(`Upgraded forge on card ${JSON.stringify(newCard, null, 2)}`);
     }
   }
   if (!newCard) {
     throw new Error('Could not upgrade card');
   }
   if (Math.random() < constants.FLAVOR_UPGRADE_CHANCE) {
-    console.log('Upgrading flavor...');
     const flavouredCard = upgradeFlavor(newCard);
     if (flavouredCard) {
-      console.log(`Upgraded flavor on card ${JSON.stringify(flavouredCard, null, 2)}`);
       newCard = flavouredCard;
-    } else {
-      console.log('Could not upgrade flavor');
     }
   }
   return newCard;
@@ -74,50 +70,41 @@ function levelUpCard(card) {
 function upgradeCard(card) {
   const { level } = card;
   let upgradedCard = card;
+  upgradedCard.level += 1;
   upgradedCard = levelUpCard(upgradedCard);
   if (level === 5) {
     upgradedCard = levelUpCard(upgradedCard);
     upgradedCard = levelUpCard(upgradedCard);
     upgradedCard = levelUpCard(upgradedCard);
   }
-  upgradedCard.level += 1;
-  const { hashContent, hash } = generateHash(card);
-  upgradedCard.hashContent = hashContent;
-  upgradedCard.hash = hash;
   return upgradedCard;
 }
 
 const startingUnitTypes = Object.values(unitTypes).filter((unitType) => !unitType.forgeLevel);
-function generateUnit(level = 1) {
-  if (level < 0) throw new Error('Level must be positive');
+function generateUnit(level) {
+  const cappedLevel = Math.min(Math.max(level, 0), 5);
   const statsAmount = randomInt(1, constants.STAT_THRESHOLDS[0]);
   const hp = randomInt(1, statsAmount);
   const attack = statsAmount - hp;
   const unitType = weightedSample(startingUnitTypes);
 
   let card = {
-    level: 1,
+    level: 0,
     attack,
     hp,
     type: 'unit',
     unitTypes: [unitType.key],
   };
 
-  console.log(`Created base card ${JSON.stringify(card, null, 2)}`);
-
-  for (let accumulator = 1; accumulator < level; accumulator += 1) {
+  for (let accumulator = 0; accumulator < cappedLevel; accumulator += 1) {
     card = upgradeCard(card);
   }
 
+  const { hashContent, hash } = generateHash(card);
+  card.hashContent = hashContent;
+  card.hash = hash;
   card.name = generateName(card);
-  console.log(`Forged: ${JSON.stringify(card, null, 2)}`);
   return card;
-}
-
-function addForgeToCard(card, maxIterations) {
-  const forge = generateForge(card, maxIterations);
-  if (!forge) return null;
-  return applyForge(forge, card);
 }
 
 const generateCard = generateUnit;

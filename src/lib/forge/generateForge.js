@@ -15,8 +15,11 @@ const {
 const { constants } = require('../../data/enums');
 
 // Filters
-const forgeLevelFilter = (maxLevel, minLevel = 0) => ({ forgeLevel = 0 }) => maxLevel >= forgeLevel && minLevel <= forgeLevel;
+const forgeLevelFilter = (maxLevel, minLevel = 0) => (
+  { forgeLevel = 0 },
+) => maxLevel >= forgeLevel && minLevel <= forgeLevel;
 
+/* eslint-disable no-param-reassign */
 function generateRegionalObjectWithWeightsBasedOnProperty(region, collectionObject, property) {
   const collectionWithWeights = Object.values(collectionObject);
   const anyRegionalProperty = region[property].find((item) => item.key === 'any' || item === 'any');
@@ -115,6 +118,7 @@ function generateObjectWeightsBasedOnElementAndUnitType(card, collection) {
   const result = valuesWithWeights.filter((currentValue) => currentValue.weight);
   return result;
 }
+/* eslint-enable no-param-reassign */
 
 // Trigger
 function generateTrigger(card) {
@@ -161,7 +165,7 @@ const processOperations = {
       throw new Error('Range must have min and max');
     }
     const { min } = exponentialDefinition;
-    const max = Math.abs(exponentialDefinition.max) || 99999; // This is for safety purposes against infinite loops
+    const max = Math.abs(exponentialDefinition.max) || 99999;
     const step = exponentialDefinition.step || 1;
     const probability = exponentialDefinition.probability || 0.5;
 
@@ -202,7 +206,10 @@ function generateEffect(card) {
 }
 
 function generateOngoingEffect(card) {
-  const ongoingEffect = weightedSample(Object.values(ongoingEffects), [forgeLevelFilter(card.level)]);
+  const ongoingEffect = weightedSample(
+    Object.values(ongoingEffects),
+    [forgeLevelFilter(card.level)],
+  );
   const { mods, ...defaultForge } = ongoingEffect;
   const processedForge = processForge(defaultForge, card);
 
@@ -237,7 +244,8 @@ function getEffectAvailableMods(forge, card) {
   const forgeMods = forge.mods || [];
   const effectMods = foundEffect.mods || [];
   const forgeLevel = card.level;
-  // First we add any mod that is level 1, is from the correct forgeLevel and is not already in the forge
+  // First we add any mod that is level 1,
+  // is from the correct forgeLevel and is not already in the forge
   const availableMods = effectMods.filter(
     (mod) => (!mod.modLevel || mod.modLevel === 1)
       && ((mod.forgeLevel || 0) <= forgeLevel)
@@ -246,9 +254,14 @@ function getEffectAvailableMods(forge, card) {
   forgeMods.forEach((mod) => {
     const modLevel = mod.modLevel ? mod.modLevel + 1 : null;
     const modKey = mod.key;
-    // Now we add any mod with current mod key and exactly current mod level, never forgetting the forge level restriction
+    // Now we add any mod with current mod key and exactly
+    // current mod level, never forgetting the forge level restriction
     effectMods.forEach((effectMod) => {
-      if (effectMod.key === modKey && effectMod.modLevel === modLevel && (effectMod.forgeLevel || 0) <= forgeLevel) {
+      if (
+        effectMod.key === modKey
+        && effectMod.modLevel === modLevel
+        && (effectMod.forgeLevel || 0) <= forgeLevel
+      ) {
         availableMods.push(effectMod);
       }
     });
@@ -261,7 +274,6 @@ function getOngoingEffectAvailableMods(forge, card) {
   const forgeMods = forge.mods || [];
   const ongoingEffectMods = foundOngoingEffect.mods || [];
   const forgeLevel = card.level;
-  // First we add any mod that is level 1, is from the correct forgeLevel and is not already in the forge
   const availableMods = ongoingEffectMods.filter(
     (mod) => (!mod.modLevel || mod.modLevel === 1)
       && ((mod.forgeLevel || 0) <= forgeLevel)
@@ -270,9 +282,12 @@ function getOngoingEffectAvailableMods(forge, card) {
   forgeMods.forEach((mod) => {
     const modLevel = mod.modLevel ? mod.modLevel + 1 : null;
     const modKey = mod.key;
-    // Now we add any mod with current mod key and exactly current mod level, never forgetting the forge level restriction
     ongoingEffectMods.forEach((effectMod) => {
-      if (effectMod.key === modKey && effectMod.modLevel === modLevel && (effectMod.forgeLevel || 0) <= forgeLevel) {
+      if (
+        effectMod.key === modKey
+        && effectMod.modLevel === modLevel
+        && (effectMod.forgeLevel || 0) <= forgeLevel
+      ) {
         availableMods.push(effectMod);
       }
     });
@@ -342,7 +357,9 @@ const forgeGenerators = [
       return this.generateStats(card);
     },
     upgrade(forge, card) {
-      if (card.attack + card.hp >= constants.STAT_THRESHOLDS[constants.STAT_THRESHOLDS.length - 1]) {
+      if (
+        card.attack + card.hp >= constants.STAT_THRESHOLDS[constants.STAT_THRESHOLDS.length - 1]
+      ) {
         return null;
       }
       const mod = this.generateStats(card);
@@ -366,7 +383,7 @@ const forgeGenerators = [
       return newCard;
     },
     isCommanderForbidden() {
-      false;
+      return false;
     },
   },
   {
@@ -400,7 +417,9 @@ const forgeGenerators = [
       let minLevel = 0;
       let maxLevel = 9999;
       card.unitTypes.forEach((currentUnitType) => {
-        const foundUnitType = unitTypesWithWeights.find((currentUnitTypeWithWeight) => currentUnitTypeWithWeight.key === currentUnitType);
+        const foundUnitType = unitTypesWithWeights.find(
+          (currentUnitTypeWithWeight) => currentUnitTypeWithWeight.key === currentUnitType,
+        );
         if (!foundUnitType) {
           return;
         }
@@ -409,9 +428,13 @@ const forgeGenerators = [
       });
       maxLevel = Math.min(card.level, maxLevel + 1);
       minLevel -= 1;
-      const repeatedUntiTypesFilter = (currentUnitType) => !card.unitTypes.includes(currentUnitType.key);
-      console.log(`Finding secondary type of levels ${minLevel}-${maxLevel}`);
-      const sample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(maxLevel, minLevel), repeatedUntiTypesFilter]);
+      const repeatedUntiTypesFilter = (currentUnitType) => !card.unitTypes.includes(
+        currentUnitType.key,
+      );
+      const sample = weightedSample(
+        unitTypesWithWeights,
+        [forgeLevelFilter(maxLevel, minLevel), repeatedUntiTypesFilter],
+      );
       if (sample === null) {
         return null;
       }
@@ -428,9 +451,7 @@ const forgeGenerators = [
       const region = regions[card.region];
       const evolutions = [];
       card.unitTypes.forEach((currentUnitType) => {
-        console.log(`Checking unit type "${currentUnitType}"`);
         const foundUnitType = unitTypes[currentUnitType];
-        console.log(`Found unit type: ${JSON.stringify(foundUnitType, null, 2)}`);
         if (foundUnitType.evolutions) {
           foundUnitType.evolutions.forEach((currentEvolution) => {
             if (typeof currentEvolution === 'string') {
@@ -447,12 +468,10 @@ const forgeGenerators = [
           });
         }
       });
-      console.log(`Evolutions: ${JSON.stringify(evolutions, null, 2)}`);
       if (evolutions.length === 0) {
         return null;
       }
       const unitTypesWithWeights = generateUnitTypesWithWeights(region, evolutions);
-      console.log(`Unit types with weights: ${JSON.stringify(unitTypesWithWeights, null, 2)}`);
       const sample = weightedSample(unitTypesWithWeights, [forgeLevelFilter(card.level)]);
       if (sample === null) {
         return null;
@@ -467,9 +486,7 @@ const forgeGenerators = [
       };
     },
     upgradeElement(forge, card) {
-      console.log(`Upgrading element ${card.element}`);
       if (elements.complex[card.element]) {
-        console.log(`Element ${card.element} is complex`);
         return null;
       }
       if (!card.element) {
@@ -477,13 +494,13 @@ const forgeGenerators = [
       }
       const region = regions[card.region];
       const basicElementWithWeights = generateElementsWithWeights(region);
-      const otherBasicElements = basicElementWithWeights.filter((currentBasicElement) => currentBasicElement.key !== card.element);
+      const otherBasicElements = basicElementWithWeights
+        .filter((currentBasicElement) => currentBasicElement.key !== card.element);
       const newBasicElement = weightedSample(otherBasicElements, [forgeLevelFilter(card.level)]);
-      console.log(`Mixing with ${newBasicElement.key}`);
       const complexElement = Object.values(elements.complex).find(
-        (currentComplexElement) => currentComplexElement.elements.includes(card.element) && currentComplexElement.elements.includes(newBasicElement.key),
+        (currentComplexElement) => currentComplexElement.elements.includes(card.element)
+          && currentComplexElement.elements.includes(newBasicElement.key),
       );
-      console.log(`Result element: ${complexElement.key}`);
       if (complexElement === null) {
         throw new Error(`Element ${card.element} doesn't have a complex element with ${newBasicElement.key}`);
       }
@@ -492,7 +509,6 @@ const forgeGenerators = [
         element: complexElement.key,
       };
 
-      console.log(`Result forge: ${JSON.stringify(newForge, null, 2)}`);
       return {
         forge: newForge,
         mod: complexElement,
@@ -544,12 +560,20 @@ const forgeGenerators = [
     weight: 1,
     complexity: 0,
     generate(card) {
-      const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, passiveEffects);
-      const passiveEffectsWithoutRequirements = passiveEffectsWithWeights.filter((passiveEffect) => !passiveEffect.requirement);
+      const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(
+        card,
+        passiveEffects,
+      );
+      const passiveEffectsWithoutRequirements = passiveEffectsWithWeights.filter(
+        (passiveEffect) => !passiveEffect.requirement,
+      );
       if (!passiveEffectsWithWeights.length) {
         return null;
       }
-      const sample = weightedSample(passiveEffectsWithoutRequirements, [forgeLevelFilter(card.level)]);
+      const sample = weightedSample(
+        passiveEffectsWithoutRequirements,
+        [forgeLevelFilter(card.level)],
+      );
       if (card.passiveEffects && card.passiveEffects.includes(sample.key)) {
         return null;
       }
@@ -559,9 +583,13 @@ const forgeGenerators = [
       };
     },
     upgrade(forge, card) {
-      const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(card, passiveEffects);
+      const passiveEffectsWithWeights = generateObjectWeightsBasedOnElementAndUnitType(
+        card,
+        passiveEffects,
+      );
       const upgradedPassiveEffects = Object.values(passiveEffectsWithWeights).filter(
-        (passiveEffect) => passiveEffect.forgeLevel <= card.level && card.passiveEffects.includes(passiveEffect.requirement),
+        (passiveEffect) => passiveEffect.forgeLevel <= card.level
+          && card.passiveEffects.includes(passiveEffect.requirement),
       );
       if (!upgradedPassiveEffects.length) {
         return null;
@@ -588,7 +616,9 @@ const forgeGenerators = [
     applyMod(mod, forge, card) {
       const newCard = { ...card };
       if (mod.requirement) {
-        newCard.passiveEffects = newCard.passiveEffects.filter((passiveEffect) => passiveEffect !== mod.requirement);
+        newCard.passiveEffects = newCard.passiveEffects.filter(
+          (passiveEffect) => passiveEffect !== mod.requirement,
+        );
       }
       return this.apply(forge, newCard);
     },
@@ -596,7 +626,8 @@ const forgeGenerators = [
       const newCard = { ...card };
       const foundPassiveEffect = passiveEffects[forge.key];
       newCard.cost = baseCost;
-      newCard.cost = foundPassiveEffect.costModificator ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
+      newCard.cost = foundPassiveEffect.costModificator
+        ? foundPassiveEffect.costModificator(newCard) : newCard.cost;
       return newCard;
     },
     isCommanderForbidden() {
@@ -740,8 +771,8 @@ const forgeGenerators = [
       return newCard;
     },
     findAction(forge, card) {
-      const { actions } = card;
-      const foundAction = actions.find(
+      const { actions: cardActions } = card;
+      const foundAction = cardActions.find(
         ({ action, effect }) => action.key === forge.action.key
           && effect.key === forge.effect.key,
       );
@@ -852,14 +883,20 @@ const forgeGenerators = [
       const foundOngoingEffect = ongoingEffects[forge.ongoingEffect.key];
       let passiveEffectCostModificator = ({ cost }) => cost;
       if (foundOngoingEffect.key === 'givePassiveEffect') {
-        const foundPassiveEffect = passiveEffects[forge.ongoingEffect.effect.passiveEffect.ongoingPassiveEffectKey];
+        const foundPassiveEffect = passiveEffects[
+          forge.ongoingEffect.effect.passiveEffect.ongoingPassiveEffectKey
+        ];
         passiveEffectCostModificator = foundPassiveEffect.costModificator;
       }
-      const extraPrice = foundOngoingEffect.price ? foundOngoingEffect.price({ ...forge.ongoingEffect.effect, passiveEffectCostModificator }) : 0;
+      const extraPrice = foundOngoingEffect.price ? foundOngoingEffect.price(
+        { ...forge.ongoingEffect.effect, passiveEffectCostModificator },
+      ) : 0;
       const foundSelector = cardSelectors[forge.selector.key];
       let extraPriceModded = parseInt(
         foundSelector.costModificator
-          ? foundSelector.costModificator({ ...forge.selector.selector, cost: extraPrice }) : extraPrice,
+          ? foundSelector.costModificator(
+            { ...forge.selector.selector, cost: extraPrice },
+          ) : extraPrice,
         10,
       );
       if (forge.target === 'any') {
@@ -905,12 +942,17 @@ function canBeCommander(card) {
     'addEffectOnAction',
     'addOngoingEffects',
   ];
-  const hasForgesOfInterestingCommanderTypes = forges.some((forge) => interestingForgeTypes.includes(forge.type));
+  const hasForgesOfInterestingCommanderTypes = forges.some(
+    (forge) => interestingForgeTypes.includes(forge.type),
+  );
   const baseCost = getCardBaseCost(card);
   const cardCost = getCost(card);
-  const allowed = !isCommanderForbidden && (cardCost - baseCost) <= constants.COMMANDER_DEFAULT_VALUE;
+  const allowed = !isCommanderForbidden
+    && (cardCost - baseCost) <= constants.COMMANDER_DEFAULT_VALUE;
   // @TODO Should check each forge value to see if it's recommended
-  const recommended = allowed && hasForgesOfInterestingCommanderTypes && (cardCost - baseCost) >= constants.RECOMMENDED_COMMANDER_LOWER_THRESHOLD;
+  const recommended = allowed
+    && hasForgesOfInterestingCommanderTypes
+    && (cardCost - baseCost) >= constants.RECOMMENDED_COMMANDER_LOWER_THRESHOLD;
   return {
     allowed,
     recommended,
@@ -918,7 +960,39 @@ function canBeCommander(card) {
 }
 
 function getCardComplexity(card) {
-  return (card.forges || []).reduce((acc, forge) => acc + (forgeGenerators.find((generator) => generator.type === forge.type)?.complexity || 0), 0);
+  return (card.forges || []).reduce((acc, forge) => acc + (forgeGenerators.find(
+    (generator) => generator.type === forge.type,
+  )?.complexity || 0), 0);
+}
+
+function applyForge(forge, card) {
+  const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
+  if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
+  if (!card) throw new Error('Card is required');
+  const newCard = forgeGenerator.apply(forge, card);
+  if (!newCard.forges) {
+    newCard.forges = [];
+  }
+  newCard.forges.push(forge);
+  return newCard;
+}
+
+function applyMod(mod, forgeIndex, forge, card) {
+  const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
+  if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
+  let newCard;
+  if (!forge.mods) {
+    // eslint-disable-next-line no-param-reassign
+    forge.mods = [];
+  }
+  forge.mods.push(mod);
+  if (forgeGenerator.applyMod) {
+    newCard = forgeGenerator.applyMod(mod, forge, card);
+  } else {
+    newCard = forgeGenerator.apply(forge, card);
+  }
+  newCard.forges[forgeIndex] = forge;
+  return newCard;
 }
 
 function upgradeFlavor(card) {
@@ -949,7 +1023,7 @@ function generateForge(card, maxIterations = 10000) {
   let forgeGenerator;
   let forge = null;
   const cardComplexity = getCardComplexity(card);
-  for (let i = 0; !forge && i < maxIterations; i++) {
+  for (let i = 0; !forge && i < maxIterations; i += 1) {
     forgeGenerator = weightedSample(forgeGenerators);
     const forgeComplexity = forgeGenerator.complexity || 0;
     if (forgeComplexity) {
@@ -962,8 +1036,8 @@ function generateForge(card, maxIterations = 10000) {
       } else if (nextComplexity >= 4) {
         chanceToSkip += 1;
       }
-      console.log('cardComplexity', cardComplexity, 'nextComplexity', nextComplexity, 'chanceToSkip', chanceToSkip);
       if (Math.random() < chanceToSkip) {
+        // eslint-disable-next-line no-continue
         continue;
       }
     }
@@ -978,35 +1052,6 @@ function generateForge(card, maxIterations = 10000) {
   };
 }
 
-function applyForge(forge, card) {
-  const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
-  if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
-  if (!card) throw new Error('Card is required');
-  const newCard = forgeGenerator.apply(forge, card);
-  if (!newCard.forges) {
-    newCard.forges = [];
-  }
-  newCard.forges.push(forge);
-  return newCard;
-}
-
-function applyMod(mod, forgeIndex, forge, card) {
-  const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
-  if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
-  let newCard;
-  if (!forge.mods) {
-    forge.mods = [];
-  }
-  forge.mods.push(mod);
-  if (forgeGenerator.applyMod) {
-    newCard = forgeGenerator.applyMod(mod, forge, card);
-  } else {
-    newCard = forgeGenerator.apply(forge, card);
-  }
-  newCard.forges[forgeIndex] = forge;
-  return newCard;
-}
-
 function upgradeRandomForge(card) {
   const remainingForges = [...(card.forges || [])].filter((forge) => forge.type !== 'addRegion');
   while (remainingForges.length) {
@@ -1017,6 +1062,7 @@ function upgradeRandomForge(card) {
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${chosenForge.type}`);
     const upgradeResult = forgeGenerator.upgrade(chosenForge, card);
     if (!upgradeResult) {
+      // eslint-disable-next-line no-continue
       continue;
     }
     const { mod, forge: upgradedForge } = upgradeResult;

@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const { ObjectId } = require('mongodb');
 
 let _eval = () => {};
@@ -216,9 +217,11 @@ async function getById(id) {
   } : null;
 }
 
-async function getByHash(hash) {
+async function getByHashOrName(hash, name) {
   const db = await getDatabase(DATABASE_NAME);
-  const card = await db.findOne({ hash });
+  const $or = [{ hash }, { name }];
+  const $and = [{ cardVersion: { $regex: new RegExp(`${cardMajor}\\.[0-9]+?\\.[0-9]+?`) } }, { $or }];
+  const card = await db.findOne({ $and });
 
   return card ? {
     id: card._id,
@@ -314,7 +317,7 @@ async function cacheCosts() {
       },
     );
 
-    processedCards++;
+    processedCards += 1;
     console.log(`[Cache Costs] Processed ${processedCards} of ${totalCards} cards.`);
   }
 }
@@ -335,7 +338,7 @@ async function removeImageless() {
     const card = await imagelessCards.next();
     await db.deleteOne({ _id: card._id });
 
-    processedCards++;
+    processedCards += 1;
     console.log(`[Remove Imageless] Deleted ${processedCards} of ${totalCards} imageless cards.`);
   }
 }
@@ -353,7 +356,10 @@ async function regenerateHashes() {
 
     const anotherCardWithTheSameHash = await db.findOne({ hash });
 
-    if (anotherCardWithTheSameHash && anotherCardWithTheSameHash._id.toString() !== card._id.toString()) {
+    if (
+      anotherCardWithTheSameHash
+      && anotherCardWithTheSameHash._id.toString() !== card._id.toString()
+    ) {
       console.log(`[Regenerate Hashes] Found a duplicated card: ${JSON.stringify(card)}. Deleting it. It's duplicated with card ${JSON.stringify(anotherCardWithTheSameHash)}`);
       await db.deleteOne({ _id: card._id });
     } else {
@@ -367,7 +373,7 @@ async function regenerateHashes() {
       );
     }
 
-    processedCards++;
+    processedCards += 1;
     console.log(`[Regenerate Hashes] Processed ${processedCards} of ${totalCards} cards.`);
   }
 }
@@ -393,7 +399,7 @@ async function checkCommanders() {
       },
     );
 
-    processedCards++;
+    processedCards += 1;
     console.log(`[Check Commanders] Processed ${processedCards} of ${totalCards} cards.`);
   }
 }
@@ -434,7 +440,7 @@ async function bulkUpdate(query, stringUpdateCardMethod) {
 module.exports = {
   search,
   getById,
-  getByHash,
+  getByHashOrName,
   findOneWithoutImage,
   create,
   update,

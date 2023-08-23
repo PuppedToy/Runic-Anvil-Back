@@ -131,13 +131,16 @@ function generateName(card, options = {}) {
   const chosenTemplate = template
     || weighedSample(templates.filter(
       (currentTemplate) => currentTemplate.type === card.type
-        && currentTemplate.forgeLevel === card.level,
+        && (
+          currentTemplate.forgeLevel === card.level
+          || (card.level === 0 && currentTemplate.forgeLevel === 1)
+        ),
     ));
 
   const dictionaries = getCardDictionaries(card);
   Object.entries(dictionaries).forEach(([key, dictionary]) => {
     if (!dictionary || !dictionary.length) {
-      console.warn(`No dictionary found for ${key} in card ${JSON.stringify(card, null, 2)}}`);
+      // console.warn(`No dictionary found for ${key} in card ${JSON.stringify(card, null, 2)}}`);
       dictionaries[key] = [...fallbackText[key]];
     }
   });
