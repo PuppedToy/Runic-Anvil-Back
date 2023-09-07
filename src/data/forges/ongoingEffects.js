@@ -1,88 +1,83 @@
-const { constants } = require('../enums');
+const { constants, stats } = require('../enums');
 const passiveEffects = require('./passiveEffects');
+const { ongoingEffects: ongoingEffectMods } = require('./mods');
 
-function levelFilter (card, element) {
-    return !element.forgeLevel || element.forgeLevel <= card.level;
+const {
+  addOrUpdateCardSelectorOngoingEffectMod,
+  ongoingStatMods,
+} = ongoingEffectMods;
+
+function levelFilter(card, element) {
+  return !element.forgeLevel || element.forgeLevel <= card.level;
 }
 
 const ongoingEffects = {
-    statChange: {
-        key: 'statChange',
-        text: 'have $effect.value $effect.stat',
-        effect: {
-            $sample: [
-                {
-                    stat: 'attack',
-                    value: {
-                        $exponential: {
-                            min: 1,
-                            max: 30,
-                            probability: 0.75,
-                        },
-                    },
-                    price: ({ value }) => value * constants.CARD_PRICE_PER_ATTACK_POINT,
-                },
-                {
-                    stat: 'hp',
-                    value: {
-                        $exponential: {
-                            min: 1,
-                            max: 30,
-                            probability: 0.75,
-                        },
-                    },
-                    price: ({ value }) => value * constants.CARD_PRICE_PER_HP_POINT,
-                },
-                {
-                    stat: 'cost',
-                    value: {
-                        $exponential: {
-                            min: -25,
-                            max: -10000,
-                            step: -25,
-                            probability: 0.9,
-                        },
-                    },
-                    price: ({ value }) => value * -1,
-                },
-            ],
-        },
-        price: ({ value, stat }) => {
-            if (stat === 'cost') {
-                return value * -1;
-            }
-            if (stat === 'attack') {
-                return value * constants.CARD_PRICE_PER_ATTACK_POINT;
-            }
-            if (stat === 'hp') {
-                return value * constants.CARD_PRICE_PER_HP_POINT;
-            }
-            throw new Error(`Unknown stat: ${stat}`);
-        },
+  modifyStat: {
+    key: 'modifyStat',
+    cardSelectors: {
+      modifiedCard: null,
     },
-    givePassiveEffect: {
-        key: 'givePassiveEffect',
-        text: 'have $effect.passiveEffect.name',
-        effect: {
-            passiveEffect: {
-                $filteredSample: {
-                    list: Object.values(passiveEffects),
-                    filters: [levelFilter],
-                    keyReplace: 'ongoingPassiveEffectKey'
-                },
-            },
+    stats: {
+      $sample: [
+        {
+          [stats.ATTACK]: 1,
         },
-        price: ({ passiveEffectCostModificator }) => {
-            const averageAttackUnit = 3;
-            const averageHpUnit = 3;
-            const baseUnitCost = constants.CARD_PRICE_PER_ATTACK_POINT * averageAttackUnit + constants.CARD_PRICE_PER_HP_POINT * averageHpUnit;
-            return passiveEffectCostModificator({
-                attack: averageAttackUnit,
-                hp: averageHpUnit,
-                cost: baseUnitCost,
-            }) - baseUnitCost;
+        {
+          [stats.HP]: 1,
         },
+        {
+          [stats.COST]: -40,
+        },
+      ],
     },
+    mods: [
+      ...ongoingStatMods,
+      addOrUpdateCardSelectorOngoingEffectMod,
+    ],
+    price: (forge) => {
+      const forgeStats = forge.stats;
+      let result = 0;
+      Object.entries(forgeStats).forEach(([stat, value]) => {
+        if (stat === 'cost') {
+          result += value * -1;
+        } else if (stat === 'attack') {
+          result += value * constants.CARD_PRICE_PER_ATTACK_POINT;
+        } else if (stat === 'hp') {
+          result += value * constants.CARD_PRICE_PER_HP_POINT;
+        } else {
+          throw new Error(`Unknown stat: ${stat}`);
+        }
+      });
+      return result;
+    },
+  },
+  givePassiveEffect: {
+    key: 'givePassiveEffect',
+    cardSelectors: {
+      modifiedCard: null,
+    },
+    passiveEffect: {
+      $richSample: {
+        list: Object.values(passiveEffects),
+        filters: [levelFilter],
+        map: (element) => element.key,
+      },
+    },
+    mods: [
+      addOrUpdateCardSelectorOngoingEffectMod,
+    ],
+    price: ({ passiveEffectCostModificator }) => {
+      const averageAttackUnit = 3;
+      const averageHpUnit = 3;
+      const baseUnitCost = constants.CARD_PRICE_PER_ATTACK_POINT
+        * averageAttackUnit + constants.CARD_PRICE_PER_HP_POINT * averageHpUnit;
+      return passiveEffectCostModificator({
+        attack: averageAttackUnit,
+        hp: averageHpUnit,
+        cost: baseUnitCost,
+      }) - baseUnitCost;
+    },
+  },
 };
 
 module.exports = ongoingEffects;

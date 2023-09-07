@@ -1,19 +1,9 @@
+// Conditions will be probably texts of the while kind.
+// For example. A card has +2 attack while damaged.
+// This was the original intent of conditional effects
+// This can work with selectors
+
 const conditions = {
-  cards: {
-    inTargetPlace: {
-      name: 'inTargetPlace',
-      arguments: {
-        place: {
-          type: 'place',
-        },
-      },
-      description: 'is in the target place',
-      text: 'is in $place',
-    },
-  },
-  kingdoms: {
-    // @TODO
-  },
 };
 
 // const conditions = {

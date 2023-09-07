@@ -44,7 +44,7 @@
     "moment": "^2.29.4",
     "mongodb": "^3.6.2",
     "morgan": "^1.10.0",
-    "string-similarity": "^4.0.4",
+    "rnamegen": "^2.0.1",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-const nouns = {
+const nounsOld = {
   main: {
     generic: [
       {
@@ -1195,8 +1195,8 @@ const nouns = {
         profession: true,
       },
     ],
-    tree: [], /* {
-      name: 'Tree',
+    treant: [], /* {
+      name: 'treant',
       forgeLevel: 2,
     }, */
     fungus: [], /* {
@@ -1406,5 +1406,109 @@ const nouns = {
     },
   ],
 };
+
+const warriorUnitTypes = [
+  'human',
+  'bird',
+  'insect',
+  'ape',
+  'beast',
+  'dwarf',
+  'elf',
+  'orc',
+  'goblin',
+  'undead',
+  'giant',
+  'fairy',
+  'harpy',
+  'merfolk',
+  'centaur',
+  'minotaur',
+  'dragonling',
+  'robot',
+  'shade',
+  'phoenix',
+  'unicorn',
+  'cyclops',
+];
+
+const warriorPassiveEffects = [
+  'none',
+  'ranged',
+  'siege',
+  'taunting',
+  'challenger',
+  'berserker',
+  'fearsome',
+  'vampiric',
+  'deadly',
+  'swift',
+  'slow',
+  'big',
+  'huge',
+  'pierce',
+  'splash',
+];
+
+const engineerUnitTypes = [
+  'human',
+  'dwarf',
+  'elf',
+  'goblin',
+  'fairy',
+  'merfolk',
+  'centaur',
+  'wizard',
+  'robot',
+  'djinn',
+];
+
+// @TODO Do all the list! Define each tribe with lore
+const nouns = [
+  {
+    word: 'warrior',
+    minAttack: 2,
+    profession: true,
+    unitTypes: warriorUnitTypes,
+    passiveEffects: warriorPassiveEffects,
+    elements: 'all',
+    effectKeywords: ['dealDamage', 'fight', 'destroy'],
+  },
+  {
+    word: 'warmaster',
+    minRarity: 2,
+    minAttack: 3,
+    profession: true,
+    unitTypes: warriorUnitTypes,
+    passiveEffects: warriorPassiveEffects,
+    elements: 'all',
+    effectKeywords: ['dealDamage', 'fight', 'destroy'],
+    // Warmaster are sorta battlecries and morale boosters
+    // So ongoing stat change is also their thing
+    // Also, if they give passive any warriorPassiveEffects to
+    // other units, they are in theme.
+  },
+  {
+    word: 'battlemaster',
+    minRarity: 2,
+    minAttack: 3,
+    profession: true,
+    unitTypes: warriorUnitTypes,
+    passiveEffects: warriorPassiveEffects,
+    elements: 'all',
+    effectKeywords: ['dealDamage', 'fight', 'destroy'],
+  },
+  {
+    word: 'engineer',
+    minRarity: 2,
+    profession: true,
+    unitTypes: engineerUnitTypes,
+    passiveEffects: 'all',
+    // @TODO Will they only summon and create tech stuff?
+    // Are creations bound to the caster element by default?
+    elements: ['tech'],
+    effectKeywords: ['summon', 'create'],
+  },
+];
 
 module.exports = nouns;

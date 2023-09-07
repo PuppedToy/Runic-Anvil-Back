@@ -6,7 +6,7 @@ function getItemWeight(item) {
   return item.weight;
 }
 
-function weightedSample(collection, filters, options = {}) {
+function weightedSample(collection, filters) {
   let collectionType = typeof collection;
   if (collection instanceof Array) collectionType = 'array';
 
@@ -44,10 +44,6 @@ function weightedSample(collection, filters, options = {}) {
         || !Object.hasOwnProperty.call(item, 'weight')
         || item.weight > 0);
 
-  if (collectionData.length <= 0) {
-    throw new Error('The received collection has no data with positive weights');
-  }
-
   // Apply filters
   if (filters) {
     const filtersArray = typeof filters === 'function' ? [filters] : filters;
@@ -56,29 +52,21 @@ function weightedSample(collection, filters, options = {}) {
     });
   }
 
+  if (collectionData.length <= 0) {
+    return null;
+  }
+
   // Calculate the weight sum
   let maxWeight = collectionData.reduce((total, item) => total + getItemWeight(item), 0);
   const randomMark = Math.random() * maxWeight;
 
-  let foundItem = collectionData.find((item) => {
+  const foundItem = collectionData.find((item) => {
     const itemWeight = getItemWeight(item);
     maxWeight -= itemWeight;
     return randomMark > maxWeight;
   });
 
   const result = typeof foundItem === 'object' ? { ...foundItem } : foundItem;
-
-  if (options.keyReplace) {
-    if (!result.key) {
-      console.log(`Warning: the item has no key property: ${JSON.stringify(result, null, 2)}`);
-    }
-    result[options.keyReplace] = result.key;
-    delete result.key;
-  }
-
-  if (options.noKey) {
-    delete result.key;
-  }
 
   return result;
 }

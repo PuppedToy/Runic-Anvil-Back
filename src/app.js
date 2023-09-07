@@ -1,7 +1,7 @@
 require('dotenv').config();
+const { readFileSync } = require('fs');
 const express = require('express');
 const morgan = require('morgan');
-const { readFileSync } = require('fs');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
 const { ValidationError } = require('express-validation');

@@ -13,7 +13,7 @@ const DEFAULT_AMOUNT_IMAGE_GENERATION = 50;
 
 if (!command || command === 'help') {
   console.log(`Usage:
-    npm run cli -- generate [-a=<amount>] [--no-images]
+    npm run cli -- generate [-a=<amount>] [-l=<level>] [--no-images]
     npm run cli -- help
     `);
   process.exit(0);
@@ -22,13 +22,15 @@ if (!command || command === 'help') {
 if (command === 'generate') {
   const noImages = args.includes('--no-images') || args.includes('-ni');
   const amount = args.find((arg) => arg.match(/^-a=\d+$/))?.replace(/^-a=/, '') || DEFAULT_AMOUNT_IMAGE_GENERATION;
+  const level = args.find((arg) => arg.match(/^-l=\d+$/))?.replace(/^-l=/, '');
   let method = generateCards;
 
   if (noImages) {
     method = generateCardsWithoutImage;
   }
 
-  method(amount)
+  console.log(`Generating ${amount} cards`);
+  method(amount, { level })
     .then((cards) => {
       console.log(`Generated ${cards.length} cards`);
       process.exit(0);
@@ -46,7 +48,7 @@ async function preprocessCards() {
   await checkCommanders();
 }
 
-if (command == 'cache-costs') {
+if (command === 'cache-costs') {
   cacheCosts()
     .then(() => {
       console.log('Cached costs');
@@ -58,7 +60,7 @@ if (command == 'cache-costs') {
     });
 }
 
-if (command == 'remove-imageless') {
+if (command === 'remove-imageless') {
   removeImageless()
     .then(() => {
       console.log('Removed imageless cards');
@@ -70,7 +72,7 @@ if (command == 'remove-imageless') {
     });
 }
 
-if (command == 'regenerate-hashes') {
+if (command === 'regenerate-hashes') {
   regenerateHashes()
     .then(() => {
       console.log('Regenerated hashes');
@@ -82,7 +84,7 @@ if (command == 'regenerate-hashes') {
     });
 }
 
-if (command == 'check-commanders') {
+if (command === 'check-commanders') {
   checkCommanders()
     .then(() => {
       console.log('Checked commanders');
@@ -94,7 +96,7 @@ if (command == 'check-commanders') {
     });
 }
 
-if (command == 'preprocess-cards') {
+if (command === 'preprocess-cards') {
   preprocessCards()
     .then(() => {
       console.log('Preprocessed cards');

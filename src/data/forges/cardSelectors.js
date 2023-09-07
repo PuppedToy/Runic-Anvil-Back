@@ -1,158 +1,223 @@
-const unitTypes = require('./unitTypes');
+const { unitTypes } = require('./unitTypes');
 const passiveEffects = require('./passiveEffects');
 const statusEffects = require('./statusEffects');
-const places = require('./places');
+const elements = require('./elements');
+const steppedSigmoidFactory = require('../../utils/steppedSigmoidFactory');
+const { stats, places, compareOperators } = require('../enums');
+
+const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 const comparativeOperators = [
-    {
-        key: 'moreThan',
-        text: 'more than',
-        weight: 2,
-    },
-    {
-        key: 'lessThan',
-        text: 'less than',
-        weight: 2,
-    },
+  {
+    key: compareOperators.MORE_THAN,
+    weight: 2,
+  },
+  {
+    key: compareOperators.LESS_THAN,
+    weight: 2,
+  },
 ];
 
 const operators = [
-    ...comparativeOperators,
-    {
-        key: 'equals',
-        text: '',
-        weight: 1,
-    },
+  ...comparativeOperators,
+  {
+    key: compareOperators.EQUALS,
+    weight: 1,
+  },
 ];
 
-function levelFilter (card, element) {
-    return !element.forgeLevel || element.forgeLevel <= card.level;
-}
+const statLessThanHpSigmoid = steppedSigmoidFactory([
+  [1, 0],
+  [3, 0.4],
+  [6, 0.6],
+  [10, 0.8],
+  [20, 0.9],
+]);
+
+const statLessThanAttackSigmoid = steppedSigmoidFactory([
+  [0, 0],
+  [3, 0.4],
+  [6, 0.6],
+  [10, 0.8],
+  [20, 0.9],
+]);
+
+const equalsAttackOrHpSigmoid = steppedSigmoidFactory([
+  [4, 0.2],
+  [8, 0.15],
+  [30, 0.05],
+]);
+
+const statLessThanCostSigmoid = steppedSigmoidFactory([
+  [0, 0],
+  [300, 0.4],
+  [600, 0.6],
+  [1000, 0.8],
+  [2000, 0.9],
+  [10000, 0.95],
+]);
 
 const cardSelectors = {
-    allUnits: {
-        key: 'allUnits',
-        text: '$target units',
-        selector: {
-        },
-        costModificator: ({ cost }) => cost * 4,
-    },
-    hasStat: {
-        key: 'hasStat',
-        text: '$target units with $selector.operator $selector.value $selector.stat',
-        selector: {
-            $sample: [
-                {
-                    stat: 'attack',
-                    operator: {
-                        $sampleWithKeyReplacement: {
-                            list: operators,
-                            keyReplace: 'operatorKey',
-                        },
-                    },
-                    value: {
-                        $exponential: {
-                            min: 0,
-                            max: 30,
-                            probability: 0.75,
-                        },
-                    },
-                },
-                {
-                    stat: 'hp',
-                    operator: {
-                        $sampleWithKeyReplacement: {
-                            list: operators,
-                            keyReplace: 'operatorKey',
-                        },
-                    },
-                    value: {
-                        $exponential: {
-                            min: 1,
-                            max: 30,
-                            probability: 0.75,
-                        },
-                    },
-                },
-                {
-                    stat: 'cost',
-                    operator: {
-                        $sampleWithKeyReplacement: {
-                            list: comparativeOperators,
-                            keyReplace: 'operatorKey',
-                        },
-                    },
-                    value: {
-                        $exponential: {
-                            min: 0,
-                            max: 10000,
-                            step: 25,
-                            probability: 0.95,
-                        },
-                    },
-                },
-            ],
-        },
-        costModificator: ({ operator, cost }) => operator.key === 'equals' ? cost * 0.5 : cost * 2,
-    },
-    hasTribe: {
-        key: 'hasTribe',
-        text: '$target $selector.tribe.name units',
-        selector: {
-            tribe: {
-                $filteredSample: {
-                    list: unitTypes,
-                    keyReplace: 'tribeKey',
-                    filters: [levelFilter],
-                },
+  hasStat: {
+    key: 'hasStat',
+    stat: {
+      $sample: [
+        {
+          stat: stats.ATTACK,
+          operator: {
+            $richSample: {
+              list: operators,
+              map: ({ key }) => key,
             },
-            costModificator: ({ cost }) => cost * 2,
-        },
-    },
-    // @TODO hasElement
-    // @TODO hasRarity
-    hasPassiveEffect: {
-        key: 'hasPassiveEffect',
-        text: '$target $selector.passiveEffect.name units',
-        selector: {
-            passiveEffect: {
-                $filteredSample: {
-                    list: Object.values(passiveEffects),
-                    keyReplace: 'selectorPassiveEffectKey',
-                    filters: [levelFilter],
-                },
+          },
+          value: {
+            $exponential: {
+              min: 0,
+              max: 30,
+              probability: 0.75,
             },
+          },
         },
-        costModificator: ({ cost }) => cost * 2,
-    },
-    hasStatusEffect: {
-        key: 'hasStatusEffect',
-        text: '$target units with $selector.statusEffect.statusEffect.statusKey',
-        selector: {
-            statusEffect: {
-                $filteredSample: {
-                    list: Object.values(statusEffects),
-                    keyReplace: 'statusEffectKey',
-                    filters: [levelFilter],
-                },
+        {
+          stat: stats.HP,
+          operator: {
+            $richSample: {
+              list: operators,
+              map: ({ key }) => key,
             },
-        },
-        costModificator: ({ cost }) => cost * 2,
-    },
-    isInPlace: {
-        key: 'isInPlace',
-        text: '$target units in $selector.place',
-        selector: {
-            place: {
-                $sampleWithKeyReplacement: {
-                    list: places,
-                    keyReplace: 'placeKey',
-                },
+          },
+          value: {
+            $exponential: {
+              min: 1,
+              max: 30,
+              probability: 0.75,
             },
+          },
         },
-        costModificator: ({ cost }) => cost * 2,
-    }
-    // Ideas: is damaged, has a state changed, is a zombie, is a creation, is defending
+        {
+          stat: 'cost',
+          operator: {
+            $richSample: {
+              list: comparativeOperators,
+              map: ({ key }) => key,
+            },
+          },
+          value: {
+            $exponential: {
+              min: 0,
+              max: 10000,
+              step: 25,
+              probability: 0.95,
+            },
+          },
+        },
+      ],
+    },
+    costModificator: ({ stat: statObject, cost }) => {
+      const { stat, operator } = statObject;
+      let modificator = 1;
+      if ((stat === stats.HP || stat === stats.ATTACK) && operator === compareOperators.EQUALS) {
+        modificator = equalsAttackOrHpSigmoid(cost);
+      } else if (stat === stats.COST && operator === compareOperators.EQUALS) {
+        modificator = statLessThanCostSigmoid(cost);
+      } else {
+        if (stat === stat.HP) {
+          modificator = statLessThanHpSigmoid(cost);
+        } else if (stat === stat.ATTACK) {
+          modificator = statLessThanAttackSigmoid(cost);
+        } else if (stat === stat.COST) {
+          modificator = statLessThanCostSigmoid(cost);
+        }
+
+        if (operator === compareOperators.MORE_THAN) {
+          modificator = 1 - modificator;
+        }
+      }
+
+      return cost * modificator;
+    },
+  },
+  hasTribe: {
+    key: 'hasTribe',
+    tribe: {
+      $richSample: {
+        list: Object.values(unitTypes),
+        filters: [forgeLevelFilter],
+        map: ({ key }) => key,
+      },
+    },
+    costModificator: ({ cost }) => cost * 0.3,
+  },
+  hasElement: {
+    key: 'hasElement',
+    element: {
+      $richSample: {
+        list: [...Object.values(elements.basic)],
+        filters: [forgeLevelFilter],
+        map: ({ key }) => key,
+      },
+    },
+    costModificator: ({ cost }) => cost * 0.3,
+  },
+  hasRarity: {
+    key: 'hasRarity',
+    level: {
+      $exponential: {
+        min: 1,
+        max: 5,
+        probability: 0.2,
+      },
+    },
+    costModificator: ({ cost }) => cost * 0.5,
+  },
+  hasPassiveEffect: {
+    key: 'hasPassiveEffect',
+    passiveEffect: {
+      $richSample: {
+        list: Object.values(passiveEffects),
+        filters: [forgeLevelFilter],
+        map: ({ key }) => key,
+      },
+    },
+    costModificator: ({ cost }) => cost * 0.3,
+  },
+  hasStatusEffect: {
+    key: 'hasStatusEffect',
+    statusEffect: {
+      $richSample: {
+        list: Object.values(statusEffects),
+        filters: [forgeLevelFilter],
+        map: ({ key }) => key,
+      },
+    },
+    costModificator: ({ cost }) => cost * 0.5,
+  },
+  isInPlace: {
+    key: 'isInPlace',
+    place: {
+      $sample: [
+        places.BARRACKS,
+        places.RANGED_ZONE,
+        places.MELEE_ZONE,
+        places.WAR_ZONE,
+        places.SIEGE_ZONE,
+      ],
+    },
+    costModificator: ({ cost }) => cost * 0.5,
+  },
+  // Ideas: is damaged, has a state changed, is a zombie, is a creation, is defending
 };
 
-module.exports = cardSelectors;
+function modifyPriceFromSelectors(price, selectors = []) {
+  let endPrice = price;
+  selectors.forEach((selector) => {
+    const { costModificator } = cardSelectors[selector.key];
+    endPrice = costModificator({ ...selector, cost: endPrice });
+  });
+  return endPrice;
+}
+
+module.exports = {
+  cardSelectors,
+  modifyPriceFromSelectors,
+};

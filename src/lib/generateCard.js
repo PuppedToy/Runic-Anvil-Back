@@ -1,64 +1,112 @@
 const md5 = require('md5');
 const { randomInt } = require('../utils/random');
-const { generateForge, applyForge } = require('./forge/generateForge');
-const { generateName } = require('./generateCardTexts');
-
-function exponential(min, range, probability = 0.5) {
-  let result = min;
-  while (Math.random() < probability && result < range) {
-    result += 1;
-  }
-  return result;
-}
+const {
+  generateForge, applyForge, upgradeRandomForge, upgradeFlavor,
+} = require('./forge/generateForge');
+const { generateName } = require('./generateCardName');
+const { constants } = require('../data/enums');
+const { unitTypes } = require('../data/forges');
+const weightedSample = require('../utils/weightedSample');
 
 function createForgeComparator(forgeKey, forgeSubkey) {
   return (a, b) => {
     const triggerComparison = a[forgeKey].key.localeCompare(b[forgeKey].key);
     if (triggerComparison !== 0) return triggerComparison;
     return a[forgeSubkey].key.localeCompare(b[forgeSubkey].key);
-  }
+  };
 }
 
 function generateHash(card) {
   const {
-    rarityLevel, attack, hp, unitType, passiveEffects = [], triggers = [], actions = [], conditionalEffects = [],
+    level,
+    attack,
+    hp,
+    unitType,
+    element,
+    passiveEffects = [],
+    triggers = [],
+    actions = [],
+    conditionalEffects = [],
   } = card;
   const sortedPassiveEffects = JSON.stringify(passiveEffects.sort());
   const sortedTriggers = JSON.stringify(triggers.sort(createForgeComparator('trigger', 'effect')));
   const sortedActions = JSON.stringify(actions.sort(createForgeComparator('action', 'effect')));
   const sortedConditionalEffects = JSON.stringify(conditionalEffects.sort(createForgeComparator('selector', 'ongoingEffect')));
-  const hashContent = `${rarityLevel}|${attack}|${hp}|${unitType}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}|${sortedConditionalEffects}`;
+  const hashContent = `${level}|${attack}|${hp}|${unitType}|${element}|${sortedPassiveEffects}|${sortedTriggers}|${sortedActions}|${sortedConditionalEffects}`;
   return { hashContent, hash: md5(hashContent) };
 }
 
-function generateUnit(level = 1) {
-  if (level < 0) throw new Error('Level must be positive');
+function addForgeToCard(card, maxIterations) {
+  const forge = generateForge(card, maxIterations);
+  if (!forge) return null;
+  return applyForge(forge, card);
+}
 
-  const minAttack = randomInt(0, 4);
-  const minHp = randomInt(1, 4);
+function levelUpCard(card) {
+  const cardForges = card.forges || [];
+  const isNewForge = !cardForges.length || Math.random() < 0.5;
+  let newCard;
+  if (isNewForge) {
+    newCard = addForgeToCard(card, 3);
+  }
+  if (!newCard) {
+    newCard = upgradeRandomForge(card);
+    if (!newCard) {
+      newCard = addForgeToCard(card);
+    }
+  }
+  if (!newCard) {
+    throw new Error('Could not upgrade card');
+  }
+  if (Math.random() < constants.FLAVOR_UPGRADE_CHANCE) {
+    const flavouredCard = upgradeFlavor(newCard);
+    if (flavouredCard) {
+      newCard = flavouredCard;
+    }
+  }
+  return newCard;
+}
+
+function upgradeCard(card) {
+  const { level } = card;
+  let upgradedCard = card;
+  upgradedCard.level += 1;
+  upgradedCard = levelUpCard(upgradedCard);
+  if (level === 5) {
+    upgradedCard = levelUpCard(upgradedCard);
+    upgradedCard = levelUpCard(upgradedCard);
+    upgradedCard = levelUpCard(upgradedCard);
+  }
+  return upgradedCard;
+}
+
+const startingUnitTypes = Object.values(unitTypes).filter((unitType) => !unitType.forgeLevel);
+function generateUnit(level) {
+  const cappedLevel = Math.min(Math.max(level, 0), 5);
+  const statsAmount = randomInt(1, constants.STAT_THRESHOLDS[0]);
+  const hp = randomInt(1, statsAmount);
+  const attack = statsAmount - hp;
+  const unitType = weightedSample(startingUnitTypes);
 
   let card = {
-    attack: exponential(minAttack, 50, 0.6),
-    hp: exponential(minHp, 50, 0.6),
+    level: 0,
+    attack,
+    hp,
     type: 'unit',
-    unitType: 'human',
+    unitTypes: [unitType.key],
   };
 
-  const forges = [];
-  for (let accumulator = 0; accumulator < level; accumulator += 1) {
-    const forge = generateForge(level);
-    forges.push(forge);
-    card = applyForge(forge, card);
+  for (let accumulator = 0; accumulator < cappedLevel; accumulator += 1) {
+    card = upgradeCard(card);
   }
 
-  card.forges = forges;
-  card.name = generateName(card);
   const { hashContent, hash } = generateHash(card);
   card.hashContent = hashContent;
   card.hash = hash;
+  card.name = generateName(card);
   return card;
 }
 
 const generateCard = generateUnit;
 
-module.exports = { generateHash, generateCard };
+module.exports = { generateHash, generateCard, upgradeCard };
