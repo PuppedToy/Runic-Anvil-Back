@@ -35,6 +35,11 @@ module.exports = {
     SUBTRACT: 'subtract',
     STEAL: 'steal',
   },
+  compareOperators: {
+    MORE_THAN: 'moreThan',
+    LESS_THAN: 'lessThan',
+    EQUALS: 'equals',
+  },
   stats: {
     ATTACK: 'attack',
     HP: 'hp',

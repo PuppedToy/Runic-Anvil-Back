@@ -12,6 +12,7 @@ const {
 } = require('../enums');
 const statusEffects = require('./statusEffects');
 const { effects: effectMods } = require('./mods');
+const { modifyPriceFromSelectors } = require('./cardSelectors');
 
 const {
   improveTargetMods,
@@ -134,7 +135,31 @@ const effects = {
         chance: 0.1,
       },
     ],
-    price: ({ value }) => value * 0.5,
+    price: ({
+      value, from, to, selectors,
+    }) => {
+      let result = value * 0.5;
+
+      if (from.place === places.DECK) {
+        result += value * 0.1;
+      }
+
+      if (to.place === places.RANGED_ZONE) {
+        result += value * 0.1;
+      } else if (to.place === places.MELEE_ZONE) {
+        result += value * 0.4;
+      } else if (to.place === places.WAR_ZONE || to.place === places.WAR_ZONE) {
+        result += value * 0.6;
+      }
+
+      if (from.kingdom === kingdoms.ENEMY && from.place === places.DECK) {
+        result += value * 0.2;
+      } else if (from.kingdom === kingdoms.ENEMY && from.place === places.HAND) {
+        result += value * 0.4;
+      }
+
+      return modifyPriceFromSelectors(result, selectors);
+    },
   },
   draw: {
     key: 'draw',

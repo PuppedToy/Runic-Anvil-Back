@@ -1,5 +1,5 @@
 const actions = require('./actions');
-const cardSelectors = require('./cardSelectors');
+const { cardSelectors } = require('./cardSelectors');
 const cardStats = require('./cardStats');
 const cardTypes = require('./cardTypes');
 const conditions = require('./conditions');

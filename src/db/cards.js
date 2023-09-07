@@ -21,6 +21,7 @@ const DATABASE_NAME = 'cards';
 
 const CARD_VERSION_PARTS = CARD_VERSION.split('.');
 const [cardMajor, cardMinor] = CARD_VERSION_PARTS;
+const majorVersionRegex = new RegExp(`${cardMajor}\\.[0-9]+?\\.[0-9]+?`);
 
 async function search(query = {}) {
   const db = await getDatabase(DATABASE_NAME);
@@ -137,7 +138,7 @@ async function search(query = {}) {
     if (query.cardVersion === 'latest') {
       $and.push({ cardVersion: CARD_VERSION });
     } else if (query.cardVersion === '^latest') {
-      $and.push({ cardVersion: { $regex: new RegExp(`${cardMajor}\\.[0-9]+?\\.[0-9]+?`) } });
+      $and.push({ cardVersion: { $regex: majorVersionRegex } });
     } else if (query.cardVersion === '~latest') {
       $and.push({ cardVersion: { $regex: new RegExp(`${cardMajor}\\.${cardMinor}\\.[0-9]+?`) } });
     } else if (query.cardVersion[0] === '^') {
@@ -220,7 +221,7 @@ async function getById(id) {
 async function getByHashOrName(hash, name) {
   const db = await getDatabase(DATABASE_NAME);
   const $or = [{ hash }, { name }];
-  const $and = [{ cardVersion: { $regex: new RegExp(`${cardMajor}\\.[0-9]+?\\.[0-9]+?`) } }, { $or }];
+  const $and = [{ cardVersion: { $regex: majorVersionRegex } }, { $or }];
   const card = await db.findOne({ $and });
 
   return card ? {
@@ -294,9 +295,16 @@ async function customQuery(query) {
 async function cacheCosts() {
   const db = await getDatabase(DATABASE_NAME);
   const allUncachedCards = await db.find({
-    $or: [
-      { costCache: { $exists: false } },
-      { costCacheVersion: { $ne: COST_CACHE_VERSION } },
+    $and: [
+      {
+        cardVersion: { $regex: majorVersionRegex },
+      },
+      {
+        $or: [
+          { costCache: { $exists: false } },
+          { costCacheVersion: { $ne: COST_CACHE_VERSION } },
+        ],
+      },
     ],
   });
 
@@ -305,20 +313,25 @@ async function cacheCosts() {
 
   while (await allUncachedCards.hasNext()) {
     const card = await allUncachedCards.next();
-    const newCost = getCost(card);
-
-    await db.updateOne(
-      { _id: card._id },
-      {
-        $set: {
-          costCache: newCost,
-          costCacheVersion: COST_CACHE_VERSION,
+    try {
+      const newCost = getCost(card);
+  
+      await db.updateOne(
+        { _id: card._id },
+        {
+          $set: {
+            costCache: newCost,
+            costCacheVersion: COST_CACHE_VERSION,
+          },
         },
-      },
-    );
-
-    processedCards += 1;
-    console.log(`[Cache Costs] Processed ${processedCards} of ${totalCards} cards.`);
+      );
+  
+      processedCards += 1;
+      console.log(`[Cache Costs] Processed ${processedCards} of ${totalCards} cards.`);
+    } catch (error) {
+      console.log(JSON.stringify(card, null, 2));
+      throw error;
+    }
   }
 }
 
@@ -345,7 +358,9 @@ async function removeImageless() {
 
 async function regenerateHashes() {
   const db = await getDatabase(DATABASE_NAME);
-  const allCards = await db.find();
+  const allCards = await db.find({
+    cardVersion: { $regex: majorVersionRegex },
+  });
 
   let processedCards = 0;
   const totalCards = await allCards.count();
@@ -380,7 +395,9 @@ async function regenerateHashes() {
 
 async function checkCommanders() {
   const db = await getDatabase(DATABASE_NAME);
-  const allCards = await db.find();
+  const allCards = await db.find({
+    cardVersion: { $regex: majorVersionRegex },
+  });
 
   let processedCards = 0;
   const totalCards = await allCards.count();

@@ -1,4 +1,4 @@
-const cardSelectors = require('./cardSelectors');
+const { cardSelectors } = require('./cardSelectors');
 const {
   places, kingdoms, targets, operations, stats, creations,
 } = require('../enums');
@@ -211,7 +211,7 @@ const modifyCurrencyValueMods = [
   modifyCurrencyValueLevel3Mod,
 ];
 
-const generateStatMethod = (minIncrement, maxIncrement, withCost = false, keyTraveler) => (card, forge) => {
+const generateStatMethod = (minIncrement, maxIncrement, withCost, keyTraveler) => (card, forge) => {
   const statsObject = keyTraveler(forge);
   const multipliers = {
     [stats.ATTACK]: 1 * (statsObject[stats.ATTACK] >= 0 ? 1 : -1),
@@ -698,25 +698,23 @@ const reverseGoldMod = {
   forgeLevel: 4,
   to: {
     $custom: {
-      method: ({ to }) => {
-        if (to.kingdom === kingdoms.ALLY) {
-          return kingdoms.ENEMY;
-        }
-        if (to.kingdom === kingdoms.ENEMY) {
+      method: (card, forge) => {
+        console.log(card);
+        console.log(forge);
+        if (forge.effect.to.kingdom === kingdoms.ENEMY) {
           return Math.random() > 0.5 ? kingdoms.ALLY : kingdoms.OWNER;
         }
+        return kingdoms.ENEMY;
       },
     },
   },
   operation: {
     $custom: {
-      method: ({ operation }) => {
-        if (operation === operations.ADD) {
-          return operations.SUBTRACT;
-        }
+      method: (card, { operation }) => {
         if (operation === operations.SUBTRACT || operation === operations.STEAL) {
           return operations.ADD;
         }
+        return operations.SUBTRACT;
       },
     },
   },
@@ -795,7 +793,10 @@ const generateAddCardSelectorMod = (keyTraveler) => (card, forge) => {
   }
   const chosenSelector = weightedSample(availableSelectors);
   console.log(`Chosen selector: ${JSON.stringify(chosenSelector, null, 2)}`);
-  if (forgeCardSelectors[chosenSelector] === null || Object.keys(forgeCardSelectors[chosenSelector]).length === 0) {
+  if (
+    forgeCardSelectors[chosenSelector] === null
+    || Object.keys(forgeCardSelectors[chosenSelector]).length === 0
+  ) {
     return {
       [chosenSelector]: {
         $sample: Object.values(cardSelectors),

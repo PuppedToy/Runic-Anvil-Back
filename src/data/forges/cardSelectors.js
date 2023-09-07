@@ -2,17 +2,18 @@ const { unitTypes } = require('./unitTypes');
 const passiveEffects = require('./passiveEffects');
 const statusEffects = require('./statusEffects');
 const elements = require('./elements');
-const { stats, places } = require('../enums');
+const steppedSigmoidFactory = require('../../utils/steppedSigmoidFactory');
+const { stats, places, compareOperators } = require('../enums');
 
 const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
 const comparativeOperators = [
   {
-    key: 'moreThan',
+    key: compareOperators.MORE_THAN,
     weight: 2,
   },
   {
-    key: 'lessThan',
+    key: compareOperators.LESS_THAN,
     weight: 2,
   },
 ];
@@ -20,10 +21,41 @@ const comparativeOperators = [
 const operators = [
   ...comparativeOperators,
   {
-    key: 'equals',
+    key: compareOperators.EQUALS,
     weight: 1,
   },
 ];
+
+const statLessThanHpSigmoid = steppedSigmoidFactory([
+  [1, 0],
+  [3, 0.4],
+  [6, 0.6],
+  [10, 0.8],
+  [20, 0.9],
+]);
+
+const statLessThanAttackSigmoid = steppedSigmoidFactory([
+  [0, 0],
+  [3, 0.4],
+  [6, 0.6],
+  [10, 0.8],
+  [20, 0.9],
+]);
+
+const equalsAttackOrHpSigmoid = steppedSigmoidFactory([
+  [4, 0.2],
+  [8, 0.15],
+  [30, 0.05],
+]);
+
+const statLessThanCostSigmoid = steppedSigmoidFactory([
+  [0, 0],
+  [300, 0.4],
+  [600, 0.6],
+  [1000, 0.8],
+  [2000, 0.9],
+  [10000, 0.95],
+]);
 
 const cardSelectors = {
   hasStat: {
@@ -81,7 +113,29 @@ const cardSelectors = {
         },
       ],
     },
-    costModificator: ({ operator, cost }) => (operator.key === 'equals' ? cost * 0.5 : cost * 0.5),
+    costModificator: ({ stat: statObject, cost }) => {
+      const { stat, operator } = statObject;
+      let modificator = 1;
+      if ((stat === stats.HP || stat === stats.ATTACK) && operator === compareOperators.EQUALS) {
+        modificator = equalsAttackOrHpSigmoid(cost);
+      } else if (stat === stats.COST && operator === compareOperators.EQUALS) {
+        modificator = statLessThanCostSigmoid(cost);
+      } else {
+        if (stat === stat.HP) {
+          modificator = statLessThanHpSigmoid(cost);
+        } else if (stat === stat.ATTACK) {
+          modificator = statLessThanAttackSigmoid(cost);
+        } else if (stat === stat.COST) {
+          modificator = statLessThanCostSigmoid(cost);
+        }
+
+        if (operator === compareOperators.MORE_THAN) {
+          modificator = 1 - modificator;
+        }
+      }
+
+      return cost * modificator;
+    },
   },
   hasTribe: {
     key: 'hasTribe',
@@ -92,7 +146,7 @@ const cardSelectors = {
         map: ({ key }) => key,
       },
     },
-    costModificator: ({ cost }) => cost * 0.5,
+    costModificator: ({ cost }) => cost * 0.3,
   },
   hasElement: {
     key: 'hasElement',
@@ -103,7 +157,7 @@ const cardSelectors = {
         map: ({ key }) => key,
       },
     },
-    costModificator: ({ cost }) => cost * 0.5,
+    costModificator: ({ cost }) => cost * 0.3,
   },
   hasRarity: {
     key: 'hasRarity',
@@ -125,7 +179,7 @@ const cardSelectors = {
         map: ({ key }) => key,
       },
     },
-    costModificator: ({ cost }) => cost * 0.5,
+    costModificator: ({ cost }) => cost * 0.3,
   },
   hasStatusEffect: {
     key: 'hasStatusEffect',
@@ -154,4 +208,16 @@ const cardSelectors = {
   // Ideas: is damaged, has a state changed, is a zombie, is a creation, is defending
 };
 
-module.exports = cardSelectors;
+function modifyPriceFromSelectors(price, selectors = []) {
+  let endPrice = price;
+  selectors.forEach((selector) => {
+    const { costModificator } = cardSelectors[selector.key];
+    endPrice = costModificator({ ...selector, cost: endPrice });
+  });
+  return endPrice;
+}
+
+module.exports = {
+  cardSelectors,
+  modifyPriceFromSelectors,
+};

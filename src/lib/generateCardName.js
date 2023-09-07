@@ -47,6 +47,8 @@ function getCardDictionaries(card) {
             addNames(unitType);
           }
         });
+      }
+      if (baseDictionary.elements) {
         baseDictionary.elements.forEach((element) => {
           if (typeof element === 'object') {
             addNames(element);

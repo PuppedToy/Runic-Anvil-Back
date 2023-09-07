@@ -34,17 +34,21 @@ const ongoingEffects = {
       ...ongoingStatMods,
       addOrUpdateCardSelectorOngoingEffectMod,
     ],
-    price: ({ value, stat }) => {
-      if (stat === 'cost') {
-        return value * -1;
-      }
-      if (stat === 'attack') {
-        return value * constants.CARD_PRICE_PER_ATTACK_POINT;
-      }
-      if (stat === 'hp') {
-        return value * constants.CARD_PRICE_PER_HP_POINT;
-      }
-      throw new Error(`Unknown stat: ${stat}`);
+    price: (forge) => {
+      const forgeStats = forge.stats;
+      let result = 0;
+      Object.entries(forgeStats).forEach(([stat, value]) => {
+        if (stat === 'cost') {
+          result += value * -1;
+        } else if (stat === 'attack') {
+          result += value * constants.CARD_PRICE_PER_ATTACK_POINT;
+        } else if (stat === 'hp') {
+          result += value * constants.CARD_PRICE_PER_HP_POINT;
+        } else {
+          throw new Error(`Unknown stat: ${stat}`);
+        }
+      });
+      return result;
     },
   },
   givePassiveEffect: {
@@ -65,7 +69,8 @@ const ongoingEffects = {
     price: ({ passiveEffectCostModificator }) => {
       const averageAttackUnit = 3;
       const averageHpUnit = 3;
-      const baseUnitCost = constants.CARD_PRICE_PER_ATTACK_POINT * averageAttackUnit + constants.CARD_PRICE_PER_HP_POINT * averageHpUnit;
+      const baseUnitCost = constants.CARD_PRICE_PER_ATTACK_POINT
+        * averageAttackUnit + constants.CARD_PRICE_PER_HP_POINT * averageHpUnit;
       return passiveEffectCostModificator({
         attack: averageAttackUnit,
         hp: averageHpUnit,
