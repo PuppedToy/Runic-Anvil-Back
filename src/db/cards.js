@@ -315,7 +315,7 @@ async function cacheCosts() {
     const card = await allUncachedCards.next();
     try {
       const newCost = getCost(card);
-  
+
       await db.updateOne(
         { _id: card._id },
         {
@@ -325,7 +325,7 @@ async function cacheCosts() {
           },
         },
       );
-  
+
       processedCards += 1;
       console.log(`[Cache Costs] Processed ${processedCards} of ${totalCards} cards.`);
     } catch (error) {

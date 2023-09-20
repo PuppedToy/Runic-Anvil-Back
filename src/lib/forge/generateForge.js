@@ -14,14 +14,17 @@ function getCardBaseCost(card) {
 
 function getCost(card) {
   let baseCost = getCardBaseCost(card);
-  let newCard = { ...card };
-  newCard.cost = baseCost;
+  console.log(baseCost);
   const forges = card.forges || [];
+  let newCard = { ...card, cost: baseCost };
+  // @TODO This is an arbitrary order to apply costs. It may change
+  console.log(JSON.stringify(forges, null, 2));
   forges.forEach((forge, forgeIndex) => {
     const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
     newCard = forgeGenerator.applyCost(baseCost, forge, card, forgeIndex);
-    baseCost += newCard.cost;
+    console.log(forge.type, newCard.cost);
+    baseCost = newCard.cost;
   });
   return newCard.cost;
 }
@@ -170,16 +173,8 @@ function upgradeRandomForge(card) {
 }
 
 function applyCardCalculatedFields(card) {
-  let baseCost = getCardBaseCost(card);
-  const forges = card.forges || [];
-  let newCard = { ...card };
-  // @TODO This is an arbitrary order to apply costs. It may change
-  forges.forEach((forge, forgeIndex) => {
-    const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
-    if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
-    newCard = forgeGenerator.applyCost(baseCost, forge, card, forgeIndex);
-    baseCost += newCard.cost;
-  });
+  const cost = getCost(card);
+  const newCard = { ...card, cost };
   const { allowed, recommended } = canBeCommander(card);
   newCard.canBeCommander = allowed;
   newCard.recommendedAsCommander = recommended;

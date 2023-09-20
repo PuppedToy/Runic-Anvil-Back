@@ -383,8 +383,8 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ value, stat }) => value * (stat === stats.ATTACK
-      ? constants.CARD_PRICE_PER_ATTACK_POINT : constants.CARD_PRICE_PER_HP_POINT),
+    price: ({ value, ...card }) => (card.stats.attack || 0) * constants.CARD_PRICE_PER_ATTACK_POINT
+      + (card.stats.hp || 0) * constants.CARD_PRICE_PER_ATTACK_POINT,
   },
   destroy: {
     key: 'destroy',
@@ -796,6 +796,7 @@ const effects = {
         map: ({ key }) => key,
       },
     },
+    target: targets.CHOSEN,
     value: 1,
     duration: 1, // @TODO If regrowth or decay, -1
     mods: [
