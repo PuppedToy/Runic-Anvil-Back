@@ -208,7 +208,12 @@ const effects = {
         chance: 0.5,
       },
     ],
-    price: () => 50,
+    price: ({ value, from }) => {
+      if (from.kingdom === kingdoms.ENEMY) {
+        return value * 110;
+      }
+      return value * 60;
+    },
   },
   dealDamage: {
     key: 'dealDamage',
@@ -252,7 +257,7 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ value }) => value * 50,
+    price: ({ value }) => value * 80,
   },
   modifyInvestment: {
     key: 'modifyInvestment',
@@ -290,7 +295,21 @@ const effects = {
         chance: 0.5,
       },
     ],
-    price: ({ value }) => value,
+    price: ({ value, operation, to }) => {
+      if (operation === operations.SUBTRACT && to.kingdom === kingdoms.ENEMY) {
+        return value * 2;
+      }
+      if (operation === operations.SUBTRACT) {
+        return value * -0.5;
+      }
+      if (operation === operations.STEAL && to.kingdom === kingdoms.ENEMY) {
+        return value * 3;
+      }
+      if (operation === operations.STEAL) {
+        return value * 0.2;
+      }
+      return value;
+    },
   },
   modifyCurrency: {
     key: 'modifyCurrency',
@@ -328,7 +347,21 @@ const effects = {
         chance: 0.5,
       },
     ],
-    price: ({ value }) => value * 0.8,
+    price: ({ value, operation, to }) => {
+      if (operation === operations.SUBTRACT && to.kingdom === kingdoms.ENEMY) {
+        return value * 1.2;
+      }
+      if (operation === operations.SUBTRACT) {
+        return value * -0.3;
+      }
+      if (operation === operations.STEAL && to.kingdom === kingdoms.ENEMY) {
+        return value * 2;
+      }
+      if (operation === operations.STEAL) {
+        return value * 0.2;
+      }
+      return value * 0.8;
+    },
   },
   modifyStat: {
     key: 'modifyStat',

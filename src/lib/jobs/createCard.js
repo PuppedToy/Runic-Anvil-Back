@@ -11,6 +11,22 @@ async function createCard(options = {}) {
     let { level } = options;
     console.log(level);
     if (level === undefined || level === null || level < 0) {
+      const rnd = Math.random();
+      if (rnd < 10) {
+        level = 0;
+      } else if (rnd < 50) {
+        level = 1;
+      } else if (rnd < 70) {
+        level = 2;
+      } else if (rnd < 85) {
+        level = 3;
+      } else if (rnd < 93) {
+        level = 4;
+      } else if (rnd < 98) {
+        level = 5;
+      } else {
+        level = 6;
+      }
       level = 0;
       level = Math.floor(Math.random() * 6);
     }

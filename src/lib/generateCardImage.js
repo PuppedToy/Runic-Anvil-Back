@@ -4,49 +4,9 @@ const {
 } = require('./stableDiffusion');
 
 const weightedSample = require('../utils/weightedSample');
+const regions = require('../data/forges/regions');
 
 const MODEL = 'trinart2_115000';
-
-const contextualWords = [
-  'fighting',
-  'war',
-  'battlefield',
-  'mountain',
-  'forest',
-  'volcano',
-  'city',
-  'night',
-  'daylight',
-  'dawn',
-  'waterfall',
-  'hell',
-  'heaven',
-  'ancient',
-  'ruins',
-  'cave',
-  'dungeon',
-  'castle',
-  'temple',
-  'tomb',
-  'graveyard',
-  'arctic',
-  'desert',
-  'jungle',
-  'swamp',
-  'ocean',
-  'sea',
-  'river',
-  'lake',
-  'beach',
-  'cliff',
-  'abyss',
-  'legendary',
-  'powerful',
-  'sunset',
-  'horror',
-  'ethereal',
-  'closeup portrait',
-];
 
 const artists = [
   'artgerm',
@@ -74,29 +34,29 @@ const artists = [
   'terry rogers',
 ];
 
-function getCardImageKeywords(card) {
-  if (!card) return [];
-  const result = new Set();
-  Object.entries(card).forEach(([key, value]) => {
-    if (key === 'id' || key === '_id') {
-      return;
-    }
-    if (key === 'key' && typeof value === 'string') result.add(value);
-    else if (typeof value === 'object' && !Array.isArray(value)) {
-      const subResult = getCardImageKeywords(value);
-      subResult.forEach((subValue) => result.add(subValue));
-    }
-  });
-  return Array.from(result);
-}
-
 function generatePrompt(card) {
   if (!card) throw new Error('No card provided');
 
-  const imageContext = `${weightedSample(contextualWords)} and ${weightedSample(contextualWords)} background`;
+  let region;
+  if (card.region) {
+    const foundRegion = regions[card.region];
+    [region] = foundRegion.aliases;
+  } else {
+    region = 'a fantasy world';
+  }
   const imageArtists = new Array(2).fill(0).map(() => weightedSample(artists)).join(' and ');
-  const cardImageKeywords = getCardImageKeywords(card).join(', ');
-  return `Epic drawing of a ${card.unitType || 'human'} ${card.name}, ${cardImageKeywords}, ${imageContext} background, by ${imageArtists}, hyper detailed, 8k resolution, cinematic, intrincate, concept art, epic, trending in artstation`;
+  const cardImageKeywords = (card.passiveEffects || []).join(', ');
+  let unitType = 'human';
+  if (card.unitTypes.length === 1) {
+    [unitType] = card.unitTypes;
+  } else if (card.unitTypes.length > 1) {
+    unitType = `hybrid creature ${card.unitTypes.join(', ')} and ${card.unitTypes.slice(-1)[0]}`;
+  }
+  let element = '';
+  if (card.element) {
+    element = ` of element ${card.element}`;
+  }
+  return `Epic drawing of a ${unitType}${element} in ${region}, ${card.name}, ${cardImageKeywords}, by ${imageArtists}, hyper detailed, 8k resolution, cinematic, intrincate, concept art, epic, trending in artstation`;
 }
 
 async function generateImage(card) {
@@ -124,7 +84,6 @@ async function generateImage(card) {
 }
 
 module.exports = {
-  getCardImageKeywords,
   generatePrompt,
   generateImage,
 };

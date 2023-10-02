@@ -2,7 +2,7 @@ const regions = {
   wheozThana: {
     key: 'wheozThana',
     name: 'Wheoz Thana',
-    aliases: ['The Big City', 'The Science Nexus', 'The City of Tomorrow'],
+    aliases: ['The City of Tomorrow', 'The Big City', 'The Science Nexus'],
     adjectives: ['thanarian', 'cityborn'],
     unitTypes: [
       'human',
@@ -122,7 +122,7 @@ const regions = {
   alphatownRuins: {
     key: 'alphatownRuins',
     name: 'Alphatown Ruins',
-    aliases: ['The Punished City', 'The Void Ruins', 'The Dead City', 'Ruins of Void', 'Voidspring Ruins'],
+    aliases: ['The Void Ruins', 'The Punished City', 'The Dead City', 'Ruins of Void', 'Voidspring Ruins'],
     adjectives: ['alpharian', 'voidtouched', 'ruined', 'punished'],
     elements: [
       'shadow',
@@ -148,6 +148,7 @@ const regions = {
     key: 'oseshire',
     name: 'Oseshire',
     adjectives: ['sheiran'],
+    aliases: ['The Gentle Valley', 'The Blissful Retreat', 'Quietshire', 'Serene Hamlet'],
     unitTypes: [
       'human',
       {
@@ -179,7 +180,7 @@ const regions = {
   zraross: {
     key: 'zraross',
     name: 'Zraross',
-    aliases: ['Realm of the Lost', 'World of Worlds', 'Unstable Multiverse', 'Chaotic Realm', 'The Lost Realm', 'The Forgotten Realm'],
+    aliases: ['The Forgotten Realm', 'Realm of the Lost', 'World of Worlds', 'Unstable Multiverse', 'Chaotic Realm', 'The Lost Realm'],
     adjectives: ['zrarossian', 'lost', 'forgotten', 'dimensional', 'chaosborn'],
     unitTypes: ['any'],
     elements: ['any'],
@@ -258,7 +259,7 @@ const regions = {
     key: 'nisetCoast',
     name: 'Niset Coast',
     description: 'A coast filled with merfolk and other water creatures.',
-    aliases: ['Merfolk City', 'Underwater City'],
+    aliases: ['Underwater City', 'Merfolk City'],
     adjectives: ['Nisetian'],
     elements: [
       'water',
@@ -373,7 +374,7 @@ const regions = {
   chisonBurrows: {
     key: 'chisonBurrows',
     name: 'Chison Burrows',
-    aliases: ['Hive City', 'The Nest'],
+    aliases: ['The Hive Burrows', 'Hive City', 'The Nest'],
     adjectives: ['Chisonian'],
     elements: [
       'earth',
@@ -729,7 +730,7 @@ const regions = {
   xahphiaLake: {
     key: 'xahphiaLake',
     name: 'Xahphia Lake',
-    aliases: ['Mirage Lake', 'Mirror Lake', 'The Lake of Illusions'],
+    aliases: ['The Lake of Illusions', 'Mirage Lake', 'Mirror Lake'],
     adjectives: ['Xahphian'],
     elements: [
       'water',
@@ -947,7 +948,7 @@ const regions = {
   luhamPools: {
     key: 'luhamPools',
     name: 'Luham Pools',
-    aliases: ['The Magma City', 'Lava Pools', 'Luham Hell'],
+    aliases: ['Lava Pools', 'The Magma City', 'Luham Hell'],
     adjectives: ['Luhamian'],
     elements: [
       'fire',
