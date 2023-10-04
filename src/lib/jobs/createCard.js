@@ -9,7 +9,6 @@ async function createCard(options = {}) {
   let counter = 0;
   do {
     let { level } = options;
-    console.log(level);
     if (level === undefined || level === null || level < 0) {
       const rnd = Math.random();
       if (rnd < 10) {

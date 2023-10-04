@@ -704,7 +704,9 @@ const forgeGenerators = [
     },
     isCommanderForbidden(forge) {
       const foundTrigger = triggers[forge.trigger.key];
-      return foundTrigger.isCommanderForbidden ? foundTrigger.isCommanderForbidden() : false;
+      const foundEffect = effects[forge.effect.key];
+      return (foundTrigger.isCommanderForbidden ? foundTrigger.isCommanderForbidden() : false)
+        || (foundEffect.isCommanderForbidden ? foundEffect.isCommanderForbidden() : false);
     },
   },
   {
@@ -806,7 +808,10 @@ const forgeGenerators = [
       cardAction.cost = actionPrice;
       return newCard;
     },
-    isCommanderForbidden: () => false,
+    isCommanderForbidden: (forge) => {
+      const foundEffect = effects[forge.effect.key];
+      return (foundEffect.isCommanderForbidden ? foundEffect.isCommanderForbidden() : false);
+    },
   },
   {
     type: 'addOngoingEffect',

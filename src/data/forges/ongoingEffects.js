@@ -36,7 +36,6 @@ const ongoingEffects = {
     ],
     price: (forge) => {
       const forgeStats = forge.stats;
-      console.log(forgeStats);
       let result = 0;
       Object.entries(forgeStats).forEach(([stat, value]) => {
         if (Number.isNaN(value)) {

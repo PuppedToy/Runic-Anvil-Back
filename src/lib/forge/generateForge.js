@@ -14,16 +14,13 @@ function getCardBaseCost(card) {
 
 function getCost(card) {
   let baseCost = getCardBaseCost(card);
-  console.log(baseCost);
   const forges = card.forges || [];
   let newCard = { ...card, cost: baseCost };
   // @TODO This is an arbitrary order to apply costs. It may change
-  console.log(JSON.stringify(forges, null, 2));
   forges.forEach((forge, forgeIndex) => {
     const forgeGenerator = forgeGenerators.find((generator) => generator.type === forge.type);
     if (!forgeGenerator) throw new Error(`Forge generator not found for type ${forge.type}`);
     newCard = forgeGenerator.applyCost(baseCost, forge, card, forgeIndex);
-    console.log(forge.type, newCard.cost);
     baseCost = newCard.cost;
   });
   return newCard.cost;
