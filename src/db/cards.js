@@ -356,6 +356,15 @@ async function removeImageless() {
   }
 }
 
+async function getAllCards() {
+  const db = await getDatabase(DATABASE_NAME);
+  const allCards = await db.find({
+    cardVersion: { $regex: majorVersionRegex },
+  });
+
+  return allCards.toArray();
+}
+
 async function regenerateHashes() {
   const db = await getDatabase(DATABASE_NAME);
   const allCards = await db.find({
@@ -465,6 +474,7 @@ module.exports = {
   bulkUpdate,
   cacheCosts,
   removeImageless,
+  getAllCards,
   regenerateHashes,
   checkCommanders,
 };

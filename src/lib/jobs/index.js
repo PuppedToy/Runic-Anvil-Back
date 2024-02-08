@@ -1,3 +1,5 @@
+const { readdir, rm } = require('fs').promises;
+
 const createCard = require('./createCard');
 const { addImageToCard, addImageToAnyCard } = require('./addImageToCard');
 const db = require('../../db');
@@ -53,6 +55,43 @@ function checkCommanders() {
   return db.cards.checkCommanders();
 }
 
+async function cleanImages() {
+  const picDirName = `${__dirname}/../../../pics`;
+  console.log(picDirName);
+
+  const [imagesToDelete, cards] = await Promise.all([
+    await readdir(picDirName),
+    await db.cards.getAllCards(),
+  ]);
+
+  ['.gitignore', '__default'].forEach((dir) => {
+    const index = imagesToDelete.findIndex((image) => image === dir);
+    if (index >= 0) {
+      imagesToDelete.splice(index, 1);
+    }
+  });
+
+  // @TODO this selects all cards
+  cards.forEach((card) => {
+    const imageIndex = imagesToDelete.findIndex((foundImage) => {
+      const splits = card.image.split('/');
+      const cardImage = splits[splits.length - 2];
+      return foundImage === cardImage;
+    });
+    if (imageIndex >= 0) {
+      imagesToDelete.splice(imageIndex, 1);
+    }
+  });
+
+  const deletingDirPromises = [];
+  imagesToDelete.forEach((imageDirectory) => {
+    console.log(`Deleting image ${imageDirectory}`);
+    deletingDirPromises.push(rm(`${picDirName}/${imageDirectory}`, { recursive: true }));
+  });
+  await Promise.all(deletingDirPromises);
+  console.log(`Deleted ${imagesToDelete.length} images`);
+}
+
 module.exports = {
   generateFullCard,
   generateCards,
@@ -64,4 +103,5 @@ module.exports = {
   removeImageless,
   regenerateHashes,
   checkCommanders,
+  cleanImages,
 };

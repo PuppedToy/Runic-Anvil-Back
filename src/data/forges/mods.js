@@ -697,14 +697,16 @@ const reverseGoldMod = {
   id: 'reverse',
   forgeLevel: 4,
   to: {
-    $custom: {
-      method: (card, forge) => {
-        console.log(card);
-        console.log(forge);
-        if (forge.effect.to.kingdom === kingdoms.ENEMY) {
-          return Math.random() > 0.5 ? kingdoms.ALLY : kingdoms.OWNER;
-        }
-        return kingdoms.ENEMY;
+    kingdom: {
+      $custom: {
+        method: (card, forge) => {
+          console.log(card);
+          console.log(forge);
+          if (forge.effect.to.kingdom === kingdoms.ENEMY) {
+            return Math.random() > 0.5 ? kingdoms.ALLY : kingdoms.OWNER;
+          }
+          return kingdoms.ENEMY;
+        },
       },
     },
   },
@@ -777,6 +779,7 @@ const improveTargetLevel1Mod = {
 const improveTargetLevel2Mod = {
   id: 'improveTarget',
   modLevel: 2,
+  forgeLevel: 4,
   target: targets.ALL,
 };
 

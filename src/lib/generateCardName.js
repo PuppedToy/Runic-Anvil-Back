@@ -98,6 +98,12 @@ function getCardDictionaries(card) {
     addNames(cardAction);
     addNames(cardEffect);
   });
+
+  result.mainNouns = [
+    ...result.mainNouns,
+    ...result.professions,
+  ];
+
   return result;
 }
 

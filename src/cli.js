@@ -6,6 +6,7 @@ const {
   removeImageless,
   regenerateHashes,
   checkCommanders,
+  cleanImages,
 } = require('./lib/jobs');
 
 const [command, ...args] = process.argv.slice(2);
@@ -100,6 +101,18 @@ if (command === 'preprocess-cards') {
   preprocessCards()
     .then(() => {
       console.log('Preprocessed cards');
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}
+
+if (command === 'clean-images') {
+  cleanImages()
+    .then(() => {
+      console.log('Cleaned images');
       process.exit(0);
     })
     .catch((err) => {
