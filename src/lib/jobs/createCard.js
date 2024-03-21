@@ -30,7 +30,7 @@ async function createCard(options = {}) {
       level = Math.floor(Math.random() * 6);
     }
     console.log(`Creating level ${level} card`);
-    newCard = generateCard(level);
+    newCard = generateCard(level, Boolean(options.debug));
 
     // eslint-disable-next-line no-await-in-loop
     foundCard = await db.cards.getByHashOrName(newCard.hash, newCard.name);

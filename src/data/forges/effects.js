@@ -56,7 +56,7 @@ const {
 //   switch (cardSelector.key) {
 //     case 'hasStat':
 //       break;
-//     case 
+//     case
 //   }
 
 //   return price;
@@ -175,7 +175,7 @@ const effects = {
       },
     ],
     price: ({
-      value, from, to, selectors,
+      value, from, to, selectors, target,
     }) => {
       let result = value * 0.5;
 
@@ -197,7 +197,7 @@ const effects = {
         result += value * 0.4;
       }
 
-      return modifyPriceFromSelectors(result, selectors);
+      return modifyPriceFromSelectors(result, selectors, target);
     },
   },
   draw: {
@@ -375,7 +375,9 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ value }) => value * 80,
+    price: (
+      { value, selectors, target },
+    ) => modifyPriceFromSelectors(value * 80, selectors, target),
   },
   modifyInvestment: {
     key: 'modifyInvestment',
@@ -712,8 +714,13 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ value, ...card }) => (card.stats.attack || 0) * constants.CARD_PRICE_PER_ATTACK_POINT
-      + (card.stats.hp || 0) * constants.CARD_PRICE_PER_ATTACK_POINT,
+    price: ({
+      stats: effectStats, selectors, target,
+    }) => {
+      const priceResult = (effectStats.attack || 0) * constants.CARD_PRICE_PER_ATTACK_POINT
+        + (effectStats.hp || 0) * constants.CARD_PRICE_PER_ATTACK_POINT;
+      return modifyPriceFromSelectors(priceResult * 80, selectors, target);
+    },
   },
   destroy: {
     key: 'destroy',
@@ -799,7 +806,7 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: () => 400,
+    price: ({ selectors, target }) => modifyPriceFromSelectors(400, selectors, target),
   },
   move: {
     key: 'move',
@@ -891,7 +898,7 @@ const effects = {
         chance: 0.5,
       },
     ],
-    price: ({ place }) => {
+    price: ({ place, selectors, target }) => {
       let result = 25;
 
       if (place === places.BARRACKS || place === places.WAR_ZONE) {
@@ -900,7 +907,7 @@ const effects = {
         result = 100;
       }
 
-      return result;
+      return modifyPriceFromSelectors(result, selectors, target);
     },
   },
   recall: {
@@ -973,7 +980,7 @@ const effects = {
         chance: 0.5,
       },
     ],
-    price: () => 200,
+    price: ({ selectors, target }) => modifyPriceFromSelectors(200, selectors, target),
   },
   fight: {
     key: 'fight',
@@ -1062,7 +1069,7 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: () => 50,
+    price: () => 25,
     isCommanderForbidden: () => true,
   },
   heal: {
@@ -1150,7 +1157,9 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ value }) => value * 50,
+    price: (
+      { value, selectors, target },
+    ) => modifyPriceFromSelectors(value * 50, selectors, target),
   },
   betray: {
     key: 'betray',
@@ -1185,7 +1194,7 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: () => 600,
+    price: ({ selectors, target }) => modifyPriceFromSelectors(600, selectors, target),
   },
   resurrect: {
     key: 'resurrect',
@@ -1200,7 +1209,13 @@ const effects = {
       kingdom: kingdoms.OWNER,
       place: places.BARRACKS,
     },
-    value: 1,
+    value: {
+      $range: {
+        min: 120,
+        max: 200,
+        step: 40,
+      },
+    },
     elements: [
       {
         key: 'shadow',
@@ -1228,7 +1243,33 @@ const effects = {
       toPlaceAnyButBarracksMod,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: () => 300,
+    price: ({ value, to, from }) => {
+      let result = value;
+      if (to.place === places.RANGED_ZONE) {
+        result *= 1.3;
+      } else if (to.place === places.MELEE_ZONE) {
+        result *= 1.5;
+      } else if (to.place === places.WAR_ZONE || to.place === places.SIEGE_ZONE) {
+        result *= 2;
+      }
+
+      if (to.kingdom === kingdoms.ENEMY) {
+        result = value > 200 ? value * 0.5 : value * 2;
+        if (to.place === places.RANGED_ZONE) {
+          result = value * -0.5;
+        } else if (to.place === places.MELEE_ZONE) {
+          result = value * -0.5;
+        } else if (to.place === places.WAR_ZONE || to.place === places.SIEGE_ZONE) {
+          result *= -1;
+        }
+        if (from.kingdom !== kingdoms.ENEMY) {
+          result *= 0.9;
+        }
+      } else if (from.kingdom === kingdoms.ENEMY) {
+        result *= 1.1;
+      }
+      return result;
+    },
   },
   discard: {
     key: 'discard',
@@ -1274,7 +1315,8 @@ const effects = {
       toOwnerOrAllyLevel2Mod,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: () => 50,
+    // @TODO discard price
+    price: () => 120,
   },
   summon: {
     key: 'summon',
@@ -1318,7 +1360,28 @@ const effects = {
       toPlaceAnyIngameButBarracksMod,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ value }) => value,
+    price: ({ value, to }) => {
+      let result = value;
+      if (to.place === places.RANGED_ZONE) {
+        result *= 1.3;
+      } else if (to.place === places.MELEE_ZONE) {
+        result *= 1.5;
+      } else if (to.place === places.WAR_ZONE || to.place === places.SIEGE_ZONE) {
+        result *= 2;
+      }
+
+      if (to.kingdom === kingdoms.ENEMY) {
+        result = value > 200 ? value * 0.5 : value * 2;
+        if (to.place === places.RANGED_ZONE) {
+          result = value * -0.5;
+        } else if (to.place === places.MELEE_ZONE) {
+          result = value * -0.5;
+        } else if (to.place === places.WAR_ZONE || to.place === places.SIEGE_ZONE) {
+          result *= -1;
+        }
+      }
+      return result;
+    },
   },
   create: {
     key: 'create',
@@ -1383,13 +1446,19 @@ const effects = {
       ...improveTargetMods,
       addOrUpdateCardSelectorEffectMod,
     ],
-    price: ({ statusEffect, value = 1 }) => {
-      let result = 50;
-      if (statusEffect === 'stun') {
+    price: ({
+      statusEffect, value = 1, selectors, target,
+    }) => {
+      let result = 60;
+      if (statusEffect === 'silence') {
         result = 100;
+      } else if (statusEffect === 'decay') {
+        result = 200;
+      } else if (statusEffect === 'regrowth') {
+        result = 200;
       }
 
-      return result * value;
+      return modifyPriceFromSelectors(result * value, selectors, target);
     },
   },
 };

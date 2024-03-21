@@ -27,7 +27,7 @@ module.exports = {
   },
   targets: {
     CHOSEN: 'chosen',
-    RANDOM: 'random',
+    CHOSEN_AND_ADJACENTS: 'chosenAndAdjacents',
     ALL: 'all',
   },
   operations: {

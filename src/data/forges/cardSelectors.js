@@ -3,7 +3,9 @@ const passiveEffects = require('./passiveEffects');
 const statusEffects = require('./statusEffects');
 const elements = require('./elements');
 const steppedSigmoidFactory = require('../../utils/steppedSigmoidFactory');
-const { stats, places, compareOperators } = require('../enums');
+const {
+  stats, places, compareOperators, targets,
+} = require('../enums');
 
 const forgeLevelFilter = (level) => ({ forgeLevel = 0 }) => level >= forgeLevel;
 
@@ -208,16 +210,21 @@ const cardSelectors = {
   // Ideas: is damaged, has a state changed, is a zombie, is a creation, is defending
 };
 
-function modifyPriceFromSelectors(price, selectors = []) {
+function applyEffectPriceModifiers(price, selectors = [], target = targets.CHOSEN) {
   let endPrice = price;
   selectors.forEach((selector) => {
     const { costModificator } = cardSelectors[selector.key];
     endPrice = costModificator({ ...selector, cost: endPrice });
   });
+  if (target === targets.CHOSEN_AND_ADJACENTS) {
+    endPrice *= 2.5;
+  } else if (target === targets.ALL) {
+    endPrice *= 4;
+  }
   return endPrice;
 }
 
 module.exports = {
   cardSelectors,
-  modifyPriceFromSelectors,
+  modifyPriceFromSelectors: applyEffectPriceModifiers,
 };

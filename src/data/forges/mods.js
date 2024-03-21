@@ -362,19 +362,44 @@ const ongoingStatMods = [
 const resurrectValueLevel1Mod = {
   id: 'value',
   modLevel: 1,
-  forgeLevel: 4,
-  value: 2,
+  value: {
+    $range: {
+      min: 250,
+      max: 450,
+      step: 40,
+    },
+  },
 };
 
 const resurrectValueLevel2Mod = {
   id: 'value',
   modLevel: 2,
-  value: 3,
+  value: {
+    $range: {
+      min: 500,
+      max: 950,
+      step: 50,
+    },
+  },
+};
+
+const resurrectValueLevel3Mod = {
+  id: 'value',
+  modLevel: 3,
+  value: {
+    $exponential: {
+      min: 1000,
+      max: 10000,
+      step: 100,
+      probability: 0.75,
+    },
+  },
 };
 
 const resurrectValueMods = [
   resurrectValueLevel1Mod,
   resurrectValueLevel2Mod,
+  resurrectValueLevel3Mod,
 ];
 
 const summonValueLevel1Mod = {
@@ -772,17 +797,20 @@ const discoverMod = {
 
 const improveTargetLevel1Mod = {
   id: 'improveTarget',
-  modLevel: 1,
-  target: targets.RANDOM,
+  modLevel: 4,
+  target: targets.CHOSEN_AND_ADJACENTS,
 };
 
 const improveTargetLevel2Mod = {
   id: 'improveTarget',
   modLevel: 2,
-  forgeLevel: 4,
+  forgeLevel: 5,
   target: targets.ALL,
 };
 
+// @TODO Remove random targeting unless specific legendary cards with lots of flavor
+// Remove ALL targeting for most cases.
+// Level 1: target
 const improveTargetMods = [
   improveTargetLevel1Mod,
   improveTargetLevel2Mod,

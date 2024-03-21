@@ -68,20 +68,17 @@ function levelUpCard(card) {
 }
 
 function upgradeCard(card) {
-  const { level } = card;
   let upgradedCard = card;
   upgradedCard.level += 1;
   upgradedCard = levelUpCard(upgradedCard);
-  if (level === 5) {
-    upgradedCard = levelUpCard(upgradedCard);
-    upgradedCard = levelUpCard(upgradedCard);
+  if (upgradedCard.level === 5) {
     upgradedCard = levelUpCard(upgradedCard);
   }
   return upgradedCard;
 }
 
 const startingUnitTypes = Object.values(unitTypes).filter((unitType) => !unitType.forgeLevel);
-function generateUnit(level) {
+function generateUnit(level, debug) {
   const cappedLevel = Math.min(Math.max(level, 0), 5);
   const statsAmount = randomInt(1, constants.STAT_THRESHOLDS[0]);
   const hp = randomInt(1, statsAmount);
@@ -96,14 +93,28 @@ function generateUnit(level) {
     unitTypes: [unitType.key],
   };
 
+  if (debug) {
+    console.log(JSON.stringify(card, null, 2));
+  }
+
   for (let accumulator = 0; accumulator < cappedLevel; accumulator += 1) {
     card = upgradeCard(card);
+    if (debug) {
+      console.log('-----');
+      console.log(JSON.stringify(card, null, 2));
+    }
   }
 
   const { hashContent, hash } = generateHash(card);
   card.hashContent = hashContent;
   card.hash = hash;
   card.name = generateName(card);
+  if (debug) {
+    console.log('=============');
+    console.log('=============');
+    console.log('=============');
+  }
+  console.log(JSON.stringify(card, null, 2));
   return card;
 }
 

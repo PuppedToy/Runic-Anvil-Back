@@ -439,10 +439,11 @@ async function bulkUpdate(query, stringUpdateCardMethod) {
   const cards = await db.find(query).toArray();
   const promises = [];
   const errors = [];
-  cards.forEach((card) => {
+  cards.forEach((card, index) => {
     const updateCard = _eval(`${stringUpdateCardMethod}; module.exports = updateCard;`);
     try {
       const updatedCard = updateCard(card);
+      console.log(`Updating card ${index} of ${cards.length}...`);
       promises.push(db.updateOne(
         { _id: card._id },
         {

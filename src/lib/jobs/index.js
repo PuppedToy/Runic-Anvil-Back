@@ -31,7 +31,7 @@ async function generateCardsWithoutImage(n, { level }) {
   for (let i = 0; i < n; i += 1) {
     console.log(`[NOIMG] Generating card ${i + 1} of ${n}`);
     // eslint-disable-next-line no-await-in-loop
-    const card = await createCard({ image: DEFAULT_IMAGE, level });
+    const card = await createCard({ image: DEFAULT_IMAGE, level, debug: true });
     if (card !== null) {
       cards.push(card);
     }
