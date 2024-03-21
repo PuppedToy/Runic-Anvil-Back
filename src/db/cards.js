@@ -97,15 +97,15 @@ async function search(query = {}) {
   }
 
   if (query.rarity) {
-    $and.push({ rarityLevel: query.rarity });
+    $and.push({ level: query.rarity });
   }
 
   if (query.minRarity) {
-    $and.push({ rarityLevel: { $gte: query.minRarity } });
+    $and.push({ level: { $gte: query.minRarity } });
   }
 
   if (query.maxRarity) {
-    $and.push({ rarityLevel: { $lte: query.maxRarity } });
+    $and.push({ level: { $lte: query.maxRarity } });
   }
 
   if (query.triggerEffect) {

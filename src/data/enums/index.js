@@ -10,6 +10,33 @@ module.exports = {
     STAT_THRESHOLDS: [5, 10, 15],
     FLAVOR_UPGRADE_CHANCE: 0.5,
   },
+  packs: {
+    getRandomCardRarity(rarityProbabilities) {
+      const random = Math.random();
+      let sum = 0;
+      const probabiltyEntries = Object.entries(rarityProbabilities);
+      for (let i = 0; i < probabiltyEntries.length; i += 1) {
+        const rarity = probabiltyEntries[i][0];
+        const probability = probabiltyEntries[i][1];
+        sum += probability;
+        if (random <= sum) {
+          return parseInt(rarity, 10);
+        }
+      }
+      throw new Error('Rarity probabilities do not sum to 1');
+    },
+    default: {
+      size: 5,
+      rarityProbabilities: {
+        0: 0.2,
+        1: 0.4,
+        2: 0.2,
+        3: 0.135,
+        4: 0.05,
+        5: 0.015,
+      },
+    },
+  },
   kingdoms: {
     OWNER: 'owner',
     ALLY: 'ally',

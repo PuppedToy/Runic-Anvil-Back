@@ -45,7 +45,17 @@ const getCardValidator = {
   }),
 };
 
+const getPackValidator = {
+  params: Joi.object({
+    type: Joi.string().valid('default').required(),
+  }),
+  query: Joi.object({
+    amount: Joi.number().integer().min(1),
+  }),
+};
+
 router.get('/search', validate(searchValidator), controller.searchController);
 router.get('/:cardId', validate(getCardValidator), controller.getCardController);
+router.get('/packs/:type', validate(getPackValidator), controller.getPackController);
 
 module.exports = router;
